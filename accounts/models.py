@@ -11,4 +11,6 @@ class User(AbstractUser):
         ('student', 'Student'),
     )
     
-    reole = models.CharField(max_length=10, choices=ROLE)
+    role = models.CharField(max_length=10, choices=ROLE)
+    avatar = models.ImageField(upload_to='avatar/', default='')
+    

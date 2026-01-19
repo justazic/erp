@@ -19,7 +19,7 @@ class PaymentCreateView(LoginRequiredMixin,View):
         Payment.objects.create(
             student_id=request.POST.get('student'),
             amount = request.POST.get('amount'),
-            method=request.POSGT.get('method')
+            method=request.POST.get('method')
         )
         return redirect('finance/report')
 

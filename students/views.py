@@ -28,5 +28,5 @@ class StudentCreateView(LoginRequiredMixin, View):
 class StudentListView(LoginRequiredMixin, View):
     def get(self, request):
         students = Student.objects.all()
-        return render(request, 'students/list.html', {'students', students})
+        return render(request, 'students/list.html', {'students': students})
     
