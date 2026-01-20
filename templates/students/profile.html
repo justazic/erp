@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+<h2>Student profili</h2>
+
+<p><b>Ism:</b> {{ student.user.first_name }}</p>
+<p><b>Familiya:</b> {{ student.user.last_name }}</p>
+<p><b>Telefon:</b> {{ student.phone }}</p>
+<p><b>Manzil:</b> {{ student.address }}</p>
+<p><b>Tug‘ilgan sana:</b> {{ student.birth_date }}</p>
+<p><b>Status:</b>
+    {% if student.active %}Faol{% else %}Nofaol{% endif %}
+</p>
+
+<a href="/students/update/">✏️ Profilni tahrirlash</a>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Moliyaviy hisobot{% endblock %}
+
+{% block content %}
+<h2>Moliyaviy hisobot</h2>
+
+<p><b>Jami tushum:</b> {{ total }}</p>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Student</th>
+        <th>Summa</th>
+        <th>To‘lov turi</th>
+        <th>Sana</th>
+    </tr>
+
+    {% for payment in payments %}
+    <tr>
+        <td>
+            {{ payment.student.user.first_name }}
+            {{ payment.student.user.last_name }}
+        </td>
+        <td>{{ payment.amount }}</td>
+        <td>{{ payment.get_method_display }}</td>
+        <td>{{ payment.created_at|date:"d.m.Y H:i" }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">To‘lovlar yo‘q</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

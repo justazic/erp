@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Profilni tahrirlash{% endblock %}
+
+{% block content %}
+<h2>Profilni tahrirlash</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Ism:</label><br>
+    <input type="text" name="first_name" value="{{ student.user.first_name }}" required><br><br>
+
+    <label>Familiya:</label><br>
+    <input type="text" name="last_name" value="{{ student.user.last_name }}" required><br><br>
+
+    <label>Telefon:</label><br>
+    <input type="text" name="phone" value="{{ student.phone }}" required><br><br>
+
+    <label>Manzil:</label><br>
+    <input type="text" name="address" value="{{ student.address }}" required><br><br>
+
+    <label>Tug‘ilgan sana:</label><br>
+    <input type="date" name="birth_date" value="{{ student.birth_date|date:'Y-m-d' }}"><br><br>
+
+    <button type="submit">Saqlash</button>
+</form>
+{% endblock %}

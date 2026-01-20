@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kurs qo‘shish</title>
+</head>
+<body>
+    <h2>Yangi kurs qo‘shish</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Kurs nomi:</label><br>
+        <input type="text" name="name" required><br><br>
+
+        <button type="submit">Saqlash</button>
+    </form>
+
+    <br>
+    <a href="/courses/">Orqaga</a>
+</body>
+</html>

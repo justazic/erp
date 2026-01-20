@@ -12,5 +12,12 @@ class User(AbstractUser):
     )
     
     role = models.CharField(max_length=10, choices=ROLE)
-    avatar = models.ImageField(upload_to='avatar/', default='')
-    
+    avatar = models.ImageField(upload_to='avatar/', default='default.png')
+
+    def save(self, *args, **kwargs):
+        if self.role == 'admin':
+            self.is_staff = True
+            self.is_superuser = True
+        super().save(*args, **kwargs)
+
+

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Student qo‘shish{% endblock %}
+
+{% block content %}
+<h2>Yangi student qo‘shish</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Username:</label><br>
+    <input type="text" name="username" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <label>Ism:</label><br>
+    <input type="text" name="first_name" required><br><br>
+
+    <label>Familiya:</label><br>
+    <input type="text" name="last_name" required><br><br>
+
+    <label>Telefon:</label><br>
+    <input type="text" name="phone" required><br><br>
+
+    <label>Manzil:</label><br>
+    <input type="text" name="address" required><br><br>
+
+    <label>Tug‘ilgan sana:</label><br>
+    <input type="date" name="birth_date"><br><br>
+
+    <button type="submit">Saqlash</button>
+</form>
+{% endblock %}

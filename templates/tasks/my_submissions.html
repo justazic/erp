@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Mening topshiriqlarim</h2>
+
+<ul>
+{% for s in submissions %}
+    <li>
+        {{ s.assignment.title }} —
+        {% if s.checked %}
+            Baho: {{ s.grade }}
+        {% else %}
+            Tekshirilmagan
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}

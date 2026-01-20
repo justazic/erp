@@ -1,22 +1,30 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Attendance
 from students.models import Student
 from datetime import date
 
-# Create your views here.
 
-
-class AttendanceCreateView(LoginRequiredMixin,View):
+class AttendanceCreateView(LoginRequiredMixin, View):
     def get(self, request):
+        if request.user.role not in ['admin', 'teacher']:
+            return redirect('/')
+
         students = Student.objects.all()
-        return render(request, 'attendance/form.html', {'students':students})
-    
-    def post(self, requdet):
+        return render(
+            request,
+            'attendance/form.html',
+            {'students': students}
+        )
+
+    def post(self, request):
+        if request.user.role not in ['admin', 'teacher']:
+            return redirect('/')
+
         Attendance.objects.create(
-            student_id = requdet.POST.get('student'),
+            student_id=request.POST.get('student'),
             date=date.today(),
-            status=requdet.POST.get('status')
+            status=request.POST.get('status')
         )
         return redirect('/')

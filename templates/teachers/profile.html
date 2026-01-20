@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+<h2>O‘qituvchi profili</h2>
+
+<p><b>Ism:</b> {{ teacher.user.first_name }}</p>
+<p><b>Familiya:</b> {{ teacher.user.last_name }}</p>
+<p><b>Mutaxassislik:</b> {{ teacher.speciality }}</p>
+<p><b>Telefon:</b> {{ teacher.phone }}</p>
+<p><b>Bio:</b> {{ teacher.bio }}</p>
+<p><b>Tajriba (yil):</b> {{ teacher.experience_year }}</p>
+
+<a href="/teachers/update/">✏️ Profilni tahrirlash</a>
+{% endblock %}
