@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}O‘qituvchilar{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .page-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border: none;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .add-btn {
+            background: #4361ee;
+            color: #fff;
+            border-radius: 12px;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .add-btn:hover {
+            background: #3f37c9;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .teacher-table thead {
+            background: #f8f9fa;
+        }
+
+        .teacher-table thead th {
+            border: none;
+            color: #8d99ae;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px;
+        }
+
+        .teacher-table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .status-inactive {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            transition: 0.2s;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+        }
+
+        .teacher-avatar {
+            width: 40px;
+            height: 40px;
+            background: #e7f1ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4361ee;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+    </style>
+
+    <div class="container py-4">
+        <div class="page-card">
+            <div class="table-header">
+                <div>
+                    <h2 class="fw-bold mb-1">👨‍🏫 O‘qituvchilar</h2>
+                    <p class="text-muted small mb-0">Tizimdagi barcha o'qituvchilarni boshqarish</p>
+                </div>
+                <a href="/teachers/create/" class="add-btn">
+                    <i class="fas fa-plus-circle me-2"></i> Yangi o‘qituvchi
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table teacher-table mb-0">
+                    <thead>
+                    <tr>
+                        <th>Ism Familya</th>
+                        <th>Mutaxassislik</th>
+                        <th>Telefon</th>
+                        <th>Holat</th>
+                        <th class="text-end">Amallar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for teacher in teachers %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="teacher-avatar">
+                                        {{ teacher.user.first_name|slice:":1" }}
+                                    </div>
+                                    <div class="fw-600 text-dark">
+                                        {{ teacher.user.first_name }} {{ teacher.user.last_name }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-muted"><i
+                                        class="fas fa-graduation-cap me-1"></i> {{ teacher.speciality }}</span>
+                            </td>
+                            <td>
+                                <span class="small fw-500 text-dark">{{ teacher.phone|default:"---" }}</span>
+                            </td>
+                            <td>
+                                {% if teacher.active %}
+                                    <span class="status-badge status-active">Faol</span>
+                                {% else %}
+                                    <span class="status-badge status-inactive">Nofaol</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <form method="post" action="/teachers/delete/{{ teacher.id }}/" style="display:inline;"
+                                      onsubmit="return confirm('Haqiqatan ham ushbu o‘qituvchini tizimdan o‘chirmoqchimisiz?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-btn" title="O'chirish">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-users-slash fa-3x mb-3 d-block"></i>
+                                Hozircha o‘qituvchilar mavjud emas.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

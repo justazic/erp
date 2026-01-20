@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Profilni tahrirlash{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .edit-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: none;
+            overflow: hidden;
+        }
+
+        .edit-header {
+            background: #4361ee;
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        .edit-body {
+            padding: 40px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2b2d42;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+        }
+
+        .form-control:focus {
+            background-color: #fff;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn-save {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn-save:hover {
+            background: #3f37c9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #8d99ae;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .cancel-link:hover {
+            color: #e74c3c;
+        }
+
+        .input-group-text {
+            border-radius: 12px 0 0 12px;
+            background-color: #f1f3f5;
+            border: 1px solid #e0e0e0;
+            color: #4361ee;
+        }
+
+        .form-control-with-icon {
+            border-radius: 0 12px 12px 0 !important;
+        }
+    </style>
+
+    <div class="container py-5">
+        <div class="edit-card">
+            <div class="edit-header">
+                <i class="fas fa-user-edit fa-3x mb-3"></i>
+                <h2 class="fw-bold mb-0">Profilni tahrirlash</h2>
+                <p class="mb-0 text-white-50 small">Ma'lumotlarni o'zgartiring va saqlash tugmasini bosing</p>
+            </div>
+
+            <div class="edit-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Mutaxassislik</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                                <input type="text" name="speciality" class="form-control form-control-with-icon"
+                                       value="{{ teacher.speciality }}" placeholder="Masalan: Ingliz tili" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Tajriba (yil)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-history"></i></span>
+                                <input type="number" name="experience_years" class="form-control form-control-with-icon"
+                                       value="{{ teacher.experience_year }}" placeholder="5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Telefon raqami</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                            <input type="text" name="phone" class="form-control form-control-with-icon"
+                                   value="{{ teacher.phone }}" placeholder="+998 90 123 45 67">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Bio (O‘zingiz haqingizda qisqacha)</label>
+                        <textarea name="bio" class="form-control"
+                                  placeholder="Ish tajribangiz va yutuqlaringiz haqida yozing...">{{ teacher.bio }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-save me-2"></i> O'zgarishlarni saqlash
+                    </button>
+
+                    <a href="/teachers/profile/" class="cancel-link">
+                        <i class="fas fa-times me-1"></i> Bekor qilish
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

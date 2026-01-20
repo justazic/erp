@@ -1,35 +1,204 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}ERP Ta'lim{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ERP Tizim{% endblock %}</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: .3s;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, .15);
+        }
+
+        .nav-item {
+            margin: 6px 15px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, .85);
+            padding: 12px 18px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .navbar-top {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -260px;
+            }
+
+            .sidebar.active {
+                margin-left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-dark bg-dark px-3">
-    <span class="navbar-brand">ERP TA'LIM</span>
-    {% if user.is_authenticated %}
-        <span class="text-white">{{ user.username }}</span>
-    {% endif %}
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+        <h5>ERP Ta'lim</h5>
+        <small>Boshqaruv paneli</small>
+    </div>
+
+    <ul class="nav flex-column mt-3">
+        <li class="nav-item">
+            <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                <i class="fas fa-home"></i> Asosiy
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'attendance_list' %}"
+               class="nav-link {% if 'attendance' in request.path %}active{% endif %}">
+                <i class="fas fa-calendar-check"></i> Davomat
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'profile' %}" class="nav-link">
+                <i class="fas fa-user"></i> Profil
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'password_change' %}" class="nav-link">
+                <i class="fas fa-key"></i> Parol
+            </a>
+        </li>
+
+        {% if user.is_superuser %}
+            <li class="nav-item">
+                <a href="/admin/" class="nav-link">
+                    <i class="fas fa-cog"></i> Admin
+                </a>
+            </li>
+        {% endif %}
+
+        <li class="nav-item mt-3">
+            <a href="{% url 'logout' %}" class="nav-link text-danger">
+                <i class="fas fa-sign-out-alt"></i> Chiqish
+            </a>
+        </li>
+    </ul>
 </nav>
 
-<div class="container-fluid">
-    <div class="row">
-        <aside class="col-2 bg-white p-3 border-end vh-100">
-            <ul class="nav flex-column">
-                <li><a class="nav-link" href="/">Dashboard</a></li>
-                <li><a class="nav-link" href="/finance/report/">Hisobotlar</a></li>
-                <li><a class="nav-link text-danger" href="/logout/">Chiqish</a></li>
-            </ul>
-        </aside>
+<!-- MAIN -->
+<div class="main-content">
 
-        <main class="col-10 p-4">
-            {% block content %}{% endblock %}
-        </main>
+    <!-- TOP BAR -->
+    <div class="navbar-top">
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-primary d-md-none" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h4 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="text-end">
+                <strong>{{ user.get_full_name|default:user.username }}</strong><br>
+                <span class="badge bg-primary">{{ user.get_role_display }}</span>
+            </div>
+
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" class="user-avatar">
+            {% else %}
+                <img src="{% static 'img/default-avatar.png' %}" class="user-avatar">
+            {% endif %}
+        </div>
     </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('sidebarToggle');
+        if (btn) {
+            btn.addEventListener('click', function () {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+        }
+    });
+</script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

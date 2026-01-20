@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Profil - {{ student.user.first_name }}{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .profile-container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .profile-header-banner {
+            background: linear-gradient(135deg, #4361ee 0%, #4cc9f0 100%);
+            height: 140px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .profile-card {
+            background: #fff;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 0 40px 40px 40px;
+            margin-top: -60px;
+            position: relative;
+        }
+
+        .avatar-box {
+            width: 120px;
+            height: 120px;
+            background: #fff;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: #4361ee;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 5px solid #fff;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 80px;
+            right: 40px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            background: #fcfdfe;
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 1px solid #f1f4f8;
+        }
+
+        .info-icon {
+            width: 45px;
+            height: 45px;
+            background: #fff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4361ee;
+            margin-right: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: #8d99ae;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #2b2d42;
+        }
+
+        .edit-profile-btn {
+            background: #4361ee;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 30px;
+            transition: 0.3s;
+        }
+
+        .edit-profile-btn:hover {
+            background: #3f37c9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+            color: #fff;
+        }
+    </style>
+
+    <div class="container py-5 profile-container">
+        <a href="/students/" class="text-muted text-decoration-none mb-3 d-inline-block">
+            <i class="fas fa-arrow-left me-2"></i> Talabalar ro'yxatiga qaytish
+        </a>
+
+        <div class="profile-header-banner"></div>
+
+        <div class="profile-card">
+            <div class="avatar-box text-uppercase">
+                {{ student.user.first_name|slice:":1" }}
+            </div>
+
+            {% if student.active %}
+                <span class="status-badge status-active"><i class="fas fa-check-circle me-1"></i> Faol</span>
+            {% else %}
+                <span class="status-badge status-inactive"><i class="fas fa-times-circle me-1"></i> Nofaol</span>
+            {% endif %}
+
+            <div class="profile-main-info">
+                <h1 class="fw-bold mb-1">{{ student.user.first_name }} {{ student.user.last_name }}</h1>
+                <p class="text-muted"><i class="fas fa-at me-1"></i> {{ student.user.username }} | Talaba</p>
+            </div>
+
+            <div class="info-section">
+                <div class="info-item">
+                    <div class="info-icon"><i class="fas fa-phone"></i></div>
+                    <div>
+                        <span class="info-label">Telefon</span>
+                        <span class="info-value">{{ student.phone|default:"---" }}</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div>
+                        <span class="info-label">Tug‘ilgan sana</span>
+                        <span class="info-value">{{ student.birth_date|date:"d.m.Y"|default:"---" }}</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <span class="info-label">Manzil</span>
+                        <span class="info-value">{{ student.address|default:"Kiritilmagan" }}</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><i class="fas fa-users"></i></div>
+                    <div>
+                        <span class="info-label">Guruh</span>
+                        <span class="info-value">{{ student.group.name|default:"Biriktirilmagan" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <a href="/students/update/" class="edit-profile-btn">
+                    <i class="fas fa-user-edit me-2"></i> Profilni tahrirlash
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

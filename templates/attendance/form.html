@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Davomat qilish{% endblock %}
+{% block page_title %}Davomat qilish{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-check me-2"></i> Davomat qilish
+                    </h5>
+                    <span class="badge bg-primary">
+                    {{ today|date:"d.m.Y" }}
+                </span>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                <tr>
+                                    <th width="50">#</th>
+                                    <th>O‘quvchi</th>
+                                    <th>Guruh</th>
+                                    <th width="200">Davomat</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for student in students %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+
+                                        <td>
+                                            {{ student.user.get_full_name|default:student.user.username }}
+                                        </td>
+
+                                        <td>
+                                            {% if student.group %}
+                                                <span class="badge bg-secondary">
+                                                {{ student.group.name }}
+                                            </span>
+                                            {% else %}
+                                                <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <input type="radio"
+                                                       class="btn-check"
+                                                       name="status_{{ student.id }}"
+                                                       id="present_{{ student.id }}"
+                                                       value="present"
+                                                       checked>
+                                                <label class="btn btn-outline-success"
+                                                       for="present_{{ student.id }}">
+                                                    Bor
+                                                </label>
+
+                                                <input type="radio"
+                                                       class="btn-check"
+                                                       name="status_{{ student.id }}"
+                                                       id="absent_{{ student.id }}"
+                                                       value="absent">
+                                                <label class="btn btn-outline-danger"
+                                                       for="absent_{{ student.id }}">
+                                                    Yo‘q
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            O‘quvchilar mavjud emas
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Saqlash
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

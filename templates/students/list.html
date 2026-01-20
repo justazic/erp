@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Studentlar ro‘yxati{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .page-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border: none;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .add-student-btn {
+            background: #4361ee;
+            color: #fff;
+            border-radius: 12px;
+            padding: 10px 22px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .add-student-btn:hover {
+            background: #3f37c9;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .student-table thead {
+            background: #f8f9fa;
+        }
+
+        .student-table thead th {
+            border: none;
+            color: #8d99ae;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .student-table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f1f1;
+            text-align: center;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .avatar-placeholder {
+            width: 38px;
+            height: 38px;
+            background: rgba(67, 97, 238, 0.1);
+            color: #4361ee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .group-badge {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .no-group {
+            background: #f1f1f1;
+            color: #999;
+        }
+
+        .username-tag {
+            font-family: 'Courier New', Courier, monospace;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .phone-link {
+            color: #2b2d42;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .phone-link:hover {
+            color: #4361ee;
+        }
+
+        .back-nav {
+            color: #8d99ae;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .back-nav:hover {
+            color: #4361ee;
+        }
+    </style>
+
+    <div class="container py-4">
+        <a href="/" class="back-nav d-inline-block mb-3">
+            <i class="fas fa-chevron-left me-1"></i> Dashboardga qaytish
+        </a>
+
+        <div class="page-card">
+            <div class="top-bar">
+                <div>
+                    <h2 class="fw-bold mb-1">👨‍🎓 Studentlar ro‘yxati</h2>
+                    <p class="text-muted small mb-0">Hozirda tizimda <strong>{{ students|length }} ta</strong> talaba
+                        mavjud</p>
+                </div>
+                <a href="/students/create/" class="add-student-btn">
+                    <i class="fas fa-plus-circle me-2"></i> Student qo‘shish
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table student-table mb-0">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th style="text-align: left;">Talaba</th>
+                        <th>Username</th>
+                        <th>Guruh</th>
+                        <th>Telefon</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td class="text-muted small">{{ forloop.counter }}</td>
+                            <td>
+                                <div class="student-info">
+                                    <div class="avatar-placeholder">
+                                        {{ student.user.first_name|slice:":1" }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ student.user.first_name }} {{ student.user.last_name }}</div>
+                                        <small class="text-muted">ID: #ST-00{{ student.id }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="username-tag">@{{ student.user.username }}</span>
+                            </td>
+                            <td>
+                                {% if student.group %}
+                                    <span class="group-badge text-uppercase">
+                                    <i class="fas fa-layer-group me-1 small"></i> {{ student.group.name }}
+                                </span>
+                                {% else %}
+                                    <span class="group-badge no-group">Biriktirilmagan</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if student.phone %}
+                                    <a href="tel:{{ student.phone }}" class="phone-link">
+                                        <i class="fas fa-phone-alt me-1 small text-muted"></i> {{ student.phone }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                                Tizimda hozircha studentlar yo‘q.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Profil{% endblock %}
+{% block page_title %}Profil{% endblock %}
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label>Ism</label>
+            <input type="text" name="first_name" value="{{ user.first_name }}" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label>Familiya</label>
+            <input type="text" name="last_name" value="{{ user.last_name }}" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label>Avatar</label>
+            <input type="file" name="avatar" class="form-control">
+        </div>
+
+        <button class="btn btn-primary">Saqlash</button>
+    </form>
+{% endblock %}

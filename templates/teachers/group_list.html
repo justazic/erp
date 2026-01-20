@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Mening guruhlarim{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .group-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .group-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none !important;
+            display: block;
+        }
+
+        .group-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.15);
+            border-color: #4361ee;
+        }
+
+        .group-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(67, 97, 238, 0.1);
+            color: #4361ee;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .group-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2b2d42;
+            margin-bottom: 10px;
+        }
+
+        .group-info {
+            font-size: 0.9rem;
+            color: #8d99ae;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .group-info span i {
+            margin-right: 5px;
+            color: #4361ee;
+        }
+
+        .arrow-icon {
+            position: absolute;
+            right: 25px;
+            bottom: 25px;
+            color: #e0e0e0;
+            transition: 0.3s;
+        }
+
+        .group-card:hover .arrow-icon {
+            color: #4361ee;
+            transform: translateX(5px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: #fff;
+            border-radius: 20px;
+            border: 2px dashed #e0e0e0;
+        }
+    </style>
+
+    <div class="container py-4">
+        <div class="row align-items-center mb-4">
+            <div class="col-md-6">
+                <h2 class="fw-bold mb-1">📘 Mening guruhlarim</h2>
+                <p class="text-muted">Sizga biriktirilgan barcha o'quv guruhlari ro'yxati</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+            <span class="badge bg-primary rounded-pill px-3 py-2">
+                Jami: {{ groups|length }} ta guruh
+            </span>
+            </div>
+        </div>
+
+        <div class="group-grid">
+            {% for group in groups %}
+                <a href="/teachers/groups/{{ group.id }}/" class="group-card text-decoration-none">
+                    <div class="group-icon">
+                        <i class="fas fa-users-rectangle"></i>
+                    </div>
+
+                    <h4 class="group-name">{{ group.name }}</h4>
+
+                    <div class="group-info">
+                        <span><i class="fas fa-user-graduate"></i> {{ group.students.count|default:"0" }} talaba</span>
+                        <span><i class="fas fa-clock"></i> Faol</span>
+                    </div>
+
+                    <div class="arrow-icon">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Hozircha guruhlar mavjud emas</h5>
+                        <p class="small text-muted">Sizga hali birorta ham guruh biriktirilmagan.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

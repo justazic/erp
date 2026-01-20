@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class User(AbstractUser):
@@ -21,3 +21,9 @@ class User(AbstractUser):
         ordering = ['-id']
         verbose_name = 'User'
         verbose_name_plural = 'Users'
+
+    def save( self, *args, **kwargs ):
+        if self.role == 'admin':
+            self.is_staff = True
+            self.is_superuser = True
+        super().save(*args, **kwargs)

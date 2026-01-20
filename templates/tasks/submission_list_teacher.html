@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Tekshirish: {{ assignment.title }}{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .submissions-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border: none;
+        }
+
+        .assignment-info-bar {
+            background: #f8f9fd;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 5px solid #4361ee;
+        }
+
+        .table thead th {
+            background: #f8f9fa;
+            color: #8d99ae;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            padding: 15px;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .student-name {
+            font-weight: 700;
+            color: #2b2d42;
+            margin-bottom: 0;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: #e7f1ff;
+            color: #0d6efd;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .download-link:hover {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        .grade-input {
+            width: 80px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 6px 10px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .grade-input:focus {
+            border-color: #4361ee;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .btn-save-grade {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 7px 15px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-left: 5px;
+            transition: 0.3s;
+        }
+
+        .btn-save-grade:hover {
+            background: #27ae60;
+            transform: translateY(-1px);
+        }
+
+        .comment-text {
+            max-width: 250px;
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
+
+    <div class="container py-4">
+        <div class="assignment-info-bar">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="text-muted small text-uppercase fw-bold">Vazifa nomi:</span>
+                    <h3 class="fw-bold mb-0 text-primary">{{ assignment.title }}</h3>
+                </div>
+                <div class="col-md-4 text-md-end">
+                <span class="badge bg-white text-dark shadow-sm p-2 px-3 rounded-pill">
+                    <i class="fas fa-users me-1"></i> {{ submissions|length }} ta topshiriq
+                </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="submissions-card">
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Fayl</th>
+                        <th>Talaba izohi</th>
+                        <th class="text-center">Baho</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for s in submissions %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm me-3 bg-light rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 35px; height: 35px;">
+                                        <i class="fas fa-user text-muted small"></i>
+                                    </div>
+                                    <p class="student-name">{{ s.student.user.first_name }} {{ s.student.user.last_name }}</p>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="{{ s.file.url }}" class="download-link">
+                                    <i class="fas fa-download me-2"></i> Yuklab olish
+                                </a>
+                            </td>
+                            <td>
+                                <div class="comment-text">
+                                    {{ s.comment|default:"Izoh qoldirilmagan"|truncatechars:50 }}
+                                </div>
+                            </td>
+                            <td>
+                                <form method="post" action="/tasks/submission/{{ s.id }}/check/"
+                                      class="d-flex justify-content-center align-items-center">
+                                    {% csrf_token %}
+                                    <input type="number" name="grade" value="{{ s.grade|default:'' }}"
+                                           class="grade-input" placeholder="0" min="0" max="100">
+                                    <button type="submit" class="btn-save-grade">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                Hali hech kim vazifani topshirmagan.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/tasks/assignments/" class="btn btn-link text-muted text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i> Vazifalar ro'yxatiga qaytish
+            </a>
+        </div>
+    </div>
+
+{% endblock %}
