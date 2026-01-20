@@ -20,10 +20,6 @@
 
       <div class="hero__cta">
         <a class="btn btn--pill btn--primary" href="#">Join for free</a>
-        <a class="hero__play" href="#">
-          <span class="hero__playIcon">▶</span>
-          <span>Watch how it works</span>
-        </a>
       </div>
     </div>
 
@@ -64,11 +60,11 @@
 </section>
 
 <!-- SUCCESS -->
-<section class="section">
+<section class="section" id="about-us">
   <div class="container">
     <div class="center">
       <h2 class="h2">Our Success</h2>
-      <p class="muted maxw">
+      <p class="muted maxw"  style="text-align: center;">
         Ornare id fames interdum porttitor nulla turpis etiam. Diam vitae sollicitudin at nec
         nam et pharetra gravida. Adipiscing a quis ultrices eu ornare tristique vel nisl orci.
       </p>
@@ -76,23 +72,23 @@
 
     <div class="stats">
       <div class="stat">
-        <div class="stat__num">15K+</div>
+        <div class="stat__num">{{ number_of_students }}</div>
         <div class="stat__label">Students</div>
       </div>
       <div class="stat">
-        <div class="stat__num">75%</div>
+        <div class="stat__num">{{ graduated_percentage }}%</div>
         <div class="stat__label">Total success</div>
       </div>
       <div class="stat">
-        <div class="stat__num">35</div>
-        <div class="stat__label">Main questions</div>
+        <div class="stat__num">{{ currently_studying_percentage }}%</div>
+        <div class="stat__label">Currently Studying</div>
       </div>
       <div class="stat">
-        <div class="stat__num">26</div>
+        <div class="stat__num">{{ experts }}</div>
         <div class="stat__label">Chief experts</div>
       </div>
       <div class="stat">
-        <div class="stat__num">16</div>
+        <div class="stat__num">{{ years_between }}</div>
         <div class="stat__label">Years of experience</div>
       </div>
     </div>
@@ -106,7 +102,7 @@
       <h2 class="h2">
         <span class="ink">All-In-One</span> <span class="accent">Cloud Software.</span>
       </h2>
-      <p class="muted maxw">
+      <p class="muted maxw" style="text-align: center;">
         TOTC is one powerful online software suite that combines all the tools needed
         to run a successful school or office.
       </p>
@@ -161,16 +157,16 @@
           <div class="mediaCard__title">FOR INSTRUCTORS</div>
           <a class="btn btn--pill btn--outline" href="#">Start a class today</a>
         </div>
-        <img class="mediaCard__img mediaCard__panel" src="{% static 'images/for-instructors.png' %}" alt="">
+        <img class="mediaCard__img" src="{% static 'images/for-instructors.png' %}" alt="">
       </div>
 
-      <div class="mediaCard mediaCard--right">
+      <div class="mediaCard mediaCard--right mediaCard__panel">
         <div class="mediaCard__overlay"></div>
         <div class="mediaCard__content">
           <div class="mediaCard__title">FOR STUDENTS</div>
           <a class="btn btn--pill btn--cyan" href="#">Enter access code</a>
         </div>
-        <img class="mediaCard__img mediaCard__panel" src="{% static 'images/for-students.png' %}" alt="">
+        <img class="mediaCard__img" src="{% static 'images/for-students.png' %}" alt="">
       </div>
     </div>
   </div>
@@ -192,7 +188,7 @@
     </div>
 
     <div class="videoFrame">
-      <img src="{% static 'images/classroom.jpg' %}" alt="Classroom">
+      <img src="{% static 'images/classroom.png' %}" alt="Classroom">
       <button class="playBtn" type="button" aria-label="Play">▶</button>
     </div>
   </div>

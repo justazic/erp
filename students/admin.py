@@ -3,8 +3,8 @@ from .models import Student
 import unfold
 @admin.register(Student)
 class StudentAdmin(unfold.admin.ModelAdmin):
-  list_display = ('user', 'phone', 'address', 'active', 'created_at', 'updated_at')
-  list_filter = ('active', 'created_at')
+  list_display = ('user', 'phone', 'address', 'status', 'created_at', 'updated_at')
+  list_filter = ('status', 'created_at')
   search_fields = ('user__username', 'user__email', 'phone', 'address')
   readonly_fields = ('created_at', 'updated_at')
   fieldsets = (
@@ -15,7 +15,7 @@ class StudentAdmin(unfold.admin.ModelAdmin):
           'fields': ('phone', 'address')
       }),
       ('Status', {
-          'fields': ('active',)
+          'fields': ('status',)
       }),
       ('Timestamps', {
           'fields': ('created_at', 'updated_at'),

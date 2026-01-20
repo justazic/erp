@@ -4,10 +4,15 @@ from accounts.models import User
 # Create your models here.
 
 class Student(models.Model):
+    Status = (
+        ('graduated', 'Graduated'),
+        ('failed', 'Failed'),
+        ('studying', 'Studying'),
+    )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=250)
-    active = models.BooleanField(default=True)
+    status = models.CharField(max_length=10, choices=Status)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
