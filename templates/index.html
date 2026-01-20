@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home | TOTC{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__left">
+      <h1 class="hero__title">
+        <span class="accent-orange">Studying</span> Online is now<br>
+        much easier
+      </h1>
+      <p class="hero__subtitle">
+        TOTC is an interesting platform that will teach<br>
+        you in more an interactive way
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn btn--pill btn--primary" href="#">Join for free</a>
+        <a class="hero__play" href="#">
+          <span class="hero__playIcon">▶</span>
+          <span>Watch how it works</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero__right">
+      <!-- Replace with your exported hero person image -->
+      <img class="hero__person" src="{% static 'images/hero-person.png' %}" alt="Student">
+
+      <!-- Floating cards (simple HTML; you can refine later) -->
+      <div class="floatCard floatCard--top">
+        <div class="floatIcon">📅</div>
+        <div>
+          <div class="floatTitle">250k</div>
+          <div class="floatText">Assisted Student</div>
+        </div>
+      </div>
+
+      <div class="floatCard floatCard--mid">
+        <div class="floatIcon">✉️</div>
+        <div>
+          <div class="floatTitle">Congratulations</div>
+          <div class="floatText">Your admission completed</div>
+        </div>
+      </div>
+
+      <div class="floatCard floatCard--bottom">
+        <div class="floatAvatar"></div>
+        <div class="floatGrow">
+          <div class="floatTitle">User Experience Class</div>
+          <div class="floatText">Today at 12.00 PM</div>
+          <a class="btn btn--pill btn--pink" href="#">Join Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- curved bottom -->
+  <div class="hero__curve" aria-hidden="true"></div>
+</section>
+
+<!-- SUCCESS -->
+<section class="section">
+  <div class="container">
+    <div class="center">
+      <h2 class="h2">Our Success</h2>
+      <p class="muted maxw">
+        Ornare id fames interdum porttitor nulla turpis etiam. Diam vitae sollicitudin at nec
+        nam et pharetra gravida. Adipiscing a quis ultrices eu ornare tristique vel nisl orci.
+      </p>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat__num">15K+</div>
+        <div class="stat__label">Students</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">75%</div>
+        <div class="stat__label">Total success</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">35</div>
+        <div class="stat__label">Main questions</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">26</div>
+        <div class="stat__label">Chief experts</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">16</div>
+        <div class="stat__label">Years of experience</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALL-IN-ONE -->
+<section class="section">
+  <div class="container">
+    <div class="center">
+      <h2 class="h2">
+        <span class="ink">All-In-One</span> <span class="accent">Cloud Software.</span>
+      </h2>
+      <p class="muted maxw">
+        TOTC is one powerful online software suite that combines all the tools needed
+        to run a successful school or office.
+      </p>
+    </div>
+
+    <div class="cards3">
+      <article class="card">
+        <div class="card__icon card__icon--blue">📄</div>
+        <h3 class="card__title">Online Billing, Invoicing, & Contracts</h3>
+        <p class="muted">
+          Simple and secure control of your organization's financial and legal transactions.
+          Send customized invoices and contracts.
+        </p>
+      </article>
+
+      <article class="card">
+        <div class="card__icon card__icon--teal">🗓️</div>
+        <h3 class="card__title">Easy Scheduling & Attendance Tracking</h3>
+        <p class="muted">
+          Schedule and reserve classrooms at one campus or multiple campuses.
+          Keep detailed records of student attendance.
+        </p>
+      </article>
+
+      <article class="card">
+        <div class="card__icon card__icon--cyan">👥</div>
+        <h3 class="card__title">Customer Tracking</h3>
+        <p class="muted">
+          Automate and track emails to individuals or groups. Built-in system helps organize your organization.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IS TOTC -->
+<section class="section">
+  <div class="container">
+    <div class="center">
+      <h2 class="h2">What is <span class="accent">TOTC?</span></h2>
+      <p class="muted maxw">
+        TOTC is a platform that allows educators to create online classes whereby they can store
+        the course materials online; manage assignments, quizzes and exams; monitor due dates;
+        grade results and provide students with feedback all in one place.
+      </p>
+    </div>
+
+    <div class="splitCards">
+      <div class="mediaCard mediaCard--left mediaCard__panel">
+        <div class="mediaCard__overlay"></div>
+        <div class="mediaCard__content">
+          <div class="mediaCard__title">FOR INSTRUCTORS</div>
+          <a class="btn btn--pill btn--outline" href="#">Start a class today</a>
+        </div>
+        <img class="mediaCard__img mediaCard__panel" src="{% static 'images/for-instructors.png' %}" alt="">
+      </div>
+
+      <div class="mediaCard mediaCard--right">
+        <div class="mediaCard__overlay"></div>
+        <div class="mediaCard__content">
+          <div class="mediaCard__title">FOR STUDENTS</div>
+          <a class="btn btn--pill btn--cyan" href="#">Enter access code</a>
+        </div>
+        <img class="mediaCard__img mediaCard__panel" src="{% static 'images/for-students.png' %}" alt="">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLASSROOM -->
+<section class="section">
+  <div class="container twoCol">
+    <div>
+      <h2 class="h2">
+        <span class="blob">Everything</span> you can do in a physical<br>
+        classroom, <span class="accent">you can do with TOTC</span>
+      </h2>
+      <p class="muted">
+        TOTC’s school management software helps traditional and online schools manage scheduling,
+        attendance, payments and virtual classrooms all in one secure cloud based system.
+      </p>
+      <a class="link" href="#">Learn more</a>
+    </div>
+
+    <div class="videoFrame">
+      <img src="{% static 'images/classroom.jpg' %}" alt="Classroom">
+      <button class="playBtn" type="button" aria-label="Play">▶</button>
+    </div>
+  </div>
+</section>
+
+<!-- OUR FEATURES TITLE -->
+<section class="section">
+  <div class="container center">
+    <h2 class="h2">Our <span class="accent">Features</span></h2>
+    <p class="muted maxw">This very extraordinary feature, can make learning activities more efficient</p>
+  </div>
+</section>
+
+<!-- FEATURE ROW 1 -->
+<section class="section">
+  <div class="container twoCol">
+    <div class="shotFrame">
+      <img src="{% static 'images/feature-ui.png' %}" alt="">
+    </div>
+    <div>
+      <h2 class="h2">A <span class="accent">user interface</span> designed<br>for the classroom</h2>
+      <ul class="bullets">
+        <li>Teachers don’t get lost in the grid view and have a dedicated Podium space.</li>
+        <li>TA’s and presenters can be moved to the front of the class.</li>
+        <li>Teachers can easily see all students and class data at one time.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE ROW 2 -->
+<section class="section">
+  <div class="container twoCol twoCol--reverse">
+    <div class="shotFrame">
+      <img src="{% static 'images/tools-teachers.png' %}" alt="">
+    </div>
+    <div>
+      <h2 class="h2"><span class="accent">Tools</span> For Teachers<br>And Learners</h2>
+      <p class="muted">
+        Class has a dynamic set of teaching tools built to be deployed and used during class.
+        Teachers can handout assignments in real-time for students to complete and submit.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE ROW 3 -->
+<section class="section">
+  <div class="container twoCol">
+    <div class="shotFrame">
+      <img src="{% static 'images/assessments.png' %}" alt="">
+    </div>
+    <div>
+      <h2 class="h2">Assessments,<br><span class="accent">Quizzes</span>, Tests</h2>
+      <p class="muted">
+        Easily launch live assignments, quizzes, and tests. Student results are automatically entered
+        in the online gradebook.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE ROW 4 -->
+<section class="section">
+  <div class="container twoCol">
+    <div>
+      <h2 class="h2"><span class="accent">Class Management</span><br>Tools for Educators</h2>
+      <p class="muted">
+        Class provides tools to help run and manage the class such as Class Roster, Attendance, and more.
+        With the Gradebook, teachers can review and grade tests and quizzes in real-time.
+      </p>
+    </div>
+    <div class="shotFrame">
+      <img src="{% static 'images/gradebook.png' %}" alt="">
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE ROW 5 -->
+<section class="section">
+  <div class="container twoCol twoCol--reverse">
+    <div class="shotFrame">
+      <img src="{% static 'images/discussions.png' %}" alt="">
+    </div>
+    <div>
+      <h2 class="h2">One-on-One<br><span class="accent">Discussions</span></h2>
+      <p class="muted">
+        Teachers and teacher assistants can talk with students privately without leaving the Zoom environment.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="center section">
+  <a class="btn btn--pill btn--outlineTeal" href="#">See more features</a>
+</div>
+
+<!-- EXPLORE COURSE -->
+<section class="section section--soft">
+  <div class="container courseWrap">
+    <div class="courseHead">
+      <div>
+        <h2 class="h2">Explore Course</h2>
+        <p class="muted">Ut sed eros finibus, placerat orci id, dapibus.</p>
+      </div>
+      <a class="link link--right" href="#">SEE ALL →</a>
+    </div>
+
+    <div class="courseRow">
+      <div class="pillList">
+        <div class="pill">Ut Sed Eros</div>
+        <div class="pill">Culabitur Egestas</div>
+        <div class="pill">Quisque Consequat</div>
+        <div class="pill">Cras Convallis</div>
+        <div class="pill">Vestibulum faucibus</div>
+        <div class="pill">Ut Sed Eros</div>
+        <div class="pill">Vestibulum faucibus</div>
+      </div>
+
+      <article class="courseCard">
+        <div class="courseCard__img">
+          <img src="{% static 'images/course-1.jpg' %}" alt="">
+        </div>
+        <div class="courseCard__body">
+          <h3>Integer id Orc Sed<br>Ante Tincidunt</h3>
+          <p class="muted small">
+            Cras convallis lacus orci, tristique tincidunt magna fringilla at faucibus vel.
+          </p>
+          <div class="courseCard__meta">
+            <div class="stars">★★★★★</div>
+            <div class="price">$ 450</div>
+          </div>
+          <a class="btn btn--pill btn--outlineTeal btn--small" href="#">EXPLORE</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="section">
+  <div class="container twoCol">
+    <div>
+      <div class="kicker">TESTIMONIAL</div>
+      <h2 class="h2">What They Say?</h2>
+      <p class="muted">
+        TOTC has got more than 100k positive ratings from our users around the world.
+      </p>
+      <p class="muted">
+        Some of the students and teachers were greatly helped by the Skilline.
+      </p>
+      <p class="muted">Are you too? Please give your assessment</p>
+
+      <a class="btn btn--pill btn--outlineTeal" href="#">
+        Write your assessment <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="testiMedia">
+      <img class="testiMedia__img" src="{% static 'images/testimonial-person.jpg' %}" alt="">
+      <button class="testiMedia__next" type="button" aria-label="Next">›</button>
+
+      <div class="quoteCard">
+        <p class="muted small">
+          “Thank you so much for your help. It’s exactly what I’ve been looking for.
+          You won’t regret it. It really saves me time and effort. TOTC is exactly what
+          our business has been lacking.”
+        </p>
+        <div class="quoteCard__bottom">
+          <div class="quoteName">Gloria Rose</div>
+          <div class="quoteMeta">
+            <div class="stars">★★★★★</div>
+            <div class="tiny">12 reviews at Yelp</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS -->
+<section class="section">
+  <div class="container center">
+    <h2 class="h2">Lastest News and Resources</h2>
+    <p class="muted maxw">See the developments that have occurred to TOTC in the world</p>
+  </div>
+
+  <div class="container newsGrid">
+    <article class="newsMain">
+      <img src="{% static 'images/news-main.jpg' %}" alt="">
+      <span class="tag">NEWS</span>
+      <h3>Class adds $30 million to its balance sheet for a Zoom-friendly edtech solution</h3>
+      <p class="muted small">Class, launched less than a year ago by Blackboard co-founder Michael Chasen...</p>
+      <a class="link" href="#">Read more</a>
+    </article>
+
+    <div class="newsList">
+      <article class="newsItem">
+        <img src="{% static 'images/news-1.jpg' %}" alt="">
+        <div>
+          <span class="tag tag--press">PRESS RELEASE</span>
+          <h4>Class Technologies Inc. Closes $30 Million Series A Financing to Meet High Demand</h4>
+          <p class="muted small">Class Technologies Inc., the company that created Class,...</p>
+        </div>
+      </article>
+
+      <article class="newsItem">
+        <img src="{% static 'images/news-2.jpg' %}" alt="">
+        <div>
+          <span class="tag">NEWS</span>
+          <h4>Zoom’s earliest investors are betting millions on a better Zoom for schools</h4>
+          <p class="muted small">Zoom was never created to be a consumer product. Nonetheless,...</p>
+        </div>
+      </article>
+
+      <article class="newsItem">
+        <img src="{% static 'images/news-3.jpg' %}" alt="">
+        <div>
+          <span class="tag">NEWS</span>
+          <h4>Former Blackboard CEO Raises $16M to Bring LMS Features to Zoom Classrooms</h4>
+          <p class="muted small">This year, investors have reaped big financial returns from betting on Zoom...</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <div class="brand brand--footer">
+        <span class="brand__mark">◇</span>
+        <span class="brand__text">TOTC</span>
+      </div>
+      <div class="footer__subtitle">Virtual Class<br>for Zoom</div>
+    </div>
+
+    <div class="footer__newsletter">
+      <div class="footer__title">Subscribe to get our Newsletter</div>
+      <form class="newsletter" action="#" method="post">
+        <input class="newsletter__input" type="email" placeholder="Your Email" />
+        <button class="btn btn--pill btn--teal btn--small" type="submit">Subscribe</button>
+      </form>
+    </div>
+
+    <div class="footer__bottom">
+      <div class="footer__links">
+        <a href="#">Careers</a>
+        <span> | </span>
+        <a href="#">Privacy Policy</a>
+        <span> | </span>
+        <a href="#">Terms & Conditions</a>
+      </div>
+      <div class="footer__copy">© 2021 Class Technologies Inc.</div>
+    </div>
+  </div>
+</footer>
+
+{% endblock %}

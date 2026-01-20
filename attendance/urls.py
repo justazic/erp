@@ -1,9 +1,7 @@
 from django.urls import path
-
-from .views import AttendanceCreateView, AttendanceListView
+from .views import AttendanceCreateView
 
 urlpatterns = [
     path('create/', AttendanceCreateView.as_view(), name='attendance_create'),
-    path('list/', AttendanceListView.as_view(), name='attendance_list'),
+    path('list/', AttendanceCreateView.as_view(), name='attendance_list'),
 ]
-
