@@ -44,7 +44,7 @@ class ProfileUpdateView(LoginRequiredMixin, View):
         if request.FILES.get('avatar'):
             user.avatar = request.FILES.get('avatar')
         user.save()
-        return redirect('accounts/profile/')
+        return redirect('profile')
         
         
 class PasswordChangeView(LoginRequiredMixin, View):
@@ -58,6 +58,6 @@ class PasswordChangeView(LoginRequiredMixin, View):
         request.user.set_password(request.POST.get('new_password'))
         request.user.save()
         update_session_auth_hash(request, request.user)
-        return redirect('account/profile/')
+        return redirect('profile')
     
     

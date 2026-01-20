@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Davomat tarixi{% endblock %}
+{% block page_title %}Davomat tarixi{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+
+            <!-- Header -->
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i> Davomat tarixi
+                </h5>
+                <a href="{% url 'attendance_create' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-1"></i> Yangi davomat
+                </a>
+            </div>
+
+            <div class="card-body">
+
+                <!-- Statistics -->
+                <div class="row mb-4 text-center">
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded">
+                            <h4>{{ total_attendance }}</h4>
+                            <small>Jami</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-success bg-opacity-10 rounded">
+                            <h4 class="text-success">{{ total_present }}</h4>
+                            <small>Bor</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-danger bg-opacity-10 rounded">
+                            <h4 class="text-danger">{{ total_absent }}</h4>
+                            <small>Yo‘q</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-info bg-opacity-10 rounded">
+                            <h4 class="text-info">{{ avg_attendance }}%</h4>
+                            <small>O‘rtacha</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter -->
+                <form method="GET" class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <select name="student" class="form-select">
+                            <option value="">Barcha o‘quvchilar</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}"
+                                {% if request.GET.student == student.id|stringformat:"s" %}selected{% endif %}>
+                                {{ student.user.get_full_name|default:student.user.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <select name="group" class="form-select">
+                            <option value="">Barcha guruhlar</option>
+                            {% for group in groups %}
+                            <option value="{{ group.id }}"
+                                {% if request.GET.group == group.id|stringformat:"s" %}selected{% endif %}>
+                                {{ group.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <select name="status" class="form-select">
+                            <option value="">Barcha holat</option>
+                            <option value="present" {% if request.GET.status == 'present' %}selected{% endif %}>Bor</option>
+                            <option value="absent" {% if request.GET.status == 'absent' %}selected{% endif %}>Yo‘q</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="date" name="date_from" class="form-control"
+                               value="{{ request.GET.date_from }}">
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="date" name="date_to" class="form-control"
+                               value="{{ request.GET.date_to }}">
+                    </div>
+
+                    <div class="col-12 text-end">
+                        <button class="btn btn-primary btn-sm">
+                            Filtrlash
+                        </button>
+                        <a href="{% url 'attendance_list' %}" class="btn btn-secondary btn-sm">
+                            Tozalash
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>O‘quvchi</th>
+                                <th>Guruh</th>
+                                <th>Sana</th>
+                                <th>Holat</th>
+                                <th>Qayd etgan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in attendances %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ a.student.user.get_full_name|default:a.student.user.username }}</td>
+                                <td>{{ a.student.group.name|default:"-" }}</td>
+                                <td>{{ a.date|date:"d.m.Y" }}</td>
+                                <td>
+                                    {% if a.status == 'present' %}
+                                        <span class="badge bg-success">Bor</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Yo‘q</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if a.marked_by %}
+                                        {{ a.marked_by.get_full_name|default:a.marked_by.username }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    Davomat topilmadi
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

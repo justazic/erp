@@ -1,21 +1,131 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Kurs qo‘shish</title>
-</head>
-<body>
-    <h2>Yangi kurs qo‘shish</h2>
+{% extends "base.html" %}
 
-    <form method="post">
-        {% csrf_token %}
+{% block title %}Yangi kurs qo‘shish{% endblock %}
 
-        <label>Kurs nomi:</label><br>
-        <input type="text" name="name" required><br><br>
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        <button type="submit">Saqlash</button>
-    </form>
+<style>
+    .course-card-wrapper {
+        max-width: 550px;
+        margin: 50px auto;
+    }
+    .course-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+    /* Kartaning tepasiga chiziq */
+    .course-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #4361ee, #4cc9f0);
+    }
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        background: rgba(67, 97, 238, 0.08);
+        color: #4361ee;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin: 0 auto 25px;
+    }
+    .form-label {
+        font-weight: 700;
+        color: #2b2d42;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        display: block;
+    }
+    .form-control {
+        border-radius: 14px;
+        padding: 14px 18px;
+        border: 2px solid #f1f4f8;
+        background-color: #f8fafc;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+    .form-control:focus {
+        border-color: #4361ee;
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        outline: none;
+    }
+    .btn-save-course {
+        background: #4361ee;
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 14px;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 30px;
+        transition: all 0.3s;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .btn-save-course:hover {
+        background: #3f37c9;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.25);
+    }
+    .back-nav {
+        color: #8d99ae;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+    .back-nav:hover {
+        color: #4361ee;
+    }
+</style>
 
-    <br>
-    <a href="/courses/">Orqaga</a>
-</body>
-</html>
+<div class="container">
+    <div class="course-card-wrapper">
+        <a href="/courses/" class="back-nav mb-4 d-inline-block">
+            <i class="fas fa-chevron-left me-2"></i> Kurslar ro'yxatiga qaytish
+        </a>
+
+        <div class="course-card text-center">
+            <div class="icon-circle">
+                <i class="fas fa-book-medical"></i>
+            </div>
+            
+            <h2 class="fw-bold mb-1">Yangi kurs</h2>
+            <p class="text-muted small mb-4">O'quv markazi uchun yangi fan yoki yo'nalish qo'shish</p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="text-start">
+                    <label class="form-label">Kurs nomi</label>
+                    <input type="text" name="name" class="form-control" 
+                           placeholder="Masalan: Frontend BootCamp" required>
+                    <small class="text-muted mt-2 d-block px-1">
+                        <i class="fas fa-info-circle me-1"></i> Kurs nomi sertifikatlarda ko'rinadi.
+                    </small>
+                </div>
+
+                <button type="submit" class="btn btn-save-course">
+                    <i class="fas fa-plus-circle"></i> Kursni saqlash
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,27 +1,148 @@
 {% extends "base.html" %}
+
 {% block title %}Profilni tahrirlash{% endblock %}
 
 {% block content %}
-<h2>Profilni tahrirlash</h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<form method="post">
-    {% csrf_token %}
+<style>
+    .edit-card {
+        max-width: 700px;
+        margin: 30px auto;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: none;
+        overflow: hidden;
+    }
+    .edit-header {
+        background: linear-gradient(135deg, #4361ee 0%, #4cc9f0 100%);
+        padding: 40px;
+        color: white;
+        text-align: center;
+    }
+    .edit-body {
+        padding: 40px;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #2b2d42;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+    .form-control {
+        border-radius: 12px;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        background-color: #fff;
+        border-color: #4361ee;
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        outline: none;
+    }
+    .input-group-text {
+        border-radius: 12px 0 0 12px;
+        background-color: #f1f3f5;
+        border: 1px solid #e0e0e0;
+        color: #4361ee;
+    }
+    .form-control-with-icon {
+        border-radius: 0 12px 12px 0 !important;
+    }
+    .btn-save {
+        background: #4361ee;
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 20px;
+        transition: 0.3s;
+    }
+    .btn-save:hover {
+        background: #3f37c9;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+    }
+    .cancel-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #8d99ae;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .cancel-link:hover {
+        color: #e74c3c;
+    }
+</style>
 
-    <label>Ism:</label><br>
-    <input type="text" name="first_name" value="{{ student.user.first_name }}" required><br><br>
+<div class="container py-4">
+    <div class="edit-card">
+        <div class="edit-header">
+            <i class="fas fa-user-circle fa-4x mb-3"></i>
+            <h2 class="fw-bold mb-0">Profilni tahrirlash</h2>
+            <p class="mb-0 text-white-50">Shaxsiy ma'lumotlaringizni yangilang</p>
+        </div>
 
-    <label>Familiya:</label><br>
-    <input type="text" name="last_name" value="{{ student.user.last_name }}" required><br><br>
+        <div class="edit-body">
+            <form method="post">
+                {% csrf_token %}
 
-    <label>Telefon:</label><br>
-    <input type="text" name="phone" value="{{ student.phone }}" required><br><br>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Ism</label>
+                        <input type="text" name="first_name" class="form-control" 
+                               value="{{ student.user.first_name }}" required>
+                    </div>
 
-    <label>Manzil:</label><br>
-    <input type="text" name="address" value="{{ student.address }}" required><br><br>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Familiya</label>
+                        <input type="text" name="last_name" class="form-control" 
+                               value="{{ student.user.last_name }}" required>
+                    </div>
+                </div>
 
-    <label>Tug‘ilgan sana:</label><br>
-    <input type="date" name="birth_date" value="{{ student.birth_date|date:'Y-m-d' }}"><br><br>
+                <div class="mb-4">
+                    <label class="form-label">Telefon raqami</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                        <input type="text" name="phone" class="form-control form-control-with-icon" 
+                               value="{{ student.phone }}" required>
+                    </div>
+                </div>
 
-    <button type="submit">Saqlash</button>
-</form>
+                <div class="mb-4">
+                    <label class="form-label">Manzil (Yashash joyi)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                        <input type="text" name="address" class="form-control form-control-with-icon" 
+                               value="{{ student.address }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Tug‘ilgan sana</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                        <input type="date" name="birth_date" class="form-control form-control-with-icon" 
+                               value="{{ student.birth_date|date:'Y-m-d' }}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-check-circle me-2"></i> O'zgarishlarni saqlash
+                </button>
+
+                <a href="/students/profile/" class="cancel-link">
+                    <i class="fas fa-times me-1"></i> Bekor qilish
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

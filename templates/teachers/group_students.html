@@ -1,33 +1,156 @@
 {% extends "base.html" %}
+
 {% block title %}{{ group.name }}{% endblock %}
 
 {% block content %}
-<h2>👨‍🎓 {{ group.name }} — Studentlar</h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<table border="1" cellpadding="8">
-    <tr>
-        <th>#</th>
-        <th>Username</th>
-        <th>Ism</th>
-        <th>Familiya</th>
-        <th>Telefon</th>
-    </tr>
+<style>
+    .page-header {
+        background: #fff;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .student-table-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: none;
+    }
+    .table thead {
+        background-color: #f8f9fa;
+    }
+    .table thead th {
+        border: none;
+        color: #8d99ae;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 15px;
+    }
+    .table tbody td {
+        padding: 18px 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f1f1;
+        color: #2b2d42;
+        font-weight: 500;
+    }
+    .table tbody tr:hover {
+        background-color: #fcfdfe;
+    }
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        background: #e7f1ff;
+        color: #0d6efd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 12px;
+    }
+    .phone-badge {
+        background: #f0f2f5;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #495057;
+        text-decoration: none;
+    }
+    .phone-badge:hover {
+        background: #e2e6ea;
+        color: #000;
+    }
+    .back-btn {
+        color: #8d99ae;
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+    .back-btn:hover {
+        color: #4361ee;
+    }
+</style>
 
-    {% for s in students %}
-    <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ s.user.username }}</td>
-        <td>{{ s.user.first_name }}</td>
-        <td>{{ s.user.last_name }}</td>
-        <td>{{ s.phone }}</td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="5">Student yo‘q</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="container py-4">
+    <div class="page-header">
+        <div>
+            <a href="/teachers/groups/" class="back-btn small mb-2 d-inline-block">
+                <i class="fas fa-chevron-left me-1"></i> Guruhlarga qaytish
+            </a>
+            <h2 class="fw-bold mb-0">👨‍🎓 {{ group.name }}</h2>
+            <p class="text-muted small mb-0">Guruhdagi jami talabalar soni: {{ students|length }} ta</p>
+        </div>
+        <div class="action-btns">
+            <a href="/attendance/create/?group_id={{ group.id }}" class="btn btn-primary rounded-pill px-4">
+                <i class="fas fa-check-double me-2"></i> Davomat olish
+            </a>
+        </div>
+    </div>
 
-<br>
-<a href="/teachers/groups/">⬅ Guruhlarga qaytish</a>
+    <div class="student-table-card">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Talaba</th>
+                        <th>Username</th>
+                        <th>Telefon</th>
+                        <th class="text-end">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td class="text-center text-muted">{{ forloop.counter }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle text-uppercase">
+                                    {{ s.user.first_name|slice:":1" }}{{ s.user.last_name|slice:":1" }}
+                                </div>
+                                <div>
+                                    <div class="mb-0 fw-bold">{{ s.user.first_name }} {{ s.user.last_name }}</div>
+                                    <small class="text-muted">ID: #100{{ s.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <code class="text-primary">@{{ s.user.username }}</code>
+                        </td>
+                        <td>
+                            {% if s.phone %}
+                                <a href="tel:{{ s.phone }}" class="phone-badge">
+                                    <i class="fas fa-phone-alt me-1 small"></i> {{ s.phone }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted small">Kiritilmagan</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <button class="btn btn-light btn-sm rounded-circle" title="Profilni ko'rish">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                            Ushbu guruhda hozircha talabalar yo'q.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

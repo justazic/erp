@@ -1,41 +1,140 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Guruh qo‘shish</title>
-</head>
-<body>
-    <h2>Yangi guruh qo‘shish</h2>
+{% extends "base.html" %}
 
-    <form method="post">
-        {% csrf_token %}
+{% block title %}Guruh qo‘shish{% endblock %}
 
-        <label>Guruh nomi:</label><br>
-        <input type="text" name="name" required><br><br>
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        <label>Kurs:</label><br>
-        <select name="course" required>
-            <option value="">-- Tanlang --</option>
-            {% for course in courses %}
-                <option value="{{ course.id }}">{{ course.name }}</option>
-            {% endfor %}
-        </select>
-        <br><br>
+<style>
+    .form-card-wrapper {
+        max-width: 650px;
+        margin: 40px auto;
+    }
+    .group-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+        border: none;
+    }
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 20px;
+    }
+    .form-label {
+        font-weight: 700;
+        color: #2b2d42;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+    .form-control, .form-select {
+        border-radius: 12px;
+        padding: 12px 18px;
+        border: 2px solid #f1f4f8;
+        background-color: #f8fafc;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #4361ee;
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        outline: none;
+    }
+    .selection-group {
+        background: #fcfdfe;
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid #edf2f7;
+        margin-bottom: 20px;
+    }
+    .btn-save-group {
+        background: #4361ee;
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 14px;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 20px;
+        transition: all 0.3s;
+    }
+    .btn-save-group:hover {
+        background: #3f37c9;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.25);
+    }
+    .back-nav {
+        color: #8d99ae;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    .back-nav:hover { color: #4361ee; }
+</style>
 
-        <label>O‘qituvchi:</label><br>
-        <select name="teacher">
-            <option value="">-- Tanlang --</option>
-            {% for teacher in teachers %}
-                <option value="{{ teacher.id }}">
-                    {{ teacher.user.first_name }} {{ teacher.user.last_name }}
-                </option>
-            {% endfor %}
-        </select>
-        <br><br>
+<div class="container">
+    <div class="form-card-wrapper">
+        <a href="/courses/groups/" class="back-nav mb-3 d-inline-block">
+            <i class="fas fa-arrow-left me-2"></i> Guruhlar ro'yxatiga qaytish
+        </a>
 
-        <button type="submit">Saqlash</button>
-    </form>
+        <div class="group-card shadow-lg">
+            <div class="text-center mb-4">
+                <div class="header-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <h2 class="fw-bold">Yangi guruh</h2>
+                <p class="text-muted small">Kurs va o'qituvchini tanlab, yangi guruh yarating</p>
+            </div>
 
-    <br>
-    <a href="/courses/groups/">Orqaga</a>
-</body>
-</html>
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label">Guruh nomi</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 rounded-start-3"><i class="fas fa-tag text-muted"></i></span>
+                        <input type="text" name="name" class="form-control border-0" placeholder="Masalan: Python-102" required>
+                    </div>
+                </div>
+
+                <div class="selection-group">
+                    <div class="mb-4">
+                        <label class="form-label"><i class="fas fa-book me-2 text-primary"></i> Kursni tanlang</label>
+                        <select name="course" class="form-select" required>
+                            <option value="">-- Kursni tanlang --</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="form-label"><i class="fas fa-chalkboard-teacher me-2 text-primary"></i> O'qituvchini biriktiring</label>
+                        <select name="teacher" class="form-select">
+                            <option value="">-- O'qituvchini tanlang (Ixtiyoriy) --</option>
+                            {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}">
+                                    {{ teacher.user.first_name }} {{ teacher.user.last_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-save-group">
+                    <i class="fas fa-check-circle me-2"></i> Guruhni saqlash
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

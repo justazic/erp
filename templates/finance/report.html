@@ -3,33 +3,171 @@
 {% block title %}Moliyaviy hisobot{% endblock %}
 
 {% block content %}
-<h2>Moliyaviy hisobot</h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 
-<p><b>Jami tushum:</b> {{ total }}</p>
+<style>
+    .finance-wrapper { padding: 20px 0; }
+    
+    /* Katta statistika kartasi */
+    .total-income-card {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 24px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: 0 15px 35px rgba(46, 204, 113, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .total-income-card h4 { opacity: 0.9; font-weight: 500; font-size: 1.1rem; }
+    .total-amount { font-size: 3rem; font-weight: 800; letter-spacing: -1px; }
+    .currency { font-size: 1.5rem; opacity: 0.8; margin-left: 5px; }
 
-<table border="1" cellpadding="5">
-    <tr>
-        <th>Student</th>
-        <th>Summa</th>
-        <th>To‘lov turi</th>
-        <th>Sana</th>
-    </tr>
+    /* Jadval kartasi */
+    .report-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+    .table thead th {
+        background: #f8f9fa;
+        border: none;
+        color: #8d99ae;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 15px;
+    }
+    .table tbody td {
+        padding: 20px 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    .amount-cell {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        color: #2ecc71;
+        font-size: 1.05rem;
+    }
+    
+    /* Metod badge dizayni */
+    .method-badge {
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+    }
+    .method-cash { background: rgba(255, 152, 0, 0.1); color: #f39c12; }
+    .method-card { background: rgba(52, 152, 219, 0.1); color: #3498db; }
+    
+    .date-text { color: #8d99ae; font-size: 0.85rem; }
+    .btn-export {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        padding: 8px 18px;
+        border-radius: 12px;
+        font-weight: 600;
+        color: #444;
+        transition: 0.3s;
+    }
+    .btn-export:hover { background: #f8f9fa; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+</style>
 
-    {% for payment in payments %}
-    <tr>
-        <td>
-            {{ payment.student.user.first_name }}
-            {{ payment.student.user.last_name }}
-        </td>
-        <td>{{ payment.amount }}</td>
-        <td>{{ payment.get_method_display }}</td>
-        <td>{{ payment.created_at|date:"d.m.Y H:i" }}</td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="4">To‘lovlar yo‘q</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="container finance-wrapper">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">💰 Moliyaviy hisobot</h2>
+            <p class="text-muted small mb-0">Tizimdagi barcha to‘lovlar va umumiy tushum tahlili</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/finance/payment/create/" class="btn btn-success rounded-pill px-4 fw-bold">
+                <i class="fas fa-plus me-2"></i> To‘lov qabul qilish
+            </a>
+        </div>
+    </div>
+
+    <div class="total-income-card">
+        <div>
+            <h4>Jami tushum miqdori</h4>
+            <div class="total-amount">
+                {{ total|floatformat:0 }}<span class="currency">SO‘M</span>
+            </div>
+        </div>
+        <div class="icon-box d-none d-md-block">
+            <i class="fas fa-chart-line fa-5x" style="opacity: 0.3;"></i>
+        </div>
+    </div>
+
+    <div class="report-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0">Oxirgi to‘lovlar</h5>
+            <button class="btn-export"><i class="fas fa-file-excel me-2"></i> Excel export</button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th class="text-center">Summa</th>
+                        <th class="text-center">To‘lov turi</th>
+                        <th class="text-end">Sana va vaqt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user text-muted small"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ payment.student.user.first_name }} {{ payment.student.user.last_name }}</div>
+                                    <small class="text-muted">ID: #PAY-{{ payment.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="amount-cell">+{{ payment.amount|floatformat:0 }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% if payment.method == 'cash' %}
+                                <span class="method-badge method-cash">
+                                    <i class="fas fa-money-bill-wave me-2"></i> Naqd
+                                </span>
+                            {% else %}
+                                <span class="method-badge method-card">
+                                    <i class="fas fa-credit-card me-2"></i> Karta
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="date-text">
+                                <i class="far fa-calendar-alt me-1"></i> {{ payment.created_at|date:"d.m.Y" }} <br>
+                                <i class="far fa-clock me-1"></i> {{ payment.created_at|date:"H:i" }}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <i class="fas fa-receipt fa-3x mb-3 d-block opacity-50"></i>
+                            Hozircha hech qanday to‘lovlar amalga oshirilmagan.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
 
 {% endblock %}
