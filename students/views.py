@@ -3,6 +3,7 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.models import User
 from .models import Student
+from courses.models import Group
 # Create your views here.
 
 
@@ -10,11 +11,21 @@ class StudentCreateView(LoginRequiredMixin, View):
     def get(self, request):
         if request.user.role != 'admin':
             return redirect('/')
+        
+        groups = Group.objects.all()
         return render(request, 'students/create.html')
 
     def post(self, request):
         if request.user.role != 'admin':
             return redirect('/')
+        username = request.POST.get('username')
+        
+        if User.objects.filter(username=username).exists():
+            return render(
+                request,
+                'students/create.html',
+                {'error': 'Bu username allaqachon mavjud'}
+            )
 
         user = User.objects.create_user(
             username=request.POST.get('username'),
@@ -26,6 +37,7 @@ class StudentCreateView(LoginRequiredMixin, View):
 
         Student.objects.create(
             user=user,
+            group_id=request.POST.get('group'),
             phone=request.POST.get('phone'),
             address=request.POST.get('address'),
             birth_date=request.POST.get('birth_date') or None
@@ -35,7 +47,7 @@ class StudentCreateView(LoginRequiredMixin, View):
     
 class StudentListView(LoginRequiredMixin, View):
     def get(self, request):
-        students = Student.objects.all()
+        students = Student.objects.select_related('user', 'group')
         return render(request, 'students/list.html', {'students': students})
     
     

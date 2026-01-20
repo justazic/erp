@@ -3,6 +3,8 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.models import User
 from .models import Teacher
+from courses.models import Group
+from students.models import Student
 
 class TeacherCreateView(LoginRequiredMixin, View):
     def get(self, request):
@@ -81,3 +83,19 @@ class TeacherDeleteView(LoginRequiredMixin, View):
         teacher = get_object_or_404(Teacher, id=teacher_id)
         teacher.user.delete()
         return redirect('/teachers/')
+    
+    
+class TeacherGroupListView(LoginRequiredMixin, View):
+    def get(self, request):
+        if request.user.role != 'teacher':
+            return redirect('/')
+
+        groups = Group.objects.filter(teacher=request.user.teacher)
+        return render(request, 'teachers/group_list.html', {'groups': groups})
+    
+    
+class TeacherGroupDetailView(LoginRequiredMixin,View):
+    def get(self, request, group_id):
+        group = Group.objects.get(id=group_id, teacher=request.user.teacher)
+        students = Student.objects.filter(group=group)
+        return render(request, 'teachers/group_students.html', {'group':group, 'students':students} )

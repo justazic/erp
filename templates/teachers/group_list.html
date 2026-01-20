@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Mening guruhlarim{% endblock %}
+
+{% block content %}
+<h2>📘 Mening guruhlarim</h2>
+
+<ul>
+    {% for group in groups %}
+        <li>
+            <a href="/teachers/groups/{{ group.id }}/">
+                {{ group.name }}
+            </a>
+        </li>
+    {% empty %}
+        <li>Guruh biriktirilmagan</li>
+    {% endfor %}
+</ul>
+{% endblock %}
