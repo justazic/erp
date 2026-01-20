@@ -1,18 +1,12 @@
 from django.db import models
 from accounts.models import User
-
+from courses.models import Course
 # Create your models here.
 
 class Student(models.Model):
-    Status = (
-        ('graduated', 'Graduated'),
-        ('failed', 'Failed'),
-        ('studying', 'Studying'),
-    )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=250)
-    status = models.CharField(max_length=10, choices=Status)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -23,4 +17,25 @@ class Student(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class Enrollment(models.Model):
+    Status = (
+        ('graduated', 'Graduated'),
+        ('failed', 'Failed'),
+        ('studying', 'Studying'),
+    )
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE
+    )
+    course = models.ForeignKey(
+        Course,
+        related_name='enrollments',
+        on_delete=models.CASCADE
+    )
+    status = models.CharField(max_length=10, choices=Status)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 

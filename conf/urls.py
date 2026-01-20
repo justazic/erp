@@ -3,8 +3,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import render
 from django.urls import path, include
-
-from students.models import Student
+from courses.utils import popular_courses
+from students.models import Enrollment, Student
 from teachers.models import Teacher
 
 from datetime import date
@@ -19,16 +19,19 @@ def years_between():
 
 
 def index( request ):
-  number_of_students = Student.objects.count()
-  graduated_percentage = int(Student.objects.filter(status='graduated').count() / number_of_students * 100)
-  currently_studying_percentage = int(Student.objects.filter(status='studying').count() / number_of_students * 100)
+  number_of_students = Enrollment.objects.count()
+  graduated_percentage = int(Enrollment.objects.filter(status='graduated').count() / number_of_students * 100)
+  currently_studying_percentage = int(Enrollment.objects.filter(status='studying').count() / number_of_students * 100)
   experts = Teacher.objects.filter(is_expert=True).count()
+
   return render(request, 'index.html', {
     'number_of_students': number_of_students,
     'graduated_percentage': graduated_percentage,
     'currently_studying_percentage': currently_studying_percentage,
     'experts': experts,
-    'years_between': years_between()
+    'years_between': years_between(),
+    'popular_courses': popular_courses,
+    'show_footer': True
     },)
 
 

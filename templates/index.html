@@ -19,7 +19,7 @@
       </p>
 
       <div class="hero__cta">
-        <a class="btn btn--pill btn--primary" href="#">Join for free</a>
+        <a class="btn btn--pill btn--primary" href="#">Join</a>
       </div>
     </div>
 
@@ -31,7 +31,7 @@
       <div class="floatCard floatCard--top">
         <div class="floatIcon">📅</div>
         <div>
-          <div class="floatTitle">250k</div>
+          <div class="floatTitle">{{ number_of_students }}</div>
           <div class="floatText">Assisted Student</div>
         </div>
       </div>
@@ -270,182 +270,63 @@
 <!-- FEATURE ROW 5 -->
 <section class="section">
   <div class="container twoCol twoCol--reverse">
-    <div class="shotFrame">
-      <img src="{% static 'images/discussions.png' %}" alt="">
-    </div>
     <div>
       <h2 class="h2">One-on-One<br><span class="accent">Discussions</span></h2>
       <p class="muted">
         Teachers and teacher assistants can talk with students privately without leaving the Zoom environment.
       </p>
     </div>
+          <div class="shotFrame">
+      <img src="{% static 'images/discussions.png' %}" alt="">
+    </div>
   </div>
 </section>
 
-<div class="center section">
-  <a class="btn btn--pill btn--outlineTeal" href="#">See more features</a>
+
+
+
+<div class="container">
+<h1>Explore Courses</h1>
+    <div class="morphCourses">
+        {% for c in popular_courses %}
+        <article class="morphPill">
+            <!-- always visible label (pill state) -->
+            <div class="morphPill__label">
+                {{ c.name }}
+            </div>
+
+            <!-- hidden details (card state) -->
+            <div class="morphPill__card">
+                <div class="morphPill__img">
+                    <img
+                            src="
+                                    {% if c.small_image %}{{ c.small_image.url }}{% else %}{% load static %}{% static 'images/course-1.jpg' %}{% endif %}"
+                            alt="{{ c.name|escape }}"
+                    >
+                </div>
+
+                <div class="morphPill__body">
+                    <h3 class="morphPill__title">{{ c.name }}</h3>
+
+                    <div class="morphPill__meta">
+                        <div class="stars">★★★★★</div>
+                        <div class="morphPill__price">
+                            {% if c.price %}${{ c.price }}{% else %}Free{% endif %}
+                        </div>
+                    </div>
+
+                    <p class="morphPill__desc muted small">
+                        {{ c.small_description }}
+                    </p>
+
+                    <a class="btn btn--pill btn--outlineTeal btn--small" href="#">
+                        EXPLORE
+                    </a>
+                </div>
+            </div>
+        </article>
+    {% endfor %}</div>
 </div>
 
-<!-- EXPLORE COURSE -->
-<section class="section section--soft">
-  <div class="container courseWrap">
-    <div class="courseHead">
-      <div>
-        <h2 class="h2">Explore Course</h2>
-        <p class="muted">Ut sed eros finibus, placerat orci id, dapibus.</p>
-      </div>
-      <a class="link link--right" href="#">SEE ALL →</a>
-    </div>
-
-    <div class="courseRow">
-      <div class="pillList">
-        <div class="pill">Ut Sed Eros</div>
-        <div class="pill">Culabitur Egestas</div>
-        <div class="pill">Quisque Consequat</div>
-        <div class="pill">Cras Convallis</div>
-        <div class="pill">Vestibulum faucibus</div>
-        <div class="pill">Ut Sed Eros</div>
-        <div class="pill">Vestibulum faucibus</div>
-      </div>
-
-      <article class="courseCard">
-        <div class="courseCard__img">
-          <img src="{% static 'images/course-1.jpg' %}" alt="">
-        </div>
-        <div class="courseCard__body">
-          <h3>Integer id Orc Sed<br>Ante Tincidunt</h3>
-          <p class="muted small">
-            Cras convallis lacus orci, tristique tincidunt magna fringilla at faucibus vel.
-          </p>
-          <div class="courseCard__meta">
-            <div class="stars">★★★★★</div>
-            <div class="price">$ 450</div>
-          </div>
-          <a class="btn btn--pill btn--outlineTeal btn--small" href="#">EXPLORE</a>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIAL -->
-<section class="section">
-  <div class="container twoCol">
-    <div>
-      <div class="kicker">TESTIMONIAL</div>
-      <h2 class="h2">What They Say?</h2>
-      <p class="muted">
-        TOTC has got more than 100k positive ratings from our users around the world.
-      </p>
-      <p class="muted">
-        Some of the students and teachers were greatly helped by the Skilline.
-      </p>
-      <p class="muted">Are you too? Please give your assessment</p>
-
-      <a class="btn btn--pill btn--outlineTeal" href="#">
-        Write your assessment <span class="arrow">→</span>
-      </a>
-    </div>
-
-    <div class="testiMedia">
-      <img class="testiMedia__img" src="{% static 'images/testimonial-person.jpg' %}" alt="">
-      <button class="testiMedia__next" type="button" aria-label="Next">›</button>
-
-      <div class="quoteCard">
-        <p class="muted small">
-          “Thank you so much for your help. It’s exactly what I’ve been looking for.
-          You won’t regret it. It really saves me time and effort. TOTC is exactly what
-          our business has been lacking.”
-        </p>
-        <div class="quoteCard__bottom">
-          <div class="quoteName">Gloria Rose</div>
-          <div class="quoteMeta">
-            <div class="stars">★★★★★</div>
-            <div class="tiny">12 reviews at Yelp</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- NEWS -->
-<section class="section">
-  <div class="container center">
-    <h2 class="h2">Lastest News and Resources</h2>
-    <p class="muted maxw">See the developments that have occurred to TOTC in the world</p>
-  </div>
-
-  <div class="container newsGrid">
-    <article class="newsMain">
-      <img src="{% static 'images/news-main.jpg' %}" alt="">
-      <span class="tag">NEWS</span>
-      <h3>Class adds $30 million to its balance sheet for a Zoom-friendly edtech solution</h3>
-      <p class="muted small">Class, launched less than a year ago by Blackboard co-founder Michael Chasen...</p>
-      <a class="link" href="#">Read more</a>
-    </article>
-
-    <div class="newsList">
-      <article class="newsItem">
-        <img src="{% static 'images/news-1.jpg' %}" alt="">
-        <div>
-          <span class="tag tag--press">PRESS RELEASE</span>
-          <h4>Class Technologies Inc. Closes $30 Million Series A Financing to Meet High Demand</h4>
-          <p class="muted small">Class Technologies Inc., the company that created Class,...</p>
-        </div>
-      </article>
-
-      <article class="newsItem">
-        <img src="{% static 'images/news-2.jpg' %}" alt="">
-        <div>
-          <span class="tag">NEWS</span>
-          <h4>Zoom’s earliest investors are betting millions on a better Zoom for schools</h4>
-          <p class="muted small">Zoom was never created to be a consumer product. Nonetheless,...</p>
-        </div>
-      </article>
-
-      <article class="newsItem">
-        <img src="{% static 'images/news-3.jpg' %}" alt="">
-        <div>
-          <span class="tag">NEWS</span>
-          <h4>Former Blackboard CEO Raises $16M to Bring LMS Features to Zoom Classrooms</h4>
-          <p class="muted small">This year, investors have reaped big financial returns from betting on Zoom...</p>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="container footer__inner">
-    <div class="footer__brand">
-      <div class="brand brand--footer">
-        <span class="brand__mark">◇</span>
-        <span class="brand__text">TOTC</span>
-      </div>
-      <div class="footer__subtitle">Virtual Class<br>for Zoom</div>
-    </div>
-
-    <div class="footer__newsletter">
-      <div class="footer__title">Subscribe to get our Newsletter</div>
-      <form class="newsletter" action="#" method="post">
-        <input class="newsletter__input" type="email" placeholder="Your Email" />
-        <button class="btn btn--pill btn--teal btn--small" type="submit">Subscribe</button>
-      </form>
-    </div>
-
-    <div class="footer__bottom">
-      <div class="footer__links">
-        <a href="#">Careers</a>
-        <span> | </span>
-        <a href="#">Privacy Policy</a>
-        <span> | </span>
-        <a href="#">Terms & Conditions</a>
-      </div>
-      <div class="footer__copy">© 2021 Class Technologies Inc.</div>
-    </div>
-  </div>
-</footer>
 
 {% endblock %}

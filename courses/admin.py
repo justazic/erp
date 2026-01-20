@@ -3,13 +3,19 @@ from .models import Course, Group, Comment
 import unfold
 
 class CourseAdmin(unfold.admin.ModelAdmin):
-  list_display = ('name', 'created_at', 'updated_at')
-  search_fields = ('name',)
+  list_display = ('name', 'small_image', 'large_image', 'small_description', 'large_description', 'price','created_at', 'updated_at')
+  search_fields = ('name', 'small_description', 'large_description', )
   ordering = ('name',)
   readonly_fields = ('created_at', 'updated_at')
   fieldsets = (
       ('Course Information', {
-          'fields': ('name',)
+          'fields': ('name', 'small_description', 'large_description', )
+      }),
+      ('Images', {
+          'fields': ('small_image', 'large_image')
+      }),
+      ('Price', {
+          'fields': ('price',)
       }),
       ('Timestamps', {
           'fields': ('created_at', 'updated_at'),

@@ -41,5 +41,61 @@
 
   {% block content %}{% endblock %}
 
+
+{% if show_footer %}
+  <!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <div class="brand brand--footer">
+        <span class="brand__mark">◇</span>
+        <span class="brand__text">TOTC</span>
+      </div>
+      <div class="footer__subtitle">Virtual Class<br>for Zoom</div>
+    </div>
+
+    <div class="footer__newsletter">
+      <div class="footer__title">Subscribe to get our Newsletter</div>
+      <form class="newsletter" action="#" method="post">
+        <input class="newsletter__input" type="email" placeholder="Your Email" />
+        <button class="btn btn--pill btn--teal btn--small" type="submit">Subscribe</button>
+      </form>
+    </div>
+
+    <div class="footer__bottom">
+      <div class="footer__links">
+        <a href="#">Careers</a>
+        <span> | </span>
+        <a href="#">Privacy Policy</a>
+        <span> | </span>
+        <a href="#">Terms & Conditions</a>
+      </div>
+      <div class="footer__copy">© 2021 Class Technologies Inc.</div>
+    </div>
+  </div>
+</footer>
+  {% endif %}
+
+
+<script>
+  (function () {
+    const pills = Array.from(document.querySelectorAll('.morphCourses .morphPill'));
+    if (!pills.length) return;
+
+    const open = (p) => {
+      pills.forEach(x => x.classList.remove('is-open'));
+      p.classList.add('is-open');
+    };
+
+    open(pills[0]); // open first on load
+
+    pills.forEach(p => {
+      p.addEventListener('mouseenter', () => open(p));
+      p.addEventListener('focus', () => open(p)); // keyboard support
+    });
+  })();
+</script>
+
+
 </body>
 </html>

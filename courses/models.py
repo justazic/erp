@@ -5,7 +5,11 @@ from accounts.models import User
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
-    
+    small_image = models.ImageField(upload_to='courses/small_images', null=True)
+    large_image = models.ImageField(upload_to='courses/large_images', null=True)
+    small_description = models.TextField(max_length=50)
+    large_description = models.TextField(max_length=1000)
+    price = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
