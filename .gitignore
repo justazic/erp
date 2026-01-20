@@ -64,9 +64,10 @@ rabbitmq/
 rabbitmq-data/
 activemq-data/
 *.sage.py
-.env
+#.env
 .envrc
-.venv
+.venv/
+.env/
 env/
 venv/
 ENV/

@@ -4,45 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79702f24-0b5c-47f7-a782-c66a5669ceec" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/attendance/migrations/0002_attendance_marked_by.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/media/avatar/default_2xgRM8U.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/attendance/attendance_history.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attendance/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/attendance/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attendance/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/attendance/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attendance/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/attendance/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/conf/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/accounts/password_change.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/accounts/password_change.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/accounts/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/accounts/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/attendance/form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/attendance/form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/auth/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/auth/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/courses/course_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/courses/course_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/courses/course_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/courses/course_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/courses/group_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/courses/group_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/courses/group_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/courses/group_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/finance/payment_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/finance/payment_form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/finance/report.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/finance/report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/students/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/students/create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/students/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/students/list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/students/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/students/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/students/update.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/students/update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/tasks/assignment_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/tasks/assignment_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/tasks/assignment_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/tasks/assignment_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/tasks/my_submissions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/tasks/my_submissions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/tasks/submission_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/tasks/submission_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/tasks/submission_list_teacher.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/tasks/submission_list_teacher.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/teachers/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/teachers/create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/teachers/group_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/teachers/group_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/teachers/group_students.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/teachers/group_students.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/teachers/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/teachers/list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/teachers/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/teachers/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/teachers/update.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/teachers/update.html" afterDir="false" />
-    </list>
+    <list default="true" id="79702f24-0b5c-47f7-a782-c66a5669ceec" name="Changes" comment="merged" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,7 +45,7 @@
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "django.template.preview.state": "SHOW_EDITOR_AND_PREVIEW",
-    "git-widget-placeholder": "Merging main",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -138,6 +100,15 @@
       <updated>1768869326328</updated>
       <workItem from="1768869327438" duration="6472000" />
     </task>
+    <task id="LOCAL-00001" summary="merged">
+      <option name="closed" value="true" />
+      <created>1768925529638</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1768925529638</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -149,6 +120,8 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
+    <MESSAGE value="merged" />
+    <option name="LAST_COMMIT_MESSAGE" value="merged" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

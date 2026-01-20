@@ -69,7 +69,7 @@ class AttendanceListView(LoginRequiredMixin, View):
             attendances = attendances.filter(date__gte=date_from)
         if date_to:
             attendances = attendances.filter(date__lte=date_to)
-        attendances = attendances.order_by('-date')
+        attendances = attendances.order_by('-updated_at')
 
         total_attendance = attendances.count()
         total_present = attendances.filter(status='present').count()
