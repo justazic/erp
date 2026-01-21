@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.username }} | Student Profile | TOTC Admin{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="dash__top" style="margin-bottom: 32px;">
+                <div>
+                    <h2 class="h2">Student <span class="accent">Profile</span></h2>
+                    <p class="muted">Managing: {{ student.get_full_name|default:student.username }}</p>
+                </div>
+                <div class="dash__quick">
+                    <a href="{% url 'courses:admin_student_list' %}" class="btn btn--pill btn--white">Back to List</a>
+                </div>
+            </div>
+
+            <div class="profileLayout" style="display: grid; grid-template-columns: 320px 1fr; gap: 40px; align-items: start;">
+                <!-- SIDEBAR -->
+                <aside class="profileSidebar card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow); text-align: center;">
+                    <div class="avatarCircle" style="width: 120px; height: 120px; background: var(--soft); border-radius: 50%; margin: 0 auto 24px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--teal2); border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                        {% if student.avatar %}
+                            <img src="{{ student.avatar.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            {{ student.first_name|default:student.username|first|upper }}
+                        {% endif %}
+                    </div>
+
+                    <h3 style="margin: 0 0 8px; font-size: 24px;">{{ student.first_name }} {{ student.last_name }}</h3>
+                    <div class="badge" style="background: var(--soft); color: var(--teal2); margin-bottom: 32px; display: inline-block;">{{ student.get_role_display }}</div>
+
+                    <div class="infoGrid" style="text-align: left; gap: 16px; display: grid;">
+                        <div class="infoItem">
+                            <label class="tiny muted" style="display: block;">Current Balance</label>
+                            <div style="font-size: 24px; font-weight: 700; color: var(--teal2);">${{ student.balance }}</div>
+                        </div>
+
+                        <div style="margin: 16px 0; padding-top: 16px; border-top: 1px solid #eee;">
+                            <h4 class="small" style="margin-bottom: 12px;">Quick Deposit</h4>
+                            <form method="post" action="{% url 'courses:admin_student_deposit' student.id %}">
+                                {% csrf_token %}
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="number" name="amount" placeholder="Amount" required step="0.01"
+                                           style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
+                                    <button type="submit" class="btn btn--pill btn--primary btn--small">Deposit</button>
+                                </div>
+                                <input type="text" name="notes" placeholder="Notes (optional)" 
+                                       style="width: 100%; margin-top: 8px; padding: 8px; border-radius: 8px; border: 1px solid #ddd; font-size: 12px;">
+                            </form>
+                            
+                            <form method="post" action="{% url 'courses:admin_student_deposit' student.id %}" style="margin-top: 16px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="charge_monthly" value="1">
+                                <button type="submit" class="btn btn--pill btn--outlineTeal btn--small btn--block" onclick="return confirm('Charge monthly fee for all active courses?')">
+                                    Charge Monthly Fees
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="infoItem">
+                            <label class="tiny muted" style="display: block;">Username</label>
+                            <div style="font-weight: 600;">{{ student.username }}</div>
+                        </div>
+                        <div class="infoItem">
+                            <label class="tiny muted" style="display: block;">Email</label>
+                            <div style="font-weight: 600;">{{ student.email }}</div>
+                        </div>
+                        <div class="infoItem">
+                            <label class="tiny muted" style="display: block;">Phone</label>
+                            <div style="font-weight: 600;">{{ student.phone|default:"—" }}</div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- CONTENT -->
+                <main class="profileContent">
+                    <div class="card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow);">
+                        <h3 style="margin: 0 0 24px; font-size: 20px;">Current Enrollments</h3>
+                        
+                        <div class="dashList">
+                            {% for enrollment in enrollments %}
+                                <div class="dashList__item" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div class="dashList__main">{{ enrollment.course.name }}</div>
+                                        <div class="dashList__sub muted small">
+                                            {{ enrollment.session.get_session_type_display }} • 
+                                            {% if enrollment.group %}
+                                                Group: <strong>{{ enrollment.group.name }}</strong>
+                                            {% else %}
+                                                <span style="color: var(--pink);">No Group Assigned</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="badge">{{ enrollment.get_status_display }}</span>
+                                        {% if enrollment.group %}
+                                            <a href="{% url 'courses:admin_group_students' enrollment.group.id %}" class="btn btn--pill btn--outlineTeal btn--small" style="margin-left: 12px;">Manage Group</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="muted">No enrollments found for this student.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow); margin-top: 32px;">
+                        <h3 style="margin: 0 0 24px; font-size: 20px;">Payment History</h3>
+                        
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 14px;">Date</th>
+                                        <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 14px;">Type</th>
+                                        <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 14px;">Amount</th>
+                                        <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 14px;">Status</th>
+                                        <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 14px;">Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in payments %}
+                                        <tr>
+                                            <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ payment.created_at|date:"M d, Y" }}</td>
+                                            <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ payment.get_payment_type_display }}</td>
+                                            <td style="padding: 12px; border-bottom: 1px solid #f9f9f9; font-weight: 600;">
+                                                {% if payment.payment_type == 'deposit' %}+{% else %}-{% endif %}${{ payment.amount }}
+                                            </td>
+                                            <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;">
+                                                <span class="badge" style="background: {% if payment.status == 'paid' %}var(--soft){% else %}#fff5f5{% endif %}; color: {% if payment.status == 'paid' %}var(--teal2){% else %}var(--pink){% endif %};">
+                                                    {{ payment.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="tiny muted">{{ payment.notes|default:"—" }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="5" style="padding: 24px; text-align: center;" class="muted">No payment history.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+{% endblock %}

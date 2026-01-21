@@ -1,141 +1,51 @@
 {% extends "base.html" %}
 
-{% block title %}Vazifa topshirish{% endblock %}
+{% block title %}Submit Assignment | TOTC{% endblock %}
 
 {% block content %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <section class="section section--soft">
+        <div class="container">
+            <div class="center" style="margin-bottom: 48px;">
+                <h2 class="h2">Submit <span class="accent">Work</span></h2>
+                <p class="muted">Upload your completed assignment for review.</p>
+            </div>
 
-    <style>
-        .submit-wrapper {
-            max-width: 600px;
-            margin: 40px auto;
-        }
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div class="card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 24px;">
+                    <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #eee;">
+                        <span class="badge" style="margin-bottom: 8px;">Assignment</span>
+                        <h3 style="margin: 0; font-size: 24px;">{{ assignment.title }}</h3>
+                        <p class="tiny muted" style="margin-top: 8px;">Deadline: {{ assignment.deadline|date:"M d, Y H:i" }}</p>
+                    </div>
 
-        .submit-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-            border: none;
-        }
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
 
-        .assignment-header {
-            border-bottom: 1px solid #edf2f7;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-        }
+                        <div style="margin-bottom: 24px;">
+                            <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Upload File</label>
+                            <input type="file" name="file" required 
+                                   style="width: 100%; padding: 12px; border-radius: 10px; border: 2px dashed #ddd; background: #f9f9f9;">
+                            <p class="tiny muted" style="margin-top: 8px;">Please upload your work in PDF, ZIP or DOCX format.</p>
+                        </div>
 
-        .file-upload-wrapper {
-            position: relative;
-            width: 100%;
-            margin-bottom: 25px;
-        }
+                        <div style="margin-bottom: 32px;">
+                            <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Comment (Optional)</label>
+                            <textarea name="comment" rows="4" placeholder="Any notes for the teacher?" 
+                                      style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; resize: vertical;"></textarea>
+                        </div>
 
-        /* Fayl tanlash maydonini chiroyli qilish */
-        .form-control-file {
-            border: 2px dashed #e2e8f0;
-            padding: 30px;
-            border-radius: 15px;
-            width: 100%;
-            text-align: center;
-            background: #f8fafc;
-            transition: all 0.3s;
-        }
-
-        .form-control-file:hover {
-            border-color: #4361ee;
-            background: #f1f5ff;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #2b2d42;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .form-control-text {
-            border-radius: 12px;
-            padding: 12px 15px;
-            border: 1px solid #e0e0e0;
-            width: 100%;
-            min-height: 100px;
-            transition: 0.3s;
-        }
-
-        .form-control-text:focus {
-            border-color: #4361ee;
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
-            outline: none;
-        }
-
-        .btn-submit {
-            background: #4361ee;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: 700;
-            width: 100%;
-            margin-top: 20px;
-            transition: 0.3s;
-        }
-
-        .btn-submit:hover {
-            background: #3f37c9;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
-        }
-
-        .back-link {
-            color: #8d99ae;
-            text-decoration: none;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-
-        .back-link:hover {
-            color: #4361ee;
-        }
-    </style>
-
-    <div class="container">
-        <div class="submit-wrapper">
-            <a href="/tasks/assignments/" class="back-link">
-                <i class="fas fa-arrow-left me-1"></i> Vazifalar ro'yxatiga qaytish
-            </a>
-
-            <div class="submit-card">
-                <div class="assignment-header">
-                    <span class="badge bg-soft-primary text-primary mb-2" style="background: rgba(67,97,238,0.1)">Topshiriq</span>
-                    <h3 class="fw-bold mb-1">{{ assignment.title }}</h3>
-                    <p class="text-muted small mb-0">Muddat: {{ assignment.deadline|date:"d.m.Y H:i" }}</p>
+                        <div style="display: flex; gap: 16px;">
+                            <button type="submit" class="btn btn--pill btn--primary" style="flex: 1;">Submit Assignment</button>
+                            <a href="{% url 'tasks:assignment_list' %}" class="btn btn--pill btn--white" style="flex: 1; border: 1px solid #ddd;">Cancel</a>
+                        </div>
+                    </form>
                 </div>
 
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-
-                    <div class="mb-4">
-                        <label class="form-label"><i class="fas fa-cloud-upload-alt me-2 text-primary"></i> Vazifa
-                            faylini yuklang</label>
-                        <input type="file" name="file" class="form-control form-control-file" required>
-                        <small class="text-muted d-block mt-2">Faqat PDF, DOCX yoki ZIP formatdagi fayllar qabul
-                            qilinadi.</small>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label"><i class="fas fa-comment-alt me-2 text-primary"></i> O'qituvchi uchun
-                            izoh (ixtiyoriy)</label>
-                        <textarea name="comment" class="form-control-text"
-                                  placeholder="Vazifa bo'yicha qo'shimcha izohingiz bo'lsa yozing..."></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-submit">
-                        <i class="fas fa-paper-plane me-2"></i> Vazifani yuborish
-                    </button>
-                </form>
+                <div class="card" style="background: var(--soft); padding: 24px; border-radius: 20px; border: 1px dashed var(--teal);">
+                    <h4 class="small" style="font-weight: 700; margin-bottom: 12px;">Assignment Description:</h4>
+                    <p class="muted small">{{ assignment.description|linebreaks }}</p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 {% endblock %}

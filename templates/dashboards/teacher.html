@@ -13,7 +13,8 @@
 
                 <div class="dash__quick">
                     <a class="dashBtn" href="{% url 'accounts:profile' %}">My Profile</a>
-                    <a class="dashBtn dashBtn--ghost" href="{% url 'tasks:submission_list_teacher' %}">Review Tasks</a>
+                    <a class="dashBtn dashBtn--ghost" href="{% url 'messaging:group_list' %}">Group Chat</a>
+                    <a class="dashBtn dashBtn--ghost" href="{% url 'tasks:assignment_list' %}">Review Tasks</a>
                 </div>
             </div>
 
@@ -35,23 +36,62 @@
                             <div class="dashStat__label">Pending reviews</div>
                         </div>
                     </div>
-                </div>
 
-                <div class="dashCard">
-                    <h3 class="dashCard__title">Today / Recent</h3>
-
+                    <h3 class="dashCard__title" style="margin-top: 32px;">My Groups</h3>
                     <ul class="dashList">
-                        {% for item in teacher_feed %}
+                        {% for group in my_groups %}
                             <li class="dashList__item">
-                                <div class="dashList__main">{{ item.title }}</div>
-                                <div class="dashList__sub muted small">{{ item.sub }}</div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div class="dashList__main">{{ group.name }}</div>
+                                        <div class="dashList__sub muted small">{{ group.course.name }} - {{ group.session.get_session_type_display }}</div>
+                                    </div>
+                                    <a href="{% url 'teachers:group_students' group.id %}" class="btn btn--pill btn--outlineTeal btn--small">Students</a>
+                                </div>
                             </li>
                         {% empty %}
                             <li class="dashList__item">
-                                <div class="dashList__main">No recent updates.</div>
+                                <div class="dashList__main">No groups assigned.</div>
                             </li>
                         {% endfor %}
                     </ul>
+                </div>
+
+                <div class="dashCard">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <h3 class="dashCard__title" style="margin: 0;">Pending Submissions</h3>
+                        <a href="{% url 'tasks:assignment_list' %}" class="tiny link">View All Tasks</a>
+                    </div>
+
+                    <ul class="dashList">
+                        {% for sub in pending_submissions %}
+                            <li class="dashList__item">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div class="dashList__main">{{ sub.student.get_full_name|default:sub.student.username }}</div>
+                                        <div class="dashList__sub muted small">{{ sub.assignment.title }}</div>
+                                    </div>
+                                    <form method="post" action="{% url 'tasks:submission_check' sub.id %}" style="display: flex; gap: 8px;">
+                                        {% csrf_token %}
+                                        <input type="number" name="grade" placeholder="Grade" required style="width: 70px; padding: 6px; border-radius: 8px; border: 1px solid #ddd;">
+                                        <button type="submit" class="btn btn--pill btn--primary btn--small">Save</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="dashList__item">
+                                <div class="dashList__main">No pending reviews.</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div style="margin-top: 32px;">
+                        <h3 class="dashCard__title">Quick Actions</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <a href="{% url 'tasks:assignment_create' %}" class="btn btn--pill btn--outlineTeal btn--small">Create Assignment</a>
+                            <a href="{% url 'attendance:schedule_list' %}" class="btn btn--pill btn--outlineTeal btn--small">Mark Attendance</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -32,8 +32,8 @@ INSTALLED_APPS = [
     'courses',
     'finance',
     'attendance',
-    'reports',
-    'tasks'
+    'tasks',
+    'messaging',
 ]
 
 UNFOLD = {

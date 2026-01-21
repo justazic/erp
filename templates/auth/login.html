@@ -16,8 +16,8 @@
     <div class="loginImage">
         <img src="{% static 'images/login.png' %}" alt="">
         <div class="loginImageText">
-            <h2>Lorem Ipsum is simply</h2>
-            <p>Lorem ipsum is simply</p>
+            <h2>Studying Online is now much easier</h2>
+            <p>TOTC is an interesting platform that will teach you in more an interactive way</p>
         </div>
     </div>
 
@@ -26,9 +26,9 @@
         <form method="post" class="loginForm">
             {% csrf_token %}
 
-            <h2 class="loginTitle">Welcome to lorem..!</h2>
+            <h2 class="loginTitle">Welcome to <span class="accent">TOTC!</span></h2>
             <p class="loginSub">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Log in to access your dashboard and manage your courses, assignments and more.
             </p>
 
             {# ERROR MESSAGE #}

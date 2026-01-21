@@ -6,6 +6,14 @@
     <div class="container py-5">
         <h1 class="mb-4">Class Schedules</h1>
 
+        <!-- SEARCH BAR -->
+        <div class="mb-4">
+            <form method="get" class="d-flex gap-2" style="max-width: 500px;">
+                <input type="text" name="search" class="form-control" placeholder="Search schedules..." value="{{ search }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+
         {% if schedules %}
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -23,12 +31,12 @@
                     {% for schedule in schedules %}
                         <tr>
                             <td>{{ schedule.group.name }}</td>
-                            <td>{{ schedule.teacher.user.get_full_name|default:schedule.teacher.user.username }}</td>
+                            <td>{{ schedule.teacher.get_full_name|default:schedule.teacher.username }}</td>
                             <td>{{ schedule.get_day_of_week_display }}</td>
                             <td>{{ schedule.start_time }} - {{ schedule.end_time }}</td>
                             <td>{{ schedule.room|default:"—" }}</td>
                             <td>
-                                {% if user.teacher_profile %}
+                                {% if request.user.role == 'teacher' and schedule.teacher == request.user %}
                                     <a href="{% url 'attendance:mark_attendance' schedule.id %}"
                                        class="btn btn-sm btn-primary">Mark</a>
                                 {% endif %}

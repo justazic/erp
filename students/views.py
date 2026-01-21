@@ -1,33 +1,37 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from accounts.models import User
-# Create your views here.
+from attendance.models import Attendance
+from .models import Enrollment
 
-
-class StudentCreateView(LoginRequiredMixin, View):
-  def get( self, request ):
-    return render(request, 'students/create.html')
-
-  def post( self, request ):
-    user = User.objects.create_user(
-      username=request.POST.get('username'),
-      password=request.POST.get('password'),
-      role='student',
-      )
-
-    Student.objects.create(
-      user=user,
-      phone=request.POST.get('phone'),
-      address=request.POST.get('address'),
-      )
-    return redirect('/')
-
+class MyAttendanceView(LoginRequiredMixin, View):
+    def get(self, request):
+        if request.user.role != 'student':
+            return redirect('/')
+        attendance_records = Attendance.objects.filter(student=request.user).select_related('schedule__group', 'schedule__group__course')
+        return render(request, 'students/my_attendance.html', {
+            'attendance_records': attendance_records,
+        })
 
 class StudentListView(LoginRequiredMixin, View):
-  def get( self, request ):
-    students = Student.objects.select_related('user')
-    return render(request, 'students/list.html', {
-      'students': students,
-      },
-                  )
+    def get(self, request):
+        if not request.user.is_staff and request.user.role != 'teacher':
+            return redirect('/')
+        
+        search = request.GET.get('search', '')
+        students = User.objects.filter(role='student')
+        
+        if search:
+            students = students.filter(
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search)
+            )
+            
+        return render(request, 'students/list.html', {
+            'students': students,
+            'search': search,
+        })

@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ course.name }} | Course | TOTC{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <!-- HERO / TITLE SECTION -->
+            <div class="center" style="margin-bottom: 48px;">
+                {% if course.category %}
+                    <span class="kicker">{{ course.category.name|upper }}</span>
+                {% endif %}
+                <h1 class="h2">{{ course.name }}</h1>
+                <p class="muted maxw">{{ course.small_description }}</p>
+            </div>
+
+            <div class="courseDetail__grid">
+                <!-- ================= LEFT ================= -->
+                <div class="courseDetail__main">
+                    {% if course.large_image %}
+                        <div class="courseHero" style="margin-bottom: 32px; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow);">
+                            <img src="{{ course.large_image.url }}" alt="{{ course.name }}" style="width: 100%; height: auto; display: block;">
+                        </div>
+                    {% endif %}
+
+                    <!-- TABS -->
+                    <div class="courseTabs">
+                        <a href="#overview" class="courseTab active">Overview</a>
+                        <a href="#instructors" class="courseTab">Instructors</a>
+                        <a href="#reviews" class="courseTab">Reviews</a>
+                    </div>
+
+                    <!-- OVERVIEW -->
+                    <div id="overview" class="courseOverview" style="margin-bottom: 48px;">
+                        <h3 class="h2" style="font-size: 24px;">Course <span class="accent">Description</span></h3>
+                        <div class="muted" style="background: #fff; padding: 32px; border-radius: 20px; box-shadow: var(--shadow);">
+                            {{ course.large_description|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- TEACHERS -->
+                    {% if teachercourses %}
+                        <div id="instructors" style="margin-bottom: 48px;">
+                            <h3 class="h2" style="font-size: 24px;">Meet your <span class="accent">Instructors</span></h3>
+                            <div class="teacherGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px;">
+                                {% for tc in teachercourses %}
+                                    <div class="card center" style="padding: 24px; border-radius: 20px; background: #fff; box-shadow: var(--shadow);">
+                                        <div style="width: 80px; height: 80px; background: #eee; border-radius: 50%; margin: 0 auto 16px; overflow: hidden;">
+                                            {% if tc.teacher.avatar %}
+                                                <img src="{{ tc.teacher.avatar.url }}" alt="{{ tc.teacher.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                            {% else %}
+                                                <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 32px; color: #ccc;">👤</div>
+                                            {% endif %}
+                                        </div>
+                                        <h4 style="margin: 0 0 4px;"><a href="{% url 'teachers:detail' tc.teacher.pk %}">{{ tc.teacher.first_name }} {{ tc.teacher.last_name }}</a></h4>
+                                        <p class="tiny" style="margin-bottom: 12px;">{{ tc.teacher.speciality|default:"Instructor" }}</p>
+                                        {% if tc.teacher.is_expert %}
+                                            <span class="badge" style="background: var(--soft); color: var(--teal2);">Expert</span>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- ================= RATINGS ================= -->
+                    <div id="reviews" style="margin-bottom: 48px;">
+                        <h3 class="h2" style="font-size: 24px;">Student <span class="accent">Reviews</span></h3>
+                        {% if total_reviews > 0 %}
+                            <div class="courseRatings card" style="padding: 32px; background: #fff; border-radius: 20px; box-shadow: var(--shadow);">
+                                <div class="ratingsSummary" style="display: flex; gap: 40px; align-items: center;">
+                                    <div class="ratingScore center">
+                                        <div style="font-size: 48px; font-weight: 700; color: var(--ink);">{{ rating_avg }}</div>
+                                        <div class="stars" style="color: var(--orange); font-size: 20px; margin: 8px 0;">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= rating_avg %}★{% else %}☆{% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="tiny">{{ total_reviews }} Reviews</div>
+                                    </div>
+                                    <div class="ratingBars" style="flex: 1;">
+                                        {% for bar in rating_bars %}
+                                            <div class="ratingBar" style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                                <span class="tiny" style="width: 50px;">{{ bar.star }} Stars</span>
+                                                <div class="bar" style="flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; position: relative;">
+                                                    <div class="bar-fill" style="position: absolute; top: 0; left: 0; bottom: 0; background: #49c6c4; width: {{ bar.percent }}%;"></div>
+                                                </div>
+                                                <span class="tiny" style="width: 30px;">{{ bar.count }}</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- COMMENTS -->
+                        <div class="courseReviews" style="margin-top: 32px;">
+                            {% for comment in comments %}
+                                <div class="review" style="background: #fff; padding: 24px; border-radius: 20px; margin-bottom: 16px; box-shadow: var(--shadow);">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <strong>{{ comment.user.first_name }} {{ comment.user.last_name }}</strong>
+                                        <span class="tiny">{{ comment.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                    <div class="stars small" style="color: var(--orange); margin-bottom: 12px;">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= comment.rating %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <p class="muted small">{{ comment.text }}</p>
+                                </div>
+                            {% empty %}
+                                <p class="muted">No reviews yet. Be the first to review!</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- WRITE REVIEW -->
+                        {% if is_authenticated and is_enrolled %}
+                            <div class="card writeReview" style="background: #fff; padding: 32px; border-radius: 20px; margin-top: 32px; box-shadow: var(--shadow);">
+                                <h4 class="h2" style="font-size: 20px; margin-bottom: 24px;">Leave a <span class="accent">Review</span></h4>
+                                <form method="post" action="{% url 'courses:detail' course.id %}" class="reviewForm">
+                                    {% csrf_token %}
+                                    <div style="margin-bottom: 16px;">
+                                        <label class="small" style="display: block; margin-bottom: 8px;">Rating</label>
+                                        <select name="rating" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd;">
+                                            <option value="5">5 Stars - Excellent</option>
+                                            <option value="4">4 Stars - Very Good</option>
+                                            <option value="3">3 Stars - Good</option>
+                                            <option value="2">2 Stars - Fair</option>
+                                            <option value="1">1 Star - Poor</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom: 24px;">
+                                        <label class="small" style="display: block; margin-bottom: 8px;">Your Message</label>
+                                        <textarea name="text" rows="4" required placeholder="Tell us what you think..." 
+                                                  style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn--pill btn--primary">Submit Review</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- ================= RIGHT SIDEBAR ================= -->
+                <aside class="courseDetail__sidebar">
+                    <div class="priceCard" style="background: #fff; padding: 24px; border-radius: 20px; box-shadow: var(--shadow); position: sticky; top: 100px;">
+                        {% if course.small_image %}
+                            <div style="border-radius: 15px; overflow: hidden; margin-bottom: 20px;">
+                                <img src="{{ course.small_image.url }}" alt="{{ course.name }}" style="width: 100%; height: auto;">
+                            </div>
+                        {% endif %}
+
+                        <div class="price" style="margin-bottom: 24px;">
+                            {% if course.price %}
+                                <span style="font-size: 32px; font-weight: 700; color: var(--ink);">${{ course.price }}</span>
+                            {% else %}
+                                <span style="font-size: 32px; font-weight: 700; color: var(--teal);">FREE</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="actions" style="display: flex; flex-direction: column; gap: 12px;">
+                            {% if not is_authenticated %}
+                                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn--pill btn--primary btn--block">Login to Enroll</a>
+                            {% elif is_enrolled %}
+                                <div class="center small" style="padding: 12px; background: var(--soft); color: var(--teal2); border-radius: 10px; font-weight: 600;">
+                                    ✓ Already Enrolled
+                                </div>
+                                <a href="{% url 'accounts:dashboard' %}" class="btn btn--pill btn--primary btn--block">GO TO DASHBOARD</a>
+                            {% else %}
+                                <form method="post" action="{% url 'courses:detail' course.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="enroll" value="1">
+                                    
+                                    <div style="margin-bottom: 16px;">
+                                        <label class="tiny muted" style="display: block; margin-bottom: 4px;">Choose Session</label>
+                                        <select name="session" id="session-select" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;" onchange="updateGroups(this.value)">
+                                            <option value="">-- Select --</option>
+                                            {% for session in sessions %}
+                                                <option value="{{ session.id }}">{{ session.get_session_type_display }} (Starts: {{ session.start_date|date:"M Y" }})</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div style="margin-bottom: 24px;">
+                                        <label class="tiny muted" style="display: block; margin-bottom: 4px;">Choose Group</label>
+                                        <select name="group" id="group-select" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                                            <option value="">-- Select Session First --</option>
+                                        </select>
+                                    </div>
+
+                                    {% if request.user.balance < course.price %}
+                                        <p class="tiny" style="color: var(--pink); margin-bottom: 12px;">Insufficient balance (${{ request.user.balance }})</p>
+                                        <button type="button" class="btn btn--pill btn--primary btn--block" disabled>
+                                            NOT ENOUGH BALANCE
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn--pill btn--primary btn--block">
+                                            {% if course.price %}PAY & ENROLL{% else %}ENROLL NOW{% endif %}
+                                        </button>
+                                    {% endif %}
+                                </form>
+
+                                <script>
+                                    const sessionGroups = {
+                                        {% for session in sessions %}
+                                            "{{ session.id }}": [
+                                                {% for group in session.groups.all %}
+                                                    {id: "{{ group.id }}", name: "{{ group.name }}", teacher: "{{ group.teacher.get_full_name|default:group.teacher.username }}"},
+                                                {% endfor %}
+                                            ],
+                                        {% endfor %}
+                                    };
+
+                                    function updateGroups(sessionId) {
+                                        const groupSelect = document.getElementById('group-select');
+                                        groupSelect.innerHTML = '<option value="">-- Select Group --</option>';
+                                        
+                                        if (sessionId && sessionGroups[sessionId]) {
+                                            sessionGroups[sessionId].forEach(group => {
+                                                const option = document.createElement('option');
+                                                option.value = group.id;
+                                                option.textContent = `${group.name} (${group.teacher})`;
+                                                groupSelect.appendChild(option);
+                                            });
+                                        }
+                                    }
+                                </script>
+                            {% endif %}
+                        </div>
+
+                        <div class="courseIncludes" style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #eee;">
+                            <h4 class="small" style="font-weight: 700; margin-bottom: 16px;">This course includes:</h4>
+                            <ul class="bullets tiny" style="list-style: none; padding: 0;">
+                                <li style="margin-bottom: 8px;">📱 Access on all devices</li>
+                                <li style="margin-bottom: 8px;">🎓 Certificate of completion</li>
+                                <li style="margin-bottom: 8px;">🕒 Lifetime access</li>
+                                {% if course.sessions.exists %}
+                                    <li>📚 {{ course.sessions.count }} Sessions</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{% if category %}Edit{% else %}Create{% endif %} Category | TOTC{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="center" style="margin-bottom: 48px;">
+                <h2 class="h2">{% if category %}Edit{% else %}Create New{% endif %} <span class="accent">Category</span></h2>
+                <p class="muted">Manage course categories.</p>
+            </div>
+
+            <div style="max-width: 500px; margin: 0 auto;">
+                <form method="post" class="card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow);">
+                    {% csrf_token %}
+
+                    <div style="margin-bottom: 32px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Category Name</label>
+                        <input type="text" name="name" value="{{ category.name|default:'' }}" required placeholder="e.g. Programming, Design" 
+                               style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+                    </div>
+
+                    <div style="display: flex; gap: 16px;">
+                        <button type="submit" class="btn btn--pill btn--primary" style="flex: 1;">{% if category %}Update{% else %}Create{% endif %} Category</button>
+                        <a href="{% url 'courses:admin_dashboard' %}" class="btn btn--pill btn--white" style="flex: 1; border: 1px solid #ddd;">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

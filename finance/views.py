@@ -32,3 +32,18 @@ class FinanceReportView(LoginRequiredMixin, View):
       'payments': payments,
       'total': total,
       }, )
+
+
+class StudentPaymentHistoryView(LoginRequiredMixin, View):
+  def get( self, request ):
+    if request.user.role != 'student':
+      return redirect('accounts:dashboard')
+
+    payments = Payment.objects.filter(student=request.user).order_by('-created_at')
+    balance = request.user.balance
+
+    return render(request, 'finance/student_payments.html', {
+      'payments': payments,
+      'balance': balance,
+      }, )
+

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{% if group %}Edit{% else %}Create{% endif %} Group | TOTC{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="center" style="margin-bottom: 48px;">
+                <h2 class="h2">{% if group %}Edit{% else %}Create New{% endif %} <span class="accent">Group</span></h2>
+                <p class="muted">Assign a teacher and session to a course group.</p>
+            </div>
+
+            <div style="max-width: 600px; margin: 0 auto;">
+                <form method="post" class="card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow);">
+                    {% csrf_token %}
+
+                    <div style="margin-bottom: 24px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Group Name</label>
+                        <input type="text" name="name" value="{{ group.name|default:'' }}" required placeholder="e.g. Group A, Evening Class" 
+                               style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Course</label>
+                        <select name="course" required style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+                            <option value="">-- Select Course --</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" {% if group.course_id == course.id or selected_course|add:"0" == course.id %}selected{% endif %}>{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Session</label>
+                        <select name="session" required style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+                            <option value="">-- Select Session --</option>
+                            {% for session in sessions %}
+                                <option value="{{ session.id }}" {% if group.session_id == session.id or selected_session|add:"0" == session.id %}selected{% endif %}>{{ session.course.name }} - {{ session.get_session_type_display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 32px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Teacher</label>
+                        <select name="teacher" required style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+                            <option value="">-- Select Teacher --</option>
+                            {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}" {% if group.teacher_id == teacher.id %}selected{% endif %}>{{ teacher.get_full_name|default:teacher.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 16px;">
+                        <button type="submit" class="btn btn--pill btn--primary" style="flex: 1;">{% if group %}Update{% else %}Create{% endif %} Group</button>
+                        <a href="{% url 'courses:admin_dashboard' %}" class="btn btn--pill btn--white" style="flex: 1; border: 1px solid #ddd;">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

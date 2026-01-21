@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Assignment | TOTC{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="center" style="margin-bottom: 48px;">
+                <h2 class="h2">Edit <span class="accent">Assignment</span></h2>
+                <p class="muted">Update the assignment details and deadline.</p>
+            </div>
+
+            <div style="max-width: 600px; margin: 0 auto;">
+                <form method="post" class="card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow);">
+                    {% csrf_token %}
+
+                    <div style="margin-bottom: 24px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Assignment Title</label>
+                        <input type="text" name="title" required placeholder="e.g. Weekly Homework 1"
+                               value="{{ assignment.title }}"
+                               style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Description</label>
+                        <textarea name="description" rows="5" required placeholder="Explain the assignment details..."
+                                  style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; resize: vertical;">{{ assignment.description }}</textarea>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Target Group</label>
+                        <select name="group" required style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+                            <option value="">Select a group</option>
+                            {% for group in groups %}
+                                <option value="{{ group.id }}" {% if group.id == assignment.group.id %}selected{% endif %}>{{ group.name }} ({{ group.course.name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 32px;">
+                        <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Deadline</label>
+                        <input type="datetime-local" name="deadline" required
+                               value="{{ assignment.deadline|date:'Y-m-dTH:i' }}"
+                               style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+                        <p class="tiny muted" style="margin-top: 8px;">Students won't be able to submit after this time.</p>
+                    </div>
+
+                    <div style="display: flex; gap: 16px;">
+                        <button type="submit" class="btn btn--pill btn--primary" style="flex: 1;">Save Changes</button>
+                        <a href="{% url 'tasks:assignment_list' %}" class="btn btn--pill btn--white" style="flex: 1; border: 1px solid #ddd;">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+

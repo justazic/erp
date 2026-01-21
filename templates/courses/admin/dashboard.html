@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | TOTC{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="dash__top" style="margin-bottom: 32px;">
+                <div>
+                    <h2 class="h2">Admin <span class="accent">Dashboard</span></h2>
+                    <p class="muted">Manage Courses, Groups and Sessions.</p>
+                </div>
+                <div class="dash__quick" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="{% url 'accounts:profile' %}" class="btn btn--pill btn--white">My Profile</a>
+                    <a href="{% url 'courses:admin_student_list' %}" class="btn btn--pill btn--white">Manage Students</a>
+                    <a href="{% url 'courses:category_create' %}" class="btn btn--pill btn--outlineTeal">Create Category</a>
+                    <a href="{% url 'courses:course_create' %}" class="btn btn--pill btn--outlineTeal">Create Course</a>
+                    <a href="{% url 'courses:session_create' %}" class="btn btn--pill btn--outlineTeal">Create Session</a>
+                    <a href="{% url 'courses:group_create' %}" class="btn btn--pill btn--primary">Create Group</a>
+                </div>
+            </div>
+
+            <div class="dashStats" style="margin-bottom: 32px;">
+                <div class="dashStat">
+                    <div class="dashStat__num">{{ students_count }}</div>
+                    <div class="dashStat__label">Total Students</div>
+                </div>
+                <div class="dashStat">
+                    <div class="dashStat__num">{{ teachers_count }}</div>
+                    <div class="dashStat__label">Total Teachers</div>
+                </div>
+                <div class="dashStat">
+                    <div class="dashStat__num">{{ courses.count }}</div>
+                    <div class="dashStat__label">Active Courses</div>
+                </div>
+            </div>
+
+            <div class="dashGrid">
+                <!-- GROUPS MANAGEMENT -->
+                <div class="dashCard">
+                    <h3 class="dashCard__title">Existing Groups</h3>
+                    <input type="text" id="groupSearch" placeholder="Search groups..." aria-label="Search groups"
+                           style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 16px; font-family: inherit;">
+                    <div style="max-height: 500px; overflow-y: auto; border-radius: 12px;">
+                        <ul class="dashList" id="groupsList">
+                            {% for group in groups %}
+                                <li class="dashList__item">
+                                    <a href="{% url 'courses:group_update' group.id %}" style="text-decoration: none; color: inherit; display: block;">
+                                        <div class="dashList__main" style="color: var(--teal2); cursor: pointer; transition: color 0.2s;">{{ group.name }}</div>
+                                        <div class="dashList__sub muted small">
+                                            {{ group.course.name }} • {{ group.session.get_session_type_display }}<br>
+                                            Teacher: {{ group.teacher.get_full_name|default:group.teacher.username }}<br>
+                                            Students: <strong>{{ group.student_count }}</strong>
+                                        </div>
+                                    </a>
+                                </li>
+                            {% empty %}
+                                <li class="dashList__item">No groups created yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SESSIONS MANAGEMENT -->
+                <div class="dashCard">
+                    <h3 class="dashCard__title">Course Sessions</h3>
+                    <input type="text" id="sessionSearch" placeholder="Search sessions..." aria-label="Search sessions"
+                           style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 16px; font-family: inherit;">
+                    <div style="max-height: 500px; overflow-y: auto; border-radius: 12px;">
+                        <ul class="dashList" id="sessionsList">
+                            {% for session in sessions %}
+                                <li class="dashList__item">
+                                    <a href="{% url 'courses:session_update' session.id %}" style="text-decoration: none; color: inherit; display: block;">
+                                        <div class="dashList__main" style="color: var(--teal2); cursor: pointer; transition: color 0.2s;">{{ session.course.name }}</div>
+                                        <div class="dashList__sub muted small">
+                                            {{ session.get_session_type_display }} •
+                                            {{ session.start_date|date:"M Y" }} - {{ session.end_date|date:"M Y" }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% empty %}
+                                <li class="dashList__item">No sessions defined yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORIES OVERVIEW -->
+            <div class="dashCard" style="margin-top: 32px;">
+                <h3 class="dashCard__title">Categories Overview</h3>
+                <div class="courseGrid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+                    {% for category in categories %}
+                        <a href="{% url 'courses:category_update' category.id %}" style="text-decoration: none; color: inherit; display: block;">
+                            <div style="padding: 16px; background: var(--soft); border-radius: 12px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; hover-effect:"
+                                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'"
+                                 onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                                <div style="font-weight: 600; color: var(--teal2);">{{ category.name }}</div>
+                                <div class="tiny muted">{{ category.courses.count }} Courses</div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- COURSES OVERVIEW -->
+            <div class="dashCard" style="margin-top: 32px;">
+                <h3 class="dashCard__title">Courses Overview</h3>
+                <div class="courseGrid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+                    {% for course in courses %}
+                        <a href="{% url 'courses:course_update' course.id %}" style="text-decoration: none; color: inherit; display: block;">
+                            <div style="padding: 16px; background: var(--soft); border-radius: 12px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'"
+                                 onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                                <div style="font-weight: 600; color: var(--teal2);">{{ course.name }}</div>
+                                <div class="tiny muted">{{ course.groups.count }} Groups • {{ course.sessions.count }} Sessions</div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Groups Search
+        const groupSearch = document.getElementById('groupSearch');
+        const groupsList = document.getElementById('groupsList');
+        const groupItems = groupsList ? Array.from(groupsList.querySelectorAll('li')) : [];
+
+        if (groupSearch && groupsList) {
+            groupSearch.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+
+                groupItems.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if all items are hidden
+                const visibleItems = groupItems.filter(item => item.style.display !== 'none');
+                if (visibleItems.length === 0 && searchTerm) {
+                    let noResultsItem = groupsList.querySelector('.no-results');
+                    if (!noResultsItem) {
+                        noResultsItem = document.createElement('li');
+                        noResultsItem.className = 'dashList__item no-results';
+                        noResultsItem.textContent = 'No groups found matching your search.';
+                        groupsList.appendChild(noResultsItem);
+                    }
+                    noResultsItem.style.display = '';
+                } else {
+                    const noResultsItem = groupsList.querySelector('.no-results');
+                    if (noResultsItem) {
+                        noResultsItem.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Sessions Search
+        const sessionSearch = document.getElementById('sessionSearch');
+        const sessionsList = document.getElementById('sessionsList');
+        const sessionItems = sessionsList ? Array.from(sessionsList.querySelectorAll('li')) : [];
+
+        if (sessionSearch && sessionsList) {
+            sessionSearch.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+
+                sessionItems.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if all items are hidden
+                const visibleItems = sessionItems.filter(item => item.style.display !== 'none');
+                if (visibleItems.length === 0 && searchTerm) {
+                    let noResultsItem = sessionsList.querySelector('.no-results');
+                    if (!noResultsItem) {
+                        noResultsItem = document.createElement('li');
+                        noResultsItem.className = 'dashList__item no-results';
+                        noResultsItem.textContent = 'No sessions found matching your search.';
+                        sessionsList.appendChild(noResultsItem);
+                    }
+                    noResultsItem.style.display = '';
+                } else {
+                    const noResultsItem = sessionsList.querySelector('.no-results');
+                    if (noResultsItem) {
+                        noResultsItem.style.display = 'none';
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

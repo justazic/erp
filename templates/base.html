@@ -29,7 +29,7 @@
                 <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
             {% endif %}
             {% if not user.is_authenticated %}
-                <a href="{% url 'course_list' %}">Courses</a>
+                <a href="{% url 'courses:list' %}">Courses</a>
                 <a href="{% url 'index' %}#about-us">About Us</a>
             {% endif %}
         </nav>
@@ -44,6 +44,9 @@
 
                     <div class="navUser__menu">
                         <a href="{% url 'accounts:profile' %}">Profile</a>
+                        {% if user.role == 'student' %}
+                            <a href="{% url 'finance:student_payments' %}">Payments</a>
+                        {% endif %}
                         <a href="{% url 'accounts:logout' %}">Logout</a>
                     </div>
                 </div>

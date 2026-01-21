@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
+from django.db.models import Q
 from .models import Assignment, Submission
+from courses.models import Group
 
 
 # Create your views here.
@@ -12,29 +14,45 @@ class AssigmentCreateView(LoginRequiredMixin, View):
     if request.user.role != 'teacher':
       return redirect('/')
 
-    return render(request, 'tasks/assignment_create.html')
+    groups = Group.objects.filter(teacher=request.user)
+    return render(request, 'tasks/assignment_create.html', {'groups': groups})
 
   def post( self, request ):
     if request.user.role != 'teacher':
       return redirect('/')
 
     Assignment.objects.create(
-      teacher=request.user.teacher,
+      teacher=request.user,
       title=request.POST.get('title'),
       description=request.POST.get('description'),
-      deadline=request.POST.get('deadline')
+      deadline=request.POST.get('deadline'),
+      group_id=request.POST.get('group'),
+      status='published'
       )
-    return redirect('/tasks/assignments/')
+    return redirect('tasks:assignment_list')
 
 
 class AssigmentListView(LoginRequiredMixin, View):
   def get( self, request ):
+    search = request.GET.get('search', '')
     if request.user.role == 'teacher':
-      assignments = Assignment.objects.filter(teacher=request.user.teacher)
+      assignments = Assignment.objects.filter(teacher=request.user)
+    elif request.user.role == 'student':
+      student_groups = Group.objects.filter(course__enrollments__student=request.user)
+      assignments = Assignment.objects.filter(group__in=student_groups)
     else:
       assignments = Assignment.objects.all()
+
+    if search:
+        assignments = assignments.filter(
+            Q(title__icontains=search) |
+            Q(description__icontains=search) |
+            Q(group__name__icontains=search)
+        )
+
     return render(request, 'tasks/assignment_list.html', {
-      'assignments': assignments
+      'assignments': assignments,
+      'search': search,
       }
                   )
 
@@ -66,7 +84,7 @@ class SubmissionCreateView(LoginRequiredMixin, View):
 
     Submission.objects.create(
       assignment_id=assignment_id,
-      student=request.user.student,
+      student=request.user,
       file=request.FILES[ 'file' ],
       comment=request.POST.get('comment', '')
       )
@@ -77,7 +95,7 @@ class MySubmissionListView(LoginRequiredMixin, View):
   def get( self, request ):
     if request.user.role != 'student':
       return redirect('/')
-    submissions = Submission.objects.filter(student=request.user.student)
+    submissions = Submission.objects.filter(student=request.user)
     return render(request, 'tasks/my_submissions.html', {
       'submissions': submissions
       }
@@ -89,8 +107,8 @@ class SubmissionsListTeacherView(LoginRequiredMixin, View):
     if request.user.role != 'teacher':
       return redirect('/')
 
-    assignment = get_object_or_404(Assignment, assignment_id, teacher=request.user.teacher)
-    submissions = Submission.objects.filter(assigment=assignment)
+    assignment = get_object_or_404(Assignment, id=assignment_id, teacher=request.user)
+    submissions = Submission.objects.filter(assignment=assignment)
     return render(request, 'tasks/submission_list_teacher.html', {
       'assignment': assignment,
       'submissions': submissions
@@ -102,17 +120,42 @@ class SubmissionCheckView(LoginRequiredMixin, View):
   def post( self, request, submission_id ):
     if request.user.role != 'teacher':
       return redirect('/')
-    submission = get_object_or_404(Submission, id=submission_id, assignment__teacher=request.user.teacher)
+    submission = get_object_or_404(Submission, id=submission_id, assignment__teacher=request.user)
     submission.grade = request.POST.get('grade')
-    submission.checked = True
+    submission.status = 'graded'
     submission.save()
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+class AssigmentUpdateView(LoginRequiredMixin, View):
+  def get( self, request, assignment_id ):
+    if request.user.role != 'teacher':
+      return redirect('/')
+
+    assignment = get_object_or_404(Assignment, id=assignment_id, teacher=request.user)
+    groups = Group.objects.filter(teacher=request.user)
+    return render(request, 'tasks/assignment_edit.html', {
+      'assignment': assignment,
+      'groups': groups
+    })
+
+  def post( self, request, assignment_id ):
+    if request.user.role != 'teacher':
+      return redirect('/')
+
+    assignment = get_object_or_404(Assignment, id=assignment_id, teacher=request.user)
+    assignment.title = request.POST.get('title')
+    assignment.description = request.POST.get('description')
+    assignment.deadline = request.POST.get('deadline')
+    assignment.group_id = request.POST.get('group')
+    assignment.save()
+    return redirect(request.META.get('HTTP_REFERER', '/tasks/assignments/'))
 
 
 class AssigmentDeleteView(LoginRequiredMixin, View):
   def post( self, request, assignment_id ):
     if request.user.role != 'teacher':
       return redirect('/')
-    assignment = get_object_or_404(Assignment, id=assignment_id, teacher=request.user.teacher)
+    assignment = get_object_or_404(Assignment, id=assignment_id, teacher=request.user)
     assignment.delete()
     return redirect('/tasks/assignments/')

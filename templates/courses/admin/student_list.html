@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Students | TOTC Admin{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="dash__top" style="margin-bottom: 32px;">
+                <div>
+                    <h2 class="h2">Manage <span class="accent">Students</span></h2>
+                    <p class="muted">Total students: {{ students.count }}</p>
+                </div>
+                <div class="dash__quick">
+                    <a href="{% url 'courses:admin_student_create' %}" class="btn btn--pill btn--primary">Add New Student</a>
+                    <a href="{% url 'courses:admin_dashboard' %}" class="btn btn--pill btn--white">Back to Dashboard</a>
+                </div>
+            </div>
+
+            <div class="center" style="margin-bottom: 40px;">
+                <form method="get" style="display: inline-flex; width: 100%; max-width: 600px; gap: 10px;">
+                    <input type="text" name="search" placeholder="Search by name, username or email..." 
+                           style="flex: 1; padding: 14px 24px; border-radius: 999px; border: 1px solid #ddd;"
+                           value="{{ search }}">
+                    <button type="submit" class="btn btn--pill btn--primary">Search</button>
+                </form>
+            </div>
+
+            <div class="card" style="background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th style="padding: 20px; color: var(--muted); font-size: 14px; border-bottom: 1px solid #eee;">Student</th>
+                            <th style="padding: 20px; color: var(--muted); font-size: 14px; border-bottom: 1px solid #eee;">Enrollments</th>
+                            <th style="padding: 20px; color: var(--muted); font-size: 14px; border-bottom: 1px solid #eee;">Joined</th>
+                            <th style="padding: 20px; color: var(--muted); font-size: 14px; border-bottom: 1px solid #eee; text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <td style="padding: 20px; border-bottom: 1px solid #eee;">
+                                    <div style="font-weight: 600;">{{ student.get_full_name|default:student.username }}</div>
+                                    <div class="tiny muted">{{ student.email }}</div>
+                                </td>
+                                <td style="padding: 20px; border-bottom: 1px solid #eee;">
+                                    <span class="badge">{{ student.enrollments.count }} Courses</span>
+                                </td>
+                                <td style="padding: 20px; border-bottom: 1px solid #eee;" class="small">
+                                    {{ student.created_at|date:"M d, Y" }}
+                                </td>
+                                <td style="padding: 20px; border-bottom: 1px solid #eee; text-align: right;">
+                                    <a href="{% url 'courses:admin_student_detail' student.id %}" class="btn btn--pill btn--outlineTeal btn--small">View Details</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" style="padding: 48px; text-align: center;" class="muted">
+                                    No students found.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}

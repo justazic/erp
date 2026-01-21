@@ -19,7 +19,7 @@ class PaymentAdmin(ModelAdmin):
                    'method',
                    'due_date',
                    'created_at')
-    search_fields = ('student__user__username',
+    search_fields = ('student__username',
                      'enrollment__course__name',
                      'reference_number')
     readonly_fields = ('created_at', 'updated_at', 'reference_number')

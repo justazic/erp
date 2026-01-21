@@ -12,14 +12,20 @@
                 </div>
 
                 <div class="dash__quick">
-                    <a class="dashBtn" href="{% url 'accounts:profile' %}">My Profile</a>
-                    <a class="dashBtn dashBtn--ghost" href="{% url 'accounts:dashboard' %}">My Tasks</a>
+                    <a class="dashBtn dashBtn--ghost" href="{% url 'messaging:group_list' %}">Group Chat</a>
+                    <a class="dashBtn" href="{% url 'courses:list' %}">Enroll in More Courses</a>
                 </div>
             </div>
 
+
             <div class="dashGrid">
                 <div class="dashCard">
-                    <h3 class="dashCard__title">My Overview</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <h3 class="dashCard__title" style="margin: 0;">My Overview</h3>
+                        <div class="badge" style="background: var(--soft); color: var(--teal2); font-size: 14px; padding: 6px 12px;">
+                            Balance: <strong>${{ balance }}</strong>
+                        </div>
+                    </div>
 
                     <div class="dashStats">
                         <div class="dashStat">
@@ -35,23 +41,91 @@
                             <div class="dashStat__label">Attendance</div>
                         </div>
                     </div>
-                </div>
 
-                <div class="dashCard">
-                    <h3 class="dashCard__title">Upcoming / Recent</h3>
-
+                    <h3 class="dashCard__title" style="margin-top: 32px;">My Enrollments</h3>
                     <ul class="dashList">
-                        {% for item in student_feed %}
+                        {% for enrollment in enrollments %}
                             <li class="dashList__item">
-                                <div class="dashList__main">{{ item.title }}</div>
-                                <div class="dashList__sub muted small">{{ item.sub }}</div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div class="dashList__main">{{ enrollment.course.name }}</div>
+                                        <div class="dashList__sub muted small">
+                                            {{ enrollment.session.get_session_type_display }} • 
+                                            <span class="badge">{{ enrollment.get_status_display }}</span>
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'courses:detail' enrollment.course.id %}" class="btn btn--pill btn--outlineTeal btn--small">Details</a>
+                                </div>
                             </li>
                         {% empty %}
                             <li class="dashList__item">
-                                <div class="dashList__main">No recent updates.</div>
+                                <div class="dashList__main">Not enrolled in any courses.</div>
                             </li>
                         {% endfor %}
                     </ul>
+                </div>
+
+                <div class="dashCard">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <h3 class="dashCard__title" style="margin: 0;">Pending Assignments</h3>
+                        <a href="{% url 'tasks:assignment_list' %}" class="tiny link">View All</a>
+                    </div>
+
+                    <ul class="dashList">
+                        {% for assignment in pending_assignments %}
+                            <li class="dashList__item">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div class="dashList__main">{{ assignment.title }}</div>
+                                        <div class="dashList__sub muted small">Due: {{ assignment.deadline|date:"M d, H:i" }}</div>
+                                    </div>
+                                    <a href="{% url 'tasks:submission_create' assignment.id %}" class="btn btn--pill btn--primary btn--small">Submit</a>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="dashList__item">
+                                <div class="dashList__main">All caught up! No pending tasks.</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div style="margin-top: 32px;">
+                        <h3 class="dashCard__title">Recent Activity</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <a href="{% url 'students:my_attendance' %}" class="btn btn--pill btn--outlineTeal btn--small">My Attendance</a>
+                            <a href="{% url 'tasks:my_submission_list' %}" class="btn btn--pill btn--outlineTeal btn--small">My Submissions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashCard" style="margin-top: 24px;">
+                <h3 class="dashCard__title">Weekly Schedule</h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Day</th>
+                                <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Time</th>
+                                <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Course</th>
+                                <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Group</th>
+                                <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Room</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for slot in schedule %}
+                                <tr>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot.get_day_of_week_display }}</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small font-weight-600">{{ slot.group.course.name }}</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot.group.name }}</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot.room|default:"—" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="5" style="padding: 24px; text-align: center;" class="muted small">No scheduled classes.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

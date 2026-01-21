@@ -20,6 +20,7 @@ urlpatterns = [
     path('attendance/', include('attendance.urls')),
     path('finance/', include('finance.urls')),
     path('courses/', include('courses.urls')),
+    path('messaging/', include('messaging.urls')),
     ]
 
 # Serve media and static files in development

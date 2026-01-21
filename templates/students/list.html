@@ -140,6 +140,14 @@
                 </a>
             </div>
 
+            <!-- SEARCH BAR -->
+            <div class="mb-4">
+                <form method="get" class="d-flex gap-2" style="max-width: 500px;">
+                    <input type="text" name="search" class="form-control" placeholder="Search students..." value="{{ search|default:'' }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+
             <div class="table-responsive">
                 <table class="table student-table mb-0">
                     <thead>
@@ -158,16 +166,16 @@
                             <td>
                                 <div class="student-info">
                                     <div class="avatar-placeholder">
-                                        {{ student.user.first_name|slice:":1" }}
+                                        {{ student.first_name|slice:":1" }}
                                     </div>
                                     <div>
-                                        <div class="fw-bold text-dark">{{ student.user.first_name }} {{ student.user.last_name }}</div>
+                                        <div class="fw-bold text-dark">{{ student.first_name }} {{ student.last_name }}</div>
                                         <small class="text-muted">ID: #ST-00{{ student.id }}</small>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span class="username-tag">@{{ student.user.username }}</span>
+                                <span class="username-tag">@{{ student.username }}</span>
                             </td>
                             <td>
                                 {% if student.group %}

@@ -34,6 +34,7 @@ class UserProfileForm(forms.ModelForm):
             "avatar",
             "phone",
             "address",
+            "balance",
             "speciality",
             "qualifications",
             "is_expert",
@@ -69,6 +70,11 @@ class UserProfileForm(forms.ModelForm):
                 "placeholder": "Address",
                 },
                 ),
+            "balance": forms.NumberInput(attrs={
+                "class": "fInput",
+                "placeholder": "0.00",
+                },
+                ),
             "speciality": forms.TextInput(attrs={
                 "class": "fInput",
                 "placeholder": "Speciality",
@@ -92,8 +98,10 @@ class UserProfileForm(forms.ModelForm):
             self.fields[ "avatar" ].required = False
 
         if editing:
-            for f in [ "is_expert" ]:
+            for f in [ "is_expert", "balance" ]:
                 if f in self.fields:
+                    if f == "balance" and user and user.role == "admin":
+                        continue
                     self.fields[ f ].disabled = True
 
         if instance and instance.role != "teacher":

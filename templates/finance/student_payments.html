@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}My Payments | TOTC{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="center" style="margin-bottom: 48px;">
+                <h1 class="h2">My <span class="accent">Payments</span></h1>
+                <p class="muted">View your payment history and account balance</p>
+            </div>
+
+            <!-- BALANCE CARD -->
+            <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 32px; box-shadow: 0 15px 35px rgba(46, 204, 113, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="opacity: 0.9; font-weight: 500; font-size: 1.1rem; margin: 0 0 16px 0;">Account Balance</h3>
+                        <div style="font-size: 3rem; font-weight: 800; letter-spacing: -1px;">
+                            ${{ balance }}
+                            <span style="font-size: 1.5rem; opacity: 0.8; margin-left: 8px;">USD</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; opacity: 0.9;">
+                        <div style="font-size: 0.9rem; margin-bottom: 8px;">Available for courses</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Keep your balance topped up</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAYMENT HISTORY -->
+            <div style="background: #fff; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);">
+                <h3 class="h2" style="font-size: 24px; margin-top: 0; margin-bottom: 24px;">Payment <span class="accent">History</span></h3>
+
+                {% if payments %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="background: #f8f9fa; border: none; color: #8d99ae; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 15px; text-align: left;">Type</th>
+                                    <th style="background: #f8f9fa; border: none; color: #8d99ae; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 15px; text-align: left;">Amount</th>
+                                    <th style="background: #f8f9fa; border: none; color: #8d99ae; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 15px; text-align: left;">Method</th>
+                                    <th style="background: #f8f9fa; border: none; color: #8d99ae; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 15px; text-align: left;">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                    <tr>
+                                        <td style="padding: 20px 15px; vertical-align: middle; border-bottom: 1px solid #f1f1f1; font-weight: 600;">
+                                            <span style="display: inline-flex; align-items: center; gap: 8px;">
+                                                {% if payment.payment_type == 'deposit' %}
+                                                    <span style="color: var(--teal2); font-size: 1.2rem;">↓</span> {{ payment.get_payment_type_display }}
+                                                {% else %}
+                                                    <span style="color: #ff6b6b; font-size: 1.2rem;">↑</span> {{ payment.get_payment_type_display }}
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td style="padding: 20px 15px; vertical-align: middle; border-bottom: 1px solid #f1f1f1; font-family: 'Poppins', sans-serif; font-weight: 700; color: {% if payment.payment_type == 'deposit' %}var(--teal2){% else %}#ff6b6b{% endif %}; font-size: 1.05rem;">
+                                            {% if payment.payment_type == 'deposit' %}+{% else %}-{% endif %}${{ payment.amount }}
+                                        </td>
+                                        <td style="padding: 20px 15px; vertical-align: middle; border-bottom: 1px solid #f1f1f1;">
+                                            <span style="padding: 6px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; background: rgba(52, 152, 219, 0.1); color: #3498db;">
+                                                {{ payment.get_method_display|default:"—" }}
+                                            </span>
+                                        </td>
+                                        <td style="padding: 20px 15px; vertical-align: middle; border-bottom: 1px solid #f1f1f1; color: #8d99ae; font-size: 0.85rem;">
+                                            {{ payment.created_at|date:"M d, Y • H:i" }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 48px 24px; color: var(--muted);">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">📊</div>
+                        <p>No payment history yet. Start learning by enrolling in a course!</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- BACK BUTTON -->
+            <div style="text-align: center; margin-top: 32px;">
+                <a href="{% url 'accounts:dashboard' %}" class="btn btn--pill btn--outlineTeal">← Back to Dashboard</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+

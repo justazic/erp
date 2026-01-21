@@ -13,6 +13,7 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatar/', default='')
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.CharField(max_length=250, blank=True, null=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     speciality = models.CharField(max_length=100, blank=True, null=True)
     qualifications = models.TextField(blank=True, null=True)

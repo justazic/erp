@@ -1,0 +1,67 @@
+<!-- Category Detail Modal -->
+<div style="padding: 24px;">
+    <h2 style="margin-top: 0; margin-bottom: 24px;">{{ category.name }}</h2>
+
+    <!-- Category Information Display -->
+    <div id="categoryInfo" style="display: block;">
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">Category Name</label>
+            <div style="font-weight: 600; font-size: 1.1rem;">{{ category.name }}</div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">Courses in this Category</label>
+            <div style="font-weight: 600; font-size: 1.1rem;">{{ category.courses.count }} Courses</div>
+        </div>
+
+        <button onclick="toggleEditForm()" class="btn btn--pill btn--outlineTeal" style="margin-top: 16px;">
+            ✏️ Edit Category
+        </button>
+    </div>
+
+    <!-- Edit Form (Hidden by default) -->
+    <form id="categoryEditForm" method="post" style="display: none;">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Category Name</label>
+            <input type="text" name="name" value="{{ category.name }}" required
+                   style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <button type="submit" class="btn btn--pill btn--primary">Save Changes</button>
+            <button type="button" onclick="toggleEditForm()" class="btn btn--pill btn--white">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleEditForm() {
+        const info = document.getElementById('categoryInfo');
+        const form = document.getElementById('categoryEditForm');
+
+        if (form.style.display === 'none') {
+            info.style.display = 'none';
+            form.style.display = 'block';
+        } else {
+            info.style.display = 'block';
+            form.style.display = 'none';
+        }
+    }
+
+    document.getElementById('categoryEditForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch(window.location.href.replace('?modal=1', ''), {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                // Reload page after successful update
+                window.location.reload();
+            }
+        }).catch(error => console.error('Error:', error));
+    });
+</script>
+

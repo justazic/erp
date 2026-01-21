@@ -15,6 +15,8 @@ class Payment(models.Model):
         ('tuition', 'Tuition Fee'),
         ('registration', 'Registration Fee'),
         ('exam', 'Exam Fee'),
+        ('deposit', 'Deposit'),
+        ('monthly', 'Monthly Charge'),
         ('other', 'Other'),
     ]
 
@@ -23,6 +25,7 @@ class Payment(models.Model):
         ('card', 'Card'),
         ('bank', 'Bank Transfer'),
         ('cheque', 'Cheque'),
+        ('balance', 'Student Balance'),
     ]
 
     student = models.ForeignKey(User, on_delete=models.PROTECT, related_name='payments', limit_choices_to={

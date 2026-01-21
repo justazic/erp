@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}{{ session.course.name }} - Session Details | Admin{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <!-- BACK BUTTON & ACTIONS -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                <a href="{% url 'courses:admin_dashboard' %}" style="color: var(--teal2); text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    ← Back to Dashboard
+                </a>
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="toggleEditMode()" class="btn btn--pill btn--outlineTeal">✏️ Edit</button>
+                    <form method="post" action="{% url 'courses:session_delete' session.id %}" onsubmit="return confirm('Are you sure you want to delete this session?')" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn--pill btn--white" style="color: var(--pink); border-color: var(--pink);">🗑️ Delete</button>
+                    </form>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <!-- DETAIL VIEW (Hidden when editing) -->
+                <div id="detailView" style="display: block;">
+                    <h1 style="margin-top: 0; margin-bottom: 32px;">{{ session.course.name }} - {{ session.get_session_type_display }}</h1>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 32px;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Course</label>
+                            <div style="font-size: 1.1rem;">{{ session.course.name }}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Session Type</label>
+                            <div style="font-size: 1.1rem;">{{ session.get_session_type_display }}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Start Date</label>
+                            <div style="font-size: 1.1rem;">{{ session.start_date|date:"M d, Y" }}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">End Date</label>
+                            <div style="font-size: 1.1rem;">{{ session.end_date|date:"M d, Y" }}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Capacity</label>
+                            <div style="font-size: 1.1rem;">{{ session.capacity }} Students</div>
+                        </div>
+                    </div>
+
+                    <!-- RELATED GROUPS -->
+                    <div style="margin-top: 48px; padding-top: 32px; border-top: 1px solid #eee;">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 24px;">Related Groups</h2>
+
+                        {% if session.groups.all %}
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                                {% for group in session.groups.all %}
+                                    <a href="{% url 'courses:group_update' group.id %}" style="text-decoration: none; color: inherit; display: block;">
+                                        <div style="padding: 20px; background: var(--soft); border-radius: 12px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                                             onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'"
+                                             onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                                            <div style="font-weight: 600; color: var(--teal2); margin-bottom: 8px;">{{ group.name }}</div>
+                                            <div class="tiny muted">Teacher: {{ group.teacher.get_full_name|default:group.teacher.username }}</div>
+                                            <div class="tiny muted" style="margin-top: 8px;">{{ group.enrollments.count }} Students</div>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="muted">No groups for this session yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- EDIT FORM (Hidden by default) -->
+                <form id="editForm" method="post" style="display: none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="update_session" value="1">
+
+                    <h2 style="margin-top: 0; margin-bottom: 24px;">Edit Session</h2>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px;">Course</label>
+                        <select name="course" required style="width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit;">
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" {% if course.id == session.course.id %}selected{% endif %}>
+                                    {{ course.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px;">Session Type</label>
+                        <select name="session_type" required style="width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit;">
+                            <option value="morning" {% if session.session_type == 'morning' %}selected{% endif %}>Morning</option>
+                            <option value="afternoon" {% if session.session_type == 'afternoon' %}selected{% endif %}>Afternoon</option>
+                            <option value="evening" {% if session.session_type == 'evening' %}selected{% endif %}>Evening</option>
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Start Date</label>
+                            <input type="date" name="start_date" value="{{ session.start_date|date:'Y-m-d' }}" required
+                                   style="width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px;">End Date</label>
+                            <input type="date" name="end_date" value="{{ session.end_date|date:'Y-m-d' }}" required
+                                   style="width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 32px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px;">Capacity</label>
+                        <input type="number" name="capacity" value="{{ session.capacity }}" min="1" required
+                               style="width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit;">
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <button type="submit" class="btn btn--pill btn--primary">Save Changes</button>
+                        <button type="button" onclick="toggleEditMode()" class="btn btn--pill btn--white">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function toggleEditMode() {
+            const detailView = document.getElementById('detailView');
+            const editForm = document.getElementById('editForm');
+
+            if (editForm.style.display === 'none') {
+                detailView.style.display = 'none';
+                editForm.style.display = 'block';
+            } else {
+                detailView.style.display = 'block';
+                editForm.style.display = 'none';
+            }
+        }
+    </script>
+{% endblock %}
+

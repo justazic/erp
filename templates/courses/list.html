@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Courses | TOTC{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="center">
+                <h2 class="h2">Our <span class="accent">Courses</span></h2>
+                <p class="muted maxw">
+                    Choose a course and explore available sessions to start your learning journey.
+                </p>
+            </div>
+
+            <!-- CATEGORY FILTER -->
+            {% if categories %}
+                <div class="categoryFilter" style="margin-top: 32px;">
+                    <a href="{% url 'courses:list' %}" class="btn btn--pill {% if not active_category %}btn--primary{% else %}btn--white{% endif %}">All</a>
+                    {% for category in categories %}
+                        <a href="?category={{ category.id }}"
+                           class="btn btn--pill {% if active_category == category.id %}btn--primary{% else %}btn--white{% endif %}">
+                            {{ category.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- SEARCH BAR -->
+            <div class="center" style="margin: 32px 0 48px;">
+                <form method="get" class="searchForm" style="display: inline-flex; width: 100%; max-width: 600px; gap: 10px;">
+                    {% if active_category %}
+                        <input type="hidden" name="category" value="{{ active_category }}">
+                    {% endif %}
+                    <input type="text" name="search" placeholder="Search for courses..." 
+                           style="flex: 1; padding: 14px 24px; border-radius: 999px; border: 1px solid #ddd; font-family: inherit; box-shadow: var(--shadow);"
+                           value="{{ request.GET.search|default:'' }}">
+                    <button type="submit" class="btn btn--pill btn--primary">Search</button>
+                </form>
+            </div>
+
+            <div class="courseGrid">
+                {% for course in courses %}
+                    <article class="courseCard">
+                        <div class="courseCard__image">
+                            {% if course.small_image %}
+                                <img src="{{ course.small_image.url }}" alt="{{ course.name }}">
+                            {% else %}
+                                <img src="{% static 'images/course-1.jpg' %}" alt="">
+                            {% endif %}
+                        </div>
+
+                        <div class="courseCard__body">
+                            <div class="courseCard__top">
+                                {% if course.category %}
+                                    <span class="badge">{{ course.category.name }}</span>
+                                {% endif %}
+                                <h3 class="courseTitle">{{ course.name }}</h3>
+                            </div>
+
+                            <p class="courseDesc">
+                                {{ course.small_description }}
+                            </p>
+
+                            <div class="courseMeta">
+                                <div class="price">
+                                    {% if course.price %}
+                                        <span class="accent">${{ course.price }}</span>
+                                    {% else %}
+                                        <span class="muted">Free</span>
+                                    {% endif %}
+                                </div>
+                                <div class="tiny">
+                                    {{ course.sessions.count }} sessions
+                                </div>
+                            </div>
+
+                            <a href="{% url 'courses:detail' course.id %}" class="btn btn--pill btn--outlineTeal btn--block btn--small">
+                                VIEW COURSE
+                            </a>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="center" style="grid-column: 1 / -1; padding: 48px;">
+                        <p class="muted">No courses found matching your criteria.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

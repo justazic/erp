@@ -8,6 +8,13 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic import TemplateView
 
+from django.db.models import Count, Q
+from courses.models import Group, Session, Course
+from students.models import Enrollment
+from tasks.models import Assignment, Submission
+from finance.models import Payment
+from attendance.models import Attendance, Schedule
+
 from .forms import LoginForm, UserProfileForm
 
 
@@ -49,9 +56,11 @@ class LoginView(View):
 
     login(request, user)
     if user.role == 'teacher':
-      return render(request, 'dashboards/teacher.html')
+      return redirect('accounts:dashboard')
     if user.role == 'student':
-      return render(request, 'dashboards/student.html')
+      return redirect('accounts:dashboard')
+    if user.role == 'admin':
+      return redirect('courses:admin_dashboard')
     return redirect('/admin/')
 
 
@@ -119,35 +128,83 @@ class DashboardView(LoginRequiredMixin, TemplateView):
       return [ "dashboards/teacher.html" ]
     if user.role == 'student':
       return [ "dashboards/student.html" ]
+    if user.role == 'admin':
+      return [ "courses/admin/dashboard.html" ]
     return [ "dashboard.html" ]
 
   def get_context_data( self, **kwargs ):
     ctx = super().get_context_data(**kwargs)
     user = self.request.user
-    ctx.update({
-      "enrolled_groups_count": 0,
-      "pending_tasks_count": 0,
-      "attendance_rate": 0,
-      "student_feed": [ ],
-      "my_groups_count": 0,
-      "total_students_count": 0,
-      "pending_reviews_count": 0,
-      "teacher_feed": [ ],
-      }, )
+    
     if user.role == 'teacher':
-      ctx[ "teacher_feed" ] = [ {
-        "title": "Check submissions",
-        "sub": "Review latest student submissions",
-        }, {
-        "title": "Take attendance",
-        "sub": "Mark today's attendance for your groups",
-        }, ]
+        my_groups = Group.objects.filter(teacher=user).select_related('course', 'session')
+        my_groups_count = my_groups.count()
+        total_students_count = Enrollment.objects.filter(course__groups__in=my_groups).distinct().count()
+        
+        # Recent submissions for teacher's assignments
+        pending_submissions = Submission.objects.filter(
+            assignment__teacher=user, 
+            status='submitted'
+        ).select_related('student', 'assignment').order_by('-created_at')[:5]
+        
+        pending_reviews_count = Submission.objects.filter(assignment__teacher=user, status='submitted').count()
+        
+        ctx.update({
+            "my_groups": my_groups,
+            "my_groups_count": my_groups_count,
+            "total_students_count": total_students_count,
+            "pending_reviews_count": pending_reviews_count,
+            "pending_submissions": pending_submissions,
+        })
     elif user.role == 'student':
-      ctx[ "student_feed" ] = [ {
-        "title": "Continue learning",
-        "sub": "Open your enrolled courses",
-        }, {
-        "title": "Submit tasks",
-        "sub": "Complete pending assignments",
-        }, ]
+        enrollments = Enrollment.objects.filter(student=user).select_related('course', 'session', 'group')
+        enrolled_groups_count = enrollments.filter(group__isnull=False).values('group').distinct().count()
+
+        # Pending tasks: assignments for groups student is in, where no submission exists
+        student_groups = Group.objects.filter(enrollments__student=user)
+        pending_assignments = Assignment.objects.filter(
+            group__in=student_groups,
+            status='published'
+        ).exclude(submissions__student=user).order_by('deadline')[:5]
+        
+        pending_tasks_count = Assignment.objects.filter(group__in=student_groups).exclude(submissions__student=user).count()
+        
+        # Attendance rate
+        total_attendance = Attendance.objects.filter(student=user).count()
+        present_attendance = Attendance.objects.filter(student=user, status='present').count()
+        attendance_rate = int((present_attendance / total_attendance) * 100) if total_attendance > 0 else 0
+        
+        # Payments
+        recent_payments = Payment.objects.filter(student=user).order_by('-created_at')[:5]
+        
+        # Schedule
+        schedule = Schedule.objects.filter(group__enrollments__student=user).select_related('group', 'group__course').order_by('day_of_week', 'start_time')
+
+        ctx.update({
+            "enrollments": enrollments,
+            "enrolled_groups_count": enrolled_groups_count,
+            "pending_tasks_count": pending_tasks_count,
+            "attendance_rate": attendance_rate,
+            "pending_assignments": pending_assignments,
+            "recent_payments": recent_payments,
+            "balance": user.balance,
+            "schedule": schedule,
+        })
+    elif user.role == 'admin':
+        ctx.update({
+            'groups': Group.objects.all().select_related('course', 'session', 'teacher'),
+            'sessions': Session.objects.all().select_related('course'),
+            'courses': Course.objects.all()
+        })
+    else:
+        ctx.update({
+            "enrolled_groups_count": 0,
+            "pending_tasks_count": 0,
+            "attendance_rate": 0,
+            "student_feed": [],
+            "my_groups_count": 0,
+            "total_students_count": 0,
+            "pending_reviews_count": 0,
+            "teacher_feed": [],
+        })
     return ctx

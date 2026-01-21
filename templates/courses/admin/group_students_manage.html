@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Group Students | TOTC Admin{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="dash__top" style="margin-bottom: 32px;">
+                <div>
+                    <h2 class="h2">Group <span class="accent">Students</span></h2>
+                    <p class="muted">Managing students for: <strong>{{ group.name }}</strong> ({{ group.course.name }})</p>
+                </div>
+                <div class="dash__quick">
+                    <a href="{% url 'courses:admin_dashboard' %}" class="btn btn--pill btn--white">Back to Dashboard</a>
+                </div>
+            </div>
+
+            <div class="dashGrid">
+                <!-- CURRENT STUDENTS -->
+                <div class="dashCard">
+                    <h3 class="dashCard__title">Students in this Group</h3>
+                    <ul class="dashList">
+                        {% for enrollment in group_enrollments %}
+                            <li class="dashList__item">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div class="dashList__main">{{ enrollment.student.get_full_name|default:enrollment.student.username }}</div>
+                                        <div class="dashList__sub muted small">{{ enrollment.student.email }}</div>
+                                    </div>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="remove">
+                                        <input type="hidden" name="student_id" value="{{ enrollment.student.id }}">
+                                        <button type="submit" class="btn btn--pill btn--white btn--small" style="color: var(--pink); border-color: var(--pink);">Remove</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="dashList__item">No students assigned to this group yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- AVAILABLE STUDENTS -->
+                <div class="dashCard">
+                    <h3 class="dashCard__title">Available Students (Session: {{ group.session.get_session_type_display }})</h3>
+                    <p class="tiny muted" style="margin-bottom: 16px;">Students enrolled in this session but not yet assigned to this group.</p>
+                    <ul class="dashList">
+                        {% for enrollment in available_students %}
+                            <li class="dashList__item">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div class="dashList__main">{{ enrollment.student.get_full_name|default:enrollment.student.username }}</div>
+                                        <div class="dashList__sub muted small">
+                                            {{ enrollment.student.email }}
+                                            {% if enrollment.group %}
+                                                <br><span style="color: var(--orange);">Currently in: {{ enrollment.group.name }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="add">
+                                        <input type="hidden" name="student_id" value="{{ enrollment.student.id }}">
+                                        <button type="submit" class="btn btn--pill btn--outlineTeal btn--small">Add to Group</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="dashList__item">No other students available in this session.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -17,7 +17,7 @@ class ScheduleAdmin(ModelAdmin):
                    'teacher',
                    'created_at')
     search_fields = ('group__name',
-                     'teacher__user__username',
+                     'teacher__username',
                      'room')
     readonly_fields = ('created_at',
                        'updated_at')
@@ -58,8 +58,8 @@ class AttendanceAdmin(ModelAdmin):
                    'date',
                    'schedule',
                    'created_at')
-    search_fields = ('student__user__username',
-                     'student__user__first_name',
+    search_fields = ('student__username',
+                     'student__first_name',
                      'student__phone')
     readonly_fields = ('created_at',
                        'updated_at')

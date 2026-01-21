@@ -1,85 +1,87 @@
 {% extends 'base.html' %}
 {% load attendance_tags %}
 
-{% block title %}Mark Attendance{% endblock %}
+{% block title %}Mark Attendance | TOTC{% endblock %}
 
 {% block content %}
-    <div class="container py-5">
-        <div class="row">
-            <div class="col-lg-10 mx-auto">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Mark Attendance</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-info">
-                            <strong>{{ schedule.group.name }}</strong> - {{ schedule.group.course.name }}<br>
-                            <strong>Date:</strong> {{ date|date:"l, F d, Y" }}<br>
-                            <strong>Time:</strong> {{ schedule.start_time }} - {{ schedule.end_time }}
-                        </div>
-
-                        <form method="post">
-                            {% csrf_token %}
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead class="table-light">
-                                    <tr>
-                                        <th>Student</th>
-                                        <th>Email</th>
-                                        <th>Status</th>
-                                        <th>Notes</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for enrollment in enrollments %}
-                                        {% with att=attendance_records|get_item:enrollment.student.id %}
-                                            <tr>
-                                                <td>
-                                                    <strong>{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</strong>
-                                                </td>
-                                                <td>{{ enrollment.student.user.email }}</td>
-                                                <td>
-                                                    <select name="status_{{ enrollment.student.id }}"
-                                                            class="form-select form-select-sm" required>
-                                                        <option value="">-- Select --</option>
-                                                        <option value="present"
-                                                                {% if att.status == 'present' %}selected{% endif %}>
-                                                            Present
-                                                        </option>
-                                                        <option value="absent"
-                                                                {% if att.status == 'absent' %}selected{% endif %}>
-                                                            Absent
-                                                        </option>
-                                                        <option value="late"
-                                                                {% if att.status == 'late' %}selected{% endif %}>Late
-                                                        </option>
-                                                        <option value="excused"
-                                                                {% if att.status == 'excused' %}selected{% endif %}>
-                                                            Excused
-                                                        </option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="notes_{{ enrollment.student.id }}"
-                                                           class="form-control form-control-sm"
-                                                           value="{% if att %}{{ att.notes }}{% endif %}">
-                                                </td>
-                                            </tr>
-                                        {% endwith %}
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="d-flex gap-2 mt-4">
-                                <button type="submit" class="btn btn-success btn-lg">Save Attendance</button>
-                                <a href="{% url 'attendance:schedule_list' %}" class="btn btn-secondary btn-lg">Back</a>
-                            </div>
-                        </form>
-                    </div>
+    <section class="section section--soft">
+        <div class="container">
+            <div class="dash__top" style="margin-bottom: 32px;">
+                <div>
+                    <h2 class="h2">Mark <span class="accent">Attendance</span></h2>
+                    <p class="muted">Group: <strong>{{ schedule.group.name }}</strong> | {{ date|date:"l, F d, Y" }}</p>
+                </div>
+                <div class="dash__quick">
+                    <a href="{% url 'attendance:schedule_list' %}" class="btn btn--pill btn--white">Back to Schedules</a>
                 </div>
             </div>
+
+            <div class="card" style="background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 40px; margin-bottom: 32px;">
+                <div style="display: flex; gap: 40px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #eee;">
+                    <div>
+                        <div class="tiny muted">Course</div>
+                        <div style="font-weight: 600;">{{ schedule.group.course.name }}</div>
+                    </div>
+                    <div>
+                        <div class="tiny muted">Time Slot</div>
+                        <div style="font-weight: 600;">{{ schedule.start_time }} - {{ schedule.end_time }}</div>
+                    </div>
+                    <div>
+                        <div class="tiny muted">Room</div>
+                        <div style="font-weight: 600;">{{ schedule.room|default:"—" }}</div>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 14px;">Student</th>
+                                    <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 14px;">Status</th>
+                                    <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 14px;">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in enrollments %}
+                                    {% with student_id=enrollment.student.id|stringformat:"s" %}
+                                    {% with att=attendance_records|dict_get:enrollment.student.id %}
+                                    <tr>
+                                        <td style="padding: 16px 12px; border-bottom: 1px solid #f9f9f9;">
+                                            <div style="font-weight: 600;">{{ enrollment.student.get_full_name|default:enrollment.student.username }}</div>
+                                            <div class="tiny muted">{{ enrollment.student.email }}</div>
+                                        </td>
+                                        <td style="padding: 16px 12px; border-bottom: 1px solid #f9f9f9;">
+                                            <select name="status_{{ enrollment.student.id }}" required 
+                                                    style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit;">
+                                                <option value="">-- Select --</option>
+                                                <option value="present" {% if att.status == 'present' %}selected{% endif %}>Present</option>
+                                                <option value="absent" {% if att.status == 'absent' %}selected{% endif %}>Absent</option>
+                                                <option value="late" {% if att.status == 'late' %}selected{% endif %}>Late</option>
+                                                <option value="excused" {% if att.status == 'excused' %}selected{% endif %}>Excused</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 16px 12px; border-bottom: 1px solid #f9f9f9;">
+                                            <input type="text" name="notes_{{ enrollment.student.id }}" 
+                                                   value="{{ att.notes|default:'' }}" placeholder="Optional notes"
+                                                   style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit;">
+                                        </td>
+                                    </tr>
+                                    {% endwith %}
+                                    {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 32px; display: flex; gap: 16px;">
+                        <button type="submit" class="btn btn--pill btn--primary">Save Attendance</button>
+                        <a href="{% url 'attendance:schedule_list' %}" class="btn btn--pill btn--white" style="border: 1px solid #ddd;">Cancel</a>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </section>
 {% endblock %}
 

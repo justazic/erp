@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}My Attendance | TOTC{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <div class="dash__top" style="margin-bottom: 32px;">
+                <div>
+                    <h2 class="h2">My <span class="accent">Attendance</span></h2>
+                    <p class="muted">Track your presence in classes.</p>
+                </div>
+                <div class="dash__quick">
+                    <a href="{% url 'accounts:dashboard' %}" class="btn btn--pill btn--white">Back to Dashboard</a>
+                </div>
+            </div>
+
+            <div class="card" style="background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th style="padding: 20px; color: var(--muted); font-size: 14px; border-bottom: 1px solid #eee;">Date</th>
+                            <th style="padding: 20px; color: var(--muted); font-size: 14px; border-bottom: 1px solid #eee;">Course & Group</th>
+                            <th style="padding: 20px; color: var(--muted); font-size: 14px; border-bottom: 1px solid #eee;">Status</th>
+                            <th style="padding: 20px; color: var(--muted); font-size: 14px; border-bottom: 1px solid #eee;">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_records %}
+                            <tr>
+                                <td style="padding: 20px; border-bottom: 1px solid #eee;">
+                                    <div style="font-weight: 600;">{{ record.date|date:"M d, Y" }}</div>
+                                    <div class="tiny muted">{{ record.date|date:"l" }}</div>
+                                </td>
+                                <td style="padding: 20px; border-bottom: 1px solid #eee;">
+                                    <div style="font-weight: 600;">{{ record.schedule.group.course.name }}</div>
+                                    <div class="small muted">{{ record.schedule.group.name }}</div>
+                                </td>
+                                <td style="padding: 20px; border-bottom: 1px solid #eee;">
+                                    {% if record.status == 'present' %}
+                                        <span class="badge" style="background: #e6fffa; color: #38b2ac;">Present</span>
+                                    {% elif record.status == 'absent' %}
+                                        <span class="badge" style="background: #fff5f5; color: #e53e3e;">Absent</span>
+                                    {% elif record.status == 'late' %}
+                                        <span class="badge" style="background: #fffaf0; color: #dd6b20;">Late</span>
+                                    {% else %}
+                                        <span class="badge" style="background: #edf2f7; color: #4a5568;">{{ record.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 20px; border-bottom: 1px solid #eee;">
+                                    <p class="tiny muted">{{ record.notes|default:"—" }}</p>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" style="padding: 48px; text-align: center;" class="muted">
+                                    No attendance records found.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}

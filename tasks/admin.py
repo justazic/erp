@@ -19,7 +19,7 @@ class AssignmentAdmin(ModelAdmin):
                  'created_at')
   search_fields = ('title',
                    'description',
-                   'teacher__user__username',
+                   'teacher__username',
                    'group__name')
   readonly_fields = ('created_at',
                      'updated_at')
@@ -56,7 +56,7 @@ class SubmissionAdmin(ModelAdmin):
   list_filter = ('status',
                  'assignment__teacher',
                  'created_at')
-  search_fields = ('student__user__username',
+  search_fields = ('student__username',
                    'assignment__title')
   readonly_fields = ('created_at',
                      'updated_at')

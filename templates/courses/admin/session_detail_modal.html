@@ -1,0 +1,114 @@
+<!-- Session Detail Modal -->
+<div style="padding: 24px;">
+    <h2 style="margin-top: 0; margin-bottom: 24px;">{{ session.course.name }} - {{ session.get_session_type_display }}</h2>
+
+    <!-- Session Information Display -->
+    <div id="sessionInfo" style="display: block;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div>
+                <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">Course</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ session.course.name }}</div>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">Session Type</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ session.get_session_type_display }}</div>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">Start Date</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ session.start_date|date:"M d, Y" }}</div>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">End Date</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ session.end_date|date:"M d, Y" }}</div>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">Capacity</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ session.capacity }} Students</div>
+            </div>
+        </div>
+
+        <button onclick="toggleEditForm()" class="btn btn--pill btn--outlineTeal" style="margin-top: 16px;">
+            ✏️ Edit Session
+        </button>
+    </div>
+
+    <!-- Edit Form (Hidden by default) -->
+    <form id="sessionEditForm" method="post" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" name="update_session" value="1">
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Course</label>
+            <select name="course" required style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                {% for course in courses %}
+                    <option value="{{ course.id }}" {% if course.id == session.course.id %}selected{% endif %}>
+                        {{ course.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Session Type</label>
+            <select name="session_type" required style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                <option value="morning" {% if session.session_type == 'morning' %}selected{% endif %}>Morning</option>
+                <option value="afternoon" {% if session.session_type == 'afternoon' %}selected{% endif %}>Afternoon</option>
+                <option value="evening" {% if session.session_type == 'evening' %}selected{% endif %}>Evening</option>
+            </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Start Date</label>
+                <input type="date" name="start_date" value="{{ session.start_date|date:'Y-m-d' }}" required
+                       style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 8px;">End Date</label>
+                <input type="date" name="end_date" value="{{ session.end_date|date:'Y-m-d' }}" required
+                       style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Capacity</label>
+            <input type="number" name="capacity" value="{{ session.capacity }}" min="1" required
+                   style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <button type="submit" class="btn btn--pill btn--primary">Save Changes</button>
+            <button type="button" onclick="toggleEditForm()" class="btn btn--pill btn--white">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleEditForm() {
+        const info = document.getElementById('sessionInfo');
+        const form = document.getElementById('sessionEditForm');
+
+        if (form.style.display === 'none') {
+            info.style.display = 'none';
+            form.style.display = 'block';
+        } else {
+            info.style.display = 'block';
+            form.style.display = 'none';
+        }
+    }
+
+    document.getElementById('sessionEditForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch(window.location.href.replace('?modal=1', ''), {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                // Reload page after successful update
+                window.location.reload();
+            }
+        }).catch(error => console.error('Error:', error));
+    });
+</script>
+

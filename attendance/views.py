@@ -3,6 +3,7 @@ from django.views import View
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
+from django.db.models import Q
 from .models import Schedule, Attendance
 from students.models import Enrollment
 
@@ -14,7 +15,24 @@ class ScheduleListView(LoginRequiredMixin, ListView):
   paginate_by = 20
 
   def get_queryset( self ):
-    return Schedule.objects.select_related('group', 'teacher').all()
+    search = self.request.GET.get('search', '')
+    qs = Schedule.objects.select_related('group', 'teacher')
+    
+    if self.request.user.role == 'teacher':
+        qs = qs.filter(teacher=self.request.user)
+    
+    if search:
+        qs = qs.filter(
+            Q(group__name__icontains=search) |
+            Q(group__course__name__icontains=search) |
+            Q(room__icontains=search)
+        )
+    return qs
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['search'] = self.request.GET.get('search', '')
+    return context
 
 
 class MarkAttendanceView(LoginRequiredMixin, View):
@@ -26,7 +44,7 @@ class MarkAttendanceView(LoginRequiredMixin, View):
 
     today = timezone.now().date()
     enrollments = Enrollment.objects.filter(
-      course=schedule.group.course,
+      group=schedule.group,
       status='studying',
       )
 
@@ -52,7 +70,7 @@ class MarkAttendanceView(LoginRequiredMixin, View):
 
     today = timezone.now().date()
     enrollments = Enrollment.objects.filter(
-      course=schedule.group.course,
+      group=schedule.group,
       status='studying',
       )
 
