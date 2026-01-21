@@ -1,8 +1,9 @@
-from django.db import models
 from django.core.exceptions import ValidationError
-from students.models import Enrollment
-from courses.models import Group
+from django.db import models
+
 from accounts.models import User
+from courses.models import Group
+from students.models import Enrollment
 
 
 class Schedule(models.Model):
@@ -70,7 +71,7 @@ class Attendance(models.Model):
     'role': 'student',
     },
                               )
-    date = models.DateField()
+  date = models.DateField()
   status = models.CharField(max_length=10, choices=STATUS_CHOICES)
   marked_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
                                 related_name='marked_attendances', limit_choices_to={
@@ -78,20 +79,20 @@ class Attendance(models.Model):
       },
                                 )
   notes = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"{self.student} - {self.date} - {self.status}"
+  def __str__( self ):
+    return f"{self.student} - {self.date} - {self.status}"
 
-    class Meta:
-        ordering = ['-date']
-        verbose_name = 'Attendance'
-        verbose_name_plural = 'Attendances'
-        unique_together = ('student',
-                           'schedule',
-                           'date')
-        indexes = [
-          models.Index(fields=[ 'student', 'date' ]),
-          models.Index(fields=[ 'schedule', 'date' ]),
-          ]
+  class Meta:
+    ordering = [ '-date' ]
+    verbose_name = 'Attendance'
+    verbose_name_plural = 'Attendances'
+    unique_together = ('student',
+                       'schedule',
+                       'date')
+    indexes = [
+      models.Index(fields=[ 'student', 'date' ]),
+      models.Index(fields=[ 'schedule', 'date' ]),
+      ]
