@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedules{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <h1 class="mb-4">Class Schedules</h1>
+
+        {% if schedules %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Group</th>
+                        <th>Teacher</th>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Room</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for schedule in schedules %}
+                        <tr>
+                            <td>{{ schedule.group.name }}</td>
+                            <td>{{ schedule.teacher.user.get_full_name|default:schedule.teacher.user.username }}</td>
+                            <td>{{ schedule.get_day_of_week_display }}</td>
+                            <td>{{ schedule.start_time }} - {{ schedule.end_time }}</td>
+                            <td>{{ schedule.room|default:"—" }}</td>
+                            <td>
+                                {% if user.teacher_profile %}
+                                    <a href="{% url 'attendance:mark_attendance' schedule.id %}"
+                                       class="btn btn-sm btn-primary">Mark</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">No schedules found.</div>
+        {% endif %}
+    </div>
+{% endblock %}
+

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+    <section class="dash">
+        <div class="container">
+
+            <div class="dash__top">
+                <div>
+                    <h1 class="dash__title">Teacher Dashboard</h1>
+                    <p class="dash__sub muted">Welcome back, {{ request.user.username }}</p>
+                </div>
+
+                <div class="dash__quick">
+                    <a class="dashBtn" href="{% url 'accounts:profile' %}">My Profile</a>
+                    <a class="dashBtn dashBtn--ghost" href="{% url 'tasks:submission_list_teacher' %}">Review Tasks</a>
+                </div>
+            </div>
+
+            <div class="dashGrid">
+                <div class="dashCard">
+                    <h3 class="dashCard__title">Teaching Overview</h3>
+
+                    <div class="dashStats">
+                        <div class="dashStat">
+                            <div class="dashStat__num">{{ my_groups_count }}</div>
+                            <div class="dashStat__label">My groups</div>
+                        </div>
+                        <div class="dashStat">
+                            <div class="dashStat__num">{{ total_students_count }}</div>
+                            <div class="dashStat__label">Total students</div>
+                        </div>
+                        <div class="dashStat">
+                            <div class="dashStat__num">{{ pending_reviews_count }}</div>
+                            <div class="dashStat__label">Pending reviews</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashCard">
+                    <h3 class="dashCard__title">Today / Recent</h3>
+
+                    <ul class="dashList">
+                        {% for item in teacher_feed %}
+                            <li class="dashList__item">
+                                <div class="dashList__main">{{ item.title }}</div>
+                                <div class="dashList__sub muted small">{{ item.sub }}</div>
+                            </li>
+                        {% empty %}
+                            <li class="dashList__item">
+                                <div class="dashList__main">No recent updates.</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </section>
+{% endblock %}
