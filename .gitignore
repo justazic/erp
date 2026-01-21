@@ -49,6 +49,7 @@ docs/_build/
 target/
 .ipynb_checkpoints
 profile_default/
+db.sqlite3
 ipython_config.py
 .pdm-python
 .pdm-build/

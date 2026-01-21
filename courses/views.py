@@ -1,16 +1,29 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Course, Group, Comment
-from teachers.models import Teacher
+from .models import Course, Group, Comment, Category
 
 
-class CourseCreateView(LoginRequiredMixin, View):
+class CourseListView(View):
+  def get( self, request ):
+    courses = Course.objects.prefetch_related("sessions", "category")
+    categories = Category.objects.all()
+
+    return render(request, "courses/course_list.html", {
+      "courses": courses,
+      "categories": categories,
+      },
+                  )
+
+
+class CourseDetailCreateView(View):
     def get(self, request):
         if request.user.role != 'admin':
             return redirect('/')
         return render(request, 'courses/course_create.html')
 
+    @login_required
     def post(self, request):
         if request.user.role != 'admin':
             return redirect('/')
@@ -21,14 +34,7 @@ class CourseCreateView(LoginRequiredMixin, View):
         return redirect('/courses/')
 
 
-class CourseListView(LoginRequiredMixin, View):
-    def get(self, request):
-        courses = Course.objects.all()
-        return render(
-            request,
-            'courses/course_list.html',
-            {'courses': courses}
-        )
+
 
 
 class GroupCreateView(LoginRequiredMixin, View):
@@ -37,7 +43,8 @@ class GroupCreateView(LoginRequiredMixin, View):
             return redirect('/')
 
         courses = Course.objects.all()
-        teachers = Teacher.objects.all()
+        from accounts.models import User
+        teachers = User.objects.filter(role='teacher')
 
         return render(
             request,

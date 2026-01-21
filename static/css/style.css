@@ -713,3 +713,819 @@ a{color:inherit;text-decoration:none}
   box-shadow:0 18px 44px rgba(20,40,80,.14);
 }
 
+/* ===== AUTH / LOGIN ===== */
+.authBody {
+    font-family: 'Poppins', sans-serif;
+    background: #e6e2e2;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loginWrap {
+    background: #fff;
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+/* LEFT IMAGE */
+.loginImage {
+    width: 50%;
+    position: relative;
+}
+
+.loginImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.loginImageText {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    color: #fff;
+}
+
+.loginImageText h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.loginImageText p {
+    margin: 4px 0 0;
+    opacity: .85;
+}
+
+/* FORM */
+.loginFormWrap {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+}
+
+.loginForm {
+    width: 100%;
+    max-width: 380px;
+}
+
+.loginTitle {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.loginSub {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin: 10px 0 28px;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.field input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 24px;
+    border: 1px solid #6ad0cf;
+    outline: none;
+}
+
+.passwordWrap {
+    position: relative;
+}
+
+.passwordWrap .eye {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: .6;
+    cursor: pointer;
+}
+
+.loginRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    margin: 10px 0 22px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.forgot {
+    text-decoration: none;
+    color: #666;
+}
+
+.loginBtn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 24px;
+    background: #4fc0c1;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+    .loginWrap {
+        flex-direction: column;
+        max-width: 420px;
+    }
+
+    .loginImage {
+        display: none;
+    }
+
+    .loginFormWrap {
+        width: 100%;
+        padding: 36px 24px;
+    }
+}
+
+.loginError {
+    background: #ffe6e6;
+    color: #b00020;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+
+/* USER DROPDOWN */
+.navUser {
+    position: relative;
+}
+
+.navUser__btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #e6ebf2;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.navUser__chev {
+    font-size: 12px;
+}
+
+/* USER DROPDOWN */
+.navUser {
+    position: relative;
+    display: inline-block;
+}
+
+/* button */
+.navUser__btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #e6ebf2;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* menu */
+.navUser__menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px; /* visual spacing */
+
+    min-width: 180px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(20, 32, 68, .15);
+
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+
+    transition: opacity .18s ease, transform .22s ease;
+    z-index: 100;
+}
+
+/* ✅ Invisible hover-bridge so the menu doesn't vanish */
+.navUser__menu::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -10px; /* bridge height */
+    height: 10px;
+    border-radius: 14px;
+}
+
+/* menu items */
+.navUser__menu a {
+    display: block;
+    padding: 12px 16px;
+    color: #1f2a44;
+    text-decoration: none;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: background .18s ease;
+
+}
+
+.navUser__menu a:hover {
+    background: #e1e1e1;
+    border-radius: 14px;
+
+}
+
+/* ✅ show menu when hovering wrapper OR focusing inside (click/keyboard) */
+.navUser:hover .navUser__menu,
+.navUser:focus-within .navUser__menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* ===== DASHBOARD (student/teacher) ===== */
+.dash {
+    padding: 42px 0;
+}
+
+.dash__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.dash__title {
+    margin: 0;
+    font-size: 28px;
+    color: #1f2340;
+}
+
+.dash__sub {
+    margin: 6px 0 0;
+}
+
+.dash__quick {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dashBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    background: #4fc0c1;
+    color: #fff;
+}
+
+.dashBtn--ghost {
+    background: #fff;
+    color: #1f2340;
+    border: 1px solid #e6ebf2;
+}
+
+.dashGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.dashCard {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(20, 32, 68, .08);
+}
+
+.dashCard__title {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2340;
+}
+
+.dashStats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.dashStat {
+    background: #f5f8ff;
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.dashStat__num {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2340;
+}
+
+.dashStat__label {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #666;
+}
+
+.dashList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashList__item {
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid #eef1f6;
+}
+
+.dashList__main {
+    font-weight: 500;
+    color: #1f2340;
+}
+
+.dashList__sub {
+    margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+    .dash__top {
+        flex-direction: column;
+    }
+
+    .dashGrid {
+        grid-template-columns:1fr;
+    }
+
+    .dashStats {
+        grid-template-columns:1fr;
+    }
+}
+
+/* ===== PROFILE PAGE ===== */
+.profilePage {
+    padding: 44px 0;
+}
+
+.profileLayout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 26px;
+    align-items: start;
+}
+
+.profileSidebar {
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(20, 32, 68, .08);
+    text-align: center;
+    position: sticky;
+    top: 18px;
+}
+
+.avatarCircle {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 14px;
+    background: #eef2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 26px rgba(20, 32, 68, .12);
+}
+
+.avatarCircle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatarFallback {
+    font-size: 46px;
+    font-weight: 700;
+    color: #4a5bdc;
+}
+
+.profileName {
+    margin: 10px 0 4px;
+    font-size: 22px;
+}
+
+.profileRole {
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.profileBtns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.profileContent {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.alerts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 2px;
+}
+
+.alert {
+    background: #f5f8ff;
+    border: 1px solid #e9efff;
+    border-radius: 14px;
+    padding: 10px 14px;
+    color: #1f2340;
+}
+
+.profileCard {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(20, 32, 68, .08);
+}
+
+.profileCardHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.linkBtn {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: #2a7bd6;
+}
+
+.infoList {
+    display: flex;
+    flex-direction: column;
+}
+
+.infoRow {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f2f6;
+}
+
+.infoRow span {
+    color: #7a8396;
+    font-size: 13px;
+}
+
+.infoRow b {
+    color: #1f2340;
+    font-weight: 600;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.formItem {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.formItem label {
+    font-size: 12px;
+    color: #7a8396;
+    font-weight: 600;
+}
+
+.formItem--full {
+    grid-column: 1 / -1;
+}
+
+.fInput, .profileCard input, .profileCard textarea, .profileCard select, .modalBox input, .modalBox textarea, .modalBox select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e6ebf2;
+    border-radius: 12px;
+    outline: none;
+    background: #fff;
+}
+
+.fInput:disabled, .profileCard input:disabled, .profileCard textarea:disabled {
+    background: #f6f7fb;
+    color: #6b7280;
+}
+
+.formActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+/* buttons – if your existing btn styles exist, these just add missing variants */
+.btn--outline {
+    background: #fff;
+    border: 1px solid #e6ebf2;
+    color: #1f2340;
+}
+
+.btn--danger {
+    background: #e54848;
+    color: #fff;
+    border: 0;
+}
+
+.btn--danger:hover {
+    filter: brightness(.95);
+}
+
+/* ===== MODAL ===== */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(14, 18, 32, .45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    z-index: 9999;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modalBox {
+    width: 100%;
+    max-width: 430px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .25);
+    overflow: hidden;
+}
+
+.modalBox--danger {
+    border: 1px solid rgba(229, 72, 72, .25);
+}
+
+.modalHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #f0f2f6;
+}
+
+.modalBody {
+    padding: 16px 18px;
+}
+
+.modalX {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    opacity: .75;
+}
+
+.modalX:hover {
+    opacity: 1;
+}
+
+/* responsive */
+@media (max-width: 900px) {
+    .profileLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .profileSidebar {
+        position: static;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .infoRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ================================
+   PROFILE FORM ACTION BUTTONS
+   ================================ */
+
+.formActions {
+    display: flex;
+    gap: 14px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eef0f6;
+}
+
+/* Primary submit button */
+.formActions .btn--primary {
+    background: #4a5bdc; /* strong blue */
+    color: #ffffff;
+    border: 1px solid #4a5bdc;
+    padding: 10px 22px;
+    font-weight: 600;
+    border-radius: 999px;
+    box-shadow: 0 8px 20px rgba(74, 91, 220, 0.25);
+}
+
+.formActions .btn--primary:hover {
+    background: #3f4fd1;
+    border-color: #3f4fd1;
+}
+
+/* Secondary cancel button */
+.formActions .btn--white {
+    background: #ffffff;
+    color: #1f2340;
+    border: 1px solid #d9deea;
+    padding: 10px 22px;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.formActions .btn--white:hover {
+    background: #f6f7fb;
+}
+
+/* Ensure buttons are never hidden */
+.formActions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Fix if parent container collapses */
+#profileForm {
+    overflow: visible;
+}
+
+
+/* ===== COURSE LIST ===== */
+
+.courseListPage {
+    padding: 48px 0;
+}
+
+.pageHeader {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.categoryFilter {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+
+.courseGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.courseCard {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(20, 32, 68, .08);
+    display: flex;
+    flex-direction: column;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.courseCard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(20, 32, 68, .14);
+}
+
+.courseCard__image {
+    height: 160px;
+    background: #f3f6ff;
+}
+
+.courseCard__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.courseCard__body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.courseTitle {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 4px 0;
+}
+
+.courseDesc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.courseMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.badge {
+    display: inline-block;
+    background: #eef2ff;
+    color: #4a5bdc;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.price {
+    font-weight: 700;
+}
+
+.btn--block {
+    width: 100%;
+    text-align: center;
+}
+

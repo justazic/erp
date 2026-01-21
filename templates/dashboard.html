@@ -1,101 +1,79 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Boshqaruv paneli{% endblock %}
-{% block page_title %}Boshqaruv paneli{% endblock %}
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
+    <section class="dashboard">
 
-    <!-- ===== STAT CARDS ===== -->
-    <div class="row mb-4">
+        <div class="container">
 
-        <!-- Students -->
-        <div class="col-md-6 col-xl-3 mb-3">
-            <div class="card border-left-primary shadow h-100">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-muted small text-uppercase">Jami o‘quvchilar</div>
-                        <div class="h4 fw-bold">{{ students }}</div>
-                    </div>
-                    <i class="fas fa-users fa-2x text-primary"></i>
+            <!-- HEADER -->
+            <div class="dashboardHeader">
+                <h1>Dashboard</h1>
+                <p class="muted">Welcome back, {{ request.user.username }}</p>
+            </div>
+
+            <!-- STATS -->
+            <div class="dashboardStats">
+                <div class="statCard">
+                    <h3>{{ students_count }}</h3>
+                    <p>Total Students</p>
+                </div>
+                <div class="statCard">
+                    <h3>{{ courses_count }}</h3>
+                    <p>Total Courses</p>
+                </div>
+                <div class="statCard">
+                    <h3>{{ teachers_count }}</h3>
+                    <p>Total Teachers</p>
+                </div>
+                <div class="statCard">
+                    <h3>${{ revenue }}</h3>
+                    <p>Total Revenue</p>
                 </div>
             </div>
+
+            <!-- GRID -->
+            <div class="dashboardGrid">
+
+                <!-- QUICK ACTIONS -->
+                <div class="card">
+                    <h2 class="cardTitle">Quick Actions</h2>
+                    <div class="actions">
+                        <a href="#" class="actionBtn">➕ Add Course</a>
+                        <a href="#" class="actionBtn">👤 Add Student</a>
+                        <a href="#" class="actionBtn">📊 Reports</a>
         </div>
-
-        <!-- Income -->
-        <div class="col-md-6 col-xl-3 mb-3">
-            <div class="card border-left-success shadow h-100">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-muted small text-uppercase">Jami daromad</div>
-                        <div class="h4 fw-bold">{{ income|floatformat:0 }} so‘m</div>
-                    </div>
-                    <i class="fas fa-money-bill-wave fa-2x text-success"></i>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ===== WELCOME ===== -->
-    <div class="card shadow mb-4">
-        <div class="card-body text-center py-5">
-            <i class="fas fa-graduation-cap fa-3x text-primary mb-3"></i>
-
-            <h4 class="fw-bold">
-                Xush kelibsiz,
-                {{ request.user.get_full_name|default:request.user.username }}!
-            </h4>
-
-            <p class="text-muted">
-                Bugun: {% now "d F Y" %}
-            </p>
-
-            <div class="alert alert-info mt-3">
-                <strong>O‘quvchilar:</strong> {{ students }} ta |
-                <strong>Daromad:</strong> {{ income|floatformat:0 }} so‘m
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== QUICK ACTIONS ===== -->
-    <div class="card shadow mb-4">
-        <div class="card-header bg-white fw-bold">
-            <i class="fas fa-bolt me-2"></i> Tezkor amallar
-        </div>
-        <div class="card-body">
-            <div class="row text-center">
-
-                <div class="col-md-3 col-6 mb-3">
-                    <a href="{% url 'attendance_create' %}" class="btn btn-primary w-100 py-3">
-                        <i class="fas fa-clipboard-check fa-2x mb-2"></i><br>
-                        Davomat
-                    </a>
                 </div>
 
-                <div class="col-md-3 col-6 mb-3">
-                    <a href="#" class="btn btn-success w-100 py-3">
-                        <i class="fas fa-money-bill-wave fa-2x mb-2"></i><br>
-                        To‘lov
-                    </a>
-                </div>
-
-                <div class="col-md-3 col-6 mb-3">
-                    <a href="#" class="btn btn-info w-100 py-3">
-                        <i class="fas fa-user-plus fa-2x mb-2"></i><br>
-                        O‘quvchi
-                    </a>
-                </div>
-
-                <div class="col-md-3 col-6 mb-3">
-                    <a href="#" class="btn btn-warning w-100 py-3">
-                        <i class="fas fa-chalkboard-teacher fa-2x mb-2"></i><br>
-                        O‘qituvchi
-                    </a>
+                <!-- RECENT COURSES -->
+                <div class="card">
+                    <h2 class="cardTitle">Recent Courses</h2>
+                    <table class="simpleTable">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for course in recent_courses %}
+                            <tr>
+                                <td>{{ course.name }}</td>
+                                <td>{{ course.category }}</td>
+                                <td>${{ course.price }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No courses yet</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
             </div>
-        </div>
-    </div>
 
+        </div>
+    </section>
 {% endblock %}

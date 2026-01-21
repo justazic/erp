@@ -1,12 +1,9 @@
 from django.urls import path
-from .views import AssigmentListView,AssigmentCreateView,AssigmentDeleteView,SubmissionCheckView,SubmissionCreateView,SubmissionsListTeacherView,MySubmissionListView
+
+app_name = 'tasks'
 
 urlpatterns = [
-    path('assignments/', AssigmentListView.as_view()),
-    path('assignments/create/', AssigmentCreateView.as_view()),
-    path('assignment/<int:assignment_id>/submit/', SubmissionCreateView.as_view()),
-    path('my-submissions/', MySubmissionListView.as_view()),
-    path('assignment/<int:assignment_id>/submissions/', SubmissionsListTeacherView.as_view()),
-    path('submission/<int:submission_id>/check/', SubmissionCheckView.as_view()),
-    path('assignment/<int:assignment_id>/delete/', AssigmentDeleteView.as_view()),
+  path('assignments/', path, name='assignment_list'),
+  path('submissions/teacher/', path, name='submission_list_teacher'),
+  path('submissions/student/', path, name='submission_list_student'),
 ]

@@ -1,5 +1,5 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
@@ -11,6 +11,13 @@ class User(AbstractUser):
     
     role = models.CharField(max_length=10, choices=ROLE)
     avatar = models.ImageField(upload_to='avatar/', default='')
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.CharField(max_length=250, blank=True, null=True)
+
+    speciality = models.CharField(max_length=100, blank=True, null=True)
+    qualifications = models.TextField(blank=True, null=True)
+    is_expert = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -27,3 +34,4 @@ class User(AbstractUser):
             self.is_staff = True
             self.is_superuser = True
         super().save(*args, **kwargs)
+

@@ -2,98 +2,120 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>{% block title %}TOTC{% endblock %}</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>{% block title %}TOTC{% endblock %}</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
-  <!-- NAV -->
-  <header class="nav">
+<!-- NAV -->
+<header class="nav">
     <div class="container nav__inner">
-      <a class="brand" href="#">
-        <span class="brand__mark">◇</span>
-        <span class="brand__text">TOTC</span>
-      </a>
+        <a class="brand" href="{% url 'index' %}">
+            <span class="brand__mark">◇</span>
+            <span class="brand__text">TOTC</span>
+        </a>
 
-      <nav class="nav__links">
-        <a href="#">Home</a>
-        <a href="#">Courses</a>
-        <a href="#about-us">About Us</a>
-      </nav>
+        <nav class="nav__links">
+            <a href="{% url 'index' %}">Home</a>
+            {% if user.is_authenticated %}
+                <a href="#">My Courses</a>
+                <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+            {% endif %}
+            {% if not user.is_authenticated %}
+                <a href="{% url 'course_list' %}">Courses</a>
+                <a href="{% url 'index' %}#about-us">About Us</a>
+            {% endif %}
+        </nav>
 
-      <div class="nav__actions">
-        <a class="btn btn--pill btn--white" href="#">Login</a>
-        <a class="btn btn--pill btn--ghost" href="mailto:admin@admin.com">Contact Us</a>
-      </div>
+        <div class="nav__actions">
+            {% if user.is_authenticated %}
+                <div class="navUser">
+                    <button class="navUser__btn" type="button">
+                        <span class="navUser__name">{{ user.username }}</span>
+                        <span class="navUser__chev">▾</span>
+                    </button>
 
-      <button class="nav__burger" type="button" aria-label="Open menu" onclick="document.body.classList.toggle('menu-open')">
-        ☰
-      </button>
+                    <div class="navUser__menu">
+                        <a href="{% url 'accounts:profile' %}">Profile</a>
+                        <a href="{% url 'accounts:logout' %}">Logout</a>
+                    </div>
+                </div>
+            {% else %}
+                <a class="btn btn--pill btn--white" href="{% url 'accounts:login' %}">Login</a>
+                <a class="btn btn--pill btn--ghost" href="mailto:admin@admin.com">Contact Us</a>
+            {% endif %}
+
+        </div>
+
+        <button class="nav__burger" type="button" aria-label="Open menu"
+                onclick="document.body.classList.toggle('menu-open')">
+            ☰
+        </button>
     </div>
-  </header>
+</header>
 
-  {% block content %}{% endblock %}
+{% block content %}{% endblock %}
 
 
 {% if show_footer %}
-  <!-- FOOTER -->
-<footer class="footer">
-  <div class="container footer__inner">
-    <div class="footer__brand">
-      <div class="brand brand--footer">
-        <span class="brand__mark">◇</span>
-        <span class="brand__text">TOTC</span>
-      </div>
-      <div class="footer__subtitle">Virtual Class<br>for Zoom</div>
-    </div>
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer__inner">
+            <div class="footer__brand">
+                <div class="brand brand--footer">
+                    <span class="brand__mark">◇</span>
+                    <span class="brand__text">TOTC</span>
+                </div>
+                <div class="footer__subtitle">Virtual Class<br>for Zoom</div>
+            </div>
 
-    <div class="footer__newsletter">
-      <div class="footer__title">Subscribe to get our Newsletter</div>
-      <form class="newsletter" action="#" method="post">
-        <input class="newsletter__input" type="email" placeholder="Your Email" />
-        <button class="btn btn--pill btn--teal btn--small" type="submit">Subscribe</button>
-      </form>
-    </div>
+            <div class="footer__newsletter">
+                <div class="footer__title">Subscribe to get our Newsletter</div>
+                <form class="newsletter" action="#" method="post">
+                    <input class="newsletter__input" type="email" placeholder="Your Email"/>
+                    <button class="btn btn--pill btn--teal btn--small" type="submit">Subscribe</button>
+                </form>
+            </div>
 
-    <div class="footer__bottom">
-      <div class="footer__links">
-        <a href="#">Careers</a>
-        <span> | </span>
-        <a href="#">Privacy Policy</a>
-        <span> | </span>
-        <a href="#">Terms & Conditions</a>
-      </div>
-      <div class="footer__copy">© 2021 Class Technologies Inc.</div>
-    </div>
-  </div>
-</footer>
-  {% endif %}
+            <div class="footer__bottom">
+                <div class="footer__links">
+                    <a href="#">Careers</a>
+                    <span> | </span>
+                    <a href="#">Privacy Policy</a>
+                    <span> | </span>
+                    <a href="#">Terms & Conditions</a>
+                </div>
+                <div class="footer__copy">© 2021 Class Technologies Inc.</div>
+            </div>
+        </div>
+    </footer>
+{% endif %}
 
 
 <script>
-  (function () {
-    const pills = Array.from(document.querySelectorAll('.morphCourses .morphPill'));
-    if (!pills.length) return;
+    (function () {
+        const pills = Array.from(document.querySelectorAll('.morphCourses .morphPill'));
+        if (!pills.length) return;
 
-    const open = (p) => {
-      pills.forEach(x => x.classList.remove('is-open'));
-      p.classList.add('is-open');
-    };
+        const open = (p) => {
+            pills.forEach(x => x.classList.remove('is-open'));
+            p.classList.add('is-open');
+        };
 
-    open(pills[0]); // open first on load
+        open(pills[0]); // open first on load
 
-    pills.forEach(p => {
-      p.addEventListener('mouseenter', () => open(p));
-      p.addEventListener('focus', () => open(p)); // keyboard support
-    });
-  })();
+        pills.forEach(p => {
+            p.addEventListener('mouseenter', () => open(p));
+            p.addEventListener('focus', () => open(p)); // keyboard support
+        });
+    })();
 </script>
 
 

@@ -1,27 +1,297 @@
 {% extends "base.html" %}
-
-{% block title %}Profil{% endblock %}
-{% block page_title %}Profil{% endblock %}
+{% load static %}
+{% block title %}My Profile{% endblock %}
 
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
+    <section class="profilePage">
+        <div class="container profileLayout">
 
-        <div class="mb-3">
-            <label>Ism</label>
-            <input type="text" name="first_name" value="{{ user.first_name }}" class="form-control">
+            <!-- SIDEBAR -->
+            <aside class="profileSidebar">
+                <div class="avatarCircle">
+                    {% if profile_user.avatar %}
+                        <img src="{{ profile_user.avatar.url }}" alt="Avatar">
+                    {% else %}
+                        <span class="avatarFallback">
+            {{ profile_user.first_name|default:profile_user.username|first }}
+          </span>
+                    {% endif %}
+                </div>
+
+                <h2 class="profileName">{{ profile_user.first_name }} {{ profile_user.last_name }}</h2>
+                <div class="profileRole muted">{{ profile_user.get_role_display }}</div>
+
+                <div class="profileBtns">
+                    <button class="btn btn--pill btn--primary" type="button" onclick="enableEdit()">Edit</button>
+                    <button class="btn btn--pill btn--outline" type="button" onclick="openPasswordModal()">Update
+                        password
+                    </button>
+                    <button class="btn btn--pill btn--danger" type="button" onclick="openDeleteModal(1)">Delete</button>
+                </div>
+            </aside>
+
+            <!-- CONTENT -->
+            <main class="profileContent">
+
+                {% if messages %}
+                    <div class="alerts">
+                        {% for message in messages %}
+                            <div class="alert">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- READ VIEW (DEFAULT) -->
+                <div id="profileView" class="profileCard">
+                    <div class="profileCardHead">
+                        <h3>Profile</h3>
+                        <button class="linkBtn" type="button" onclick="enableEdit()">Edit</button>
+                    </div>
+
+                    <div class="infoList">
+                        <div class="infoRow"><span>Email</span><b>{{ profile_user.email }}</b></div>
+                        <div class="infoRow"><span>Username</span><b>{{ profile_user.username }}</b></div>
+                        <div class="infoRow"><span>Phone</span><b>{{ profile_user.phone|default:"—" }}</b></div>
+                        <div class="infoRow"><span>Address</span><b>{{ profile_user.address|default:"—" }}</b></div>
+
+                        {% if profile_user.role == "teacher" %}
+                            <div class="infoRow"><span>Speciality</span><b>{{ profile_user.speciality|default:"—" }}</b>
+                            </div>
+                            <div class="infoRow">
+                                <span>Qualifications</span><b>{{ profile_user.qualifications|default:"—" }}</b></div>
+                            <div class="infoRow"><span>Expert</span><b>{{ profile_user.is_expert|yesno:"Yes,No" }}</b>
+                            </div>
+                        {% endif %}
+
+                        <div class="infoRow"><span>Joined</span><b>{{ profile_user.date_joined|date:"d M Y" }}</b></div>
+                    </div>
+                </div>
+
+                <!-- EDIT FORM (HIDDEN UNTIL EDIT CLICK) -->
+                <form id="profileForm" class="profileCard hidden" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="update_profile" value="1">
+
+                    <div class="profileCardHead">
+                        <h3>Edit profile</h3>
+                        <button class="linkBtn" type="button" onclick="cancelEdit()">Cancel</button>
+                    </div>
+
+                    {% if profile_form.non_field_errors %}
+                        <div class="formError">{{ profile_form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="formGrid">
+                        <div class="formItem">
+                            <label>First name</label>
+                            {{ profile_form.first_name }}
+                            {{ profile_form.first_name.errors }}
+                        </div>
+
+                        <div class="formItem">
+                            <label>Last name</label>
+                            {{ profile_form.last_name }}
+                            {{ profile_form.last_name.errors }}
+                        </div>
+
+                        <div class="formItem">
+                            <label>Username</label>
+                            {{ profile_form.username }}
+                            {{ profile_form.username.errors }}
+                        </div>
+
+                        <div class="formItem">
+                            <label>Email</label>
+                            {{ profile_form.email }}
+                            {{ profile_form.email.errors }}
+                        </div>
+
+                        <div class="formItem">
+                            <label>Phone</label>
+                            {{ profile_form.phone }}
+                            {{ profile_form.phone.errors }}
+                        </div>
+
+                        <div class="formItem">
+                            <label>Address</label>
+                            {{ profile_form.address }}
+                            {{ profile_form.address.errors }}
+                        </div>
+
+                        <div class="formItem">
+                            <label>Avatar</label>
+                            {{ profile_form.avatar }}
+                            {{ profile_form.avatar.errors }}
+                        </div>
+
+                        {% if profile_user.role == "teacher" %}
+                            <div class="formItem">
+                                <label>Speciality</label>
+                                {{ profile_form.speciality }}
+                                {{ profile_form.speciality.errors }}
+                            </div>
+
+                            <div class="formItem formItem--full">
+                                <label>Qualifications</label>
+                                {{ profile_form.qualifications }}
+                                {{ profile_form.qualifications.errors }}
+                            </div>
+
+                            {% if profile_form.is_expert %}
+                                <div class="formItem">
+                                    <label>Expert</label>
+                                    {{ profile_form.is_expert }}
+                                    {{ profile_form.is_expert.errors }}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <div class="formActions">
+                        <button class="btn btn--pill btn--primary" type="submit">Save changes</button>
+                        <button class="btn btn--pill btn--white" type="button" onclick="cancelEdit()">Cancel</button>
+                    </div>
+                </form>
+
+            </main>
         </div>
+    </section>
 
-        <div class="mb-3">
-            <label>Familiya</label>
-            <input type="text" name="last_name" value="{{ user.last_name }}" class="form-control">
+    <!-- PASSWORD MODAL -->
+    <div class="modal" id="passwordModal" aria-hidden="true">
+        <div class="modalBox">
+            <div class="modalHead">
+                <h3>Change password</h3>
+                <button class="modalX" type="button" onclick="closePasswordModal()">✕</button>
+            </div>
+
+            <form method="post" class="modalBody">
+                {% csrf_token %}
+                <input type="hidden" name="change_password" value="1">
+
+                <div class="formItem">
+                    <label>Old password</label>
+                    {{ password_form.old_password }}
+                    {{ password_form.old_password.errors }}
+                </div>
+
+                <div class="formItem">
+                    <label>New password</label>
+                    {{ password_form.new_password1 }}
+                    {{ password_form.new_password1.errors }}
+                </div>
+
+                <div class="formItem">
+                    <label>New password again</label>
+                    {{ password_form.new_password2 }}
+                    {{ password_form.new_password2.errors }}
+                </div>
+
+                <div class="formActions">
+                    <button class="btn btn--pill btn--primary" type="submit">Update</button>
+                    <button class="btn btn--pill btn--white" type="button" onclick="closePasswordModal()">Cancel
+                    </button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label>Avatar</label>
-            <input type="file" name="avatar" class="form-control">
+    <!-- DELETE MODAL (2-step) -->
+    <div class="modal" id="deleteModal" aria-hidden="true">
+        <div class="modalBox modalBox--danger">
+            <div class="modalHead">
+                <h3 id="deleteTitle">Delete account</h3>
+                <button class="modalX" type="button" onclick="closeDeleteModal()">✕</button>
+            </div>
+
+            <div class="modalBody">
+                <p id="deleteText" class="muted">Are you sure you want to delete your account?</p>
+
+                <form method="post" id="deleteForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_account" value="1">
+                    <input type="hidden" name="delete_step" id="deleteStep" value="1">
+
+                    <div class="formActions">
+                        <button class="btn btn--pill btn--danger" id="firstDeleteBtn" type="button"
+                                onclick="confirmDeleteStep()">
+                            Yes, delete
+                        </button>
+                        <button id="deleteFinalBtn" class="btn btn--pill btn--danger hidden" type="submit">
+                            Yes, Delete Confirm
+                        </button>
+                        <button class="btn btn--pill btn--white" type="button" onclick="closeDeleteModal()">Cancel
+                        </button>
+                    </div>
+
+
+                </form>
+            </div>
         </div>
+    </div>
 
-        <button class="btn btn-primary">Saqlash</button>
-    </form>
+    <script>
+        function enableEdit() {
+            document.getElementById("profileView").classList.add("hidden");
+            document.getElementById("profileForm").classList.remove("hidden");
+            window.scrollTo({top: 0, behavior: "smooth"});
+        }
+
+        function cancelEdit() {
+            // reset changes by reloading page
+            window.location.href = window.location.href.split("#")[0];
+        }
+
+        function openPasswordModal() {
+            const m = document.getElementById("passwordModal");
+            m.classList.add("show");
+            m.setAttribute("aria-hidden", "false");
+        }
+
+        function closePasswordModal() {
+            const m = document.getElementById("passwordModal");
+            m.classList.remove("show");
+            m.setAttribute("aria-hidden", "true");
+        }
+
+        function openDeleteModal(step) {
+            const m = document.getElementById("deleteModal");
+            m.classList.add("show");
+            m.setAttribute("aria-hidden", "false");
+            resetDeleteModal();
+        }
+
+        function closeDeleteModal() {
+            const m = document.getElementById("deleteModal");
+            m.classList.remove("show");
+            m.setAttribute("aria-hidden", "true");
+            resetDeleteModal();
+        }
+
+        function resetDeleteModal() {
+            document.getElementById("deleteTitle").textContent = "Delete account";
+            document.getElementById("deleteText").textContent = "Are you sure you want to delete your account?";
+            document.getElementById("deleteStep").value = "1";
+            document.getElementById("deleteFinalBtn").classList.add("hidden");
+        }
+
+        function confirmDeleteStep() {
+            // Step 1 -> Step 2 prompt
+            document.getElementById("deleteTitle").textContent = "Final confirmation";
+            document.getElementById("deleteText").textContent = "Do you really kinda want to delete your account?";
+            document.getElementById("deleteStep").value = "2";
+            document.getElementById("firstDeleteBtn").classList.add("hidden");
+            document.getElementById("deleteFinalBtn").classList.remove("hidden");
+        }
+
+        // keep password modal open if there are password errors
+        {% if open_password_modal %}
+            openPasswordModal();
+        {% endif %}
+
+        {% if open_edit_mode %}
+            enableEdit();
+        {% endif %}
+
+    </script>
 {% endblock %}

@@ -1,5 +1,6 @@
 from django.db import models
-from students.models import Student
+from accounts.models import User
+from students.models import Enrollment
 
 
 class Payment(models.Model):
@@ -24,7 +25,13 @@ class Payment(models.Model):
         ('cheque', 'Cheque'),
     ]
 
-    student = models.ForeignKey(Student, on_delete=models.PROTECT)
+    student = models.ForeignKey(User, on_delete=models.PROTECT, related_name='payments', limit_choices_to={
+      'role': 'student',
+      },
+                                )
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='payments',
+                                   )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE, default='tuition')
     method = models.CharField(max_length=20, choices=PAYMENT_METHOD)

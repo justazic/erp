@@ -1,130 +1,86 @@
 {% extends "base.html" %}
-
-{% block title %}Kurslar{% endblock %}
+{% load static %}
+{% block title %}Courses{% endblock %}
 
 {% block content %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <section class="courseListPage">
+        <div class="container">
 
-    <style>
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .course-item-card {
-            background: #fff;
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
-            border: 1px solid #f1f4f8;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .course-item-card:hover {
-            transform: translateY(-10px);
-            border-color: #4361ee;
-            box-shadow: 0 15px 35px rgba(67, 97, 238, 0.1);
-        }
-
-        .course-icon-bg {
-            width: 70px;
-            height: 70px;
-            background: rgba(67, 97, 238, 0.08);
-            color: #4361ee;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin: 0 auto 20px;
-            transition: 0.3s;
-        }
-
-        .course-item-card:hover .course-icon-bg {
-            background: #4361ee;
-            color: #fff;
-        }
-
-        .course-title {
-            font-weight: 700;
-            color: #2b2d42;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-
-        .course-meta {
-            font-size: 0.85rem;
-            color: #8d99ae;
-            border-top: 1px solid #f1f4f8;
-            padding-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .add-course-btn {
-            background: #4361ee;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-weight: 700;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.2);
-        }
-
-        .add-course-btn:hover {
-            background: #3f37c9;
-            color: white;
-            transform: translateY(-2px);
-        }
-    </style>
-
-    <div class="container py-4">
-        <div class="row align-items-center mb-4">
-            <div class="col-md-6">
-                <h2 class="fw-bold mb-1">📚 O‘quv Kurslari</h2>
-                <p class="text-muted small">Markazimizda mavjud barcha ta'lim yo'nalishlari</p>
+            <!-- PAGE HEADER -->
+            <div class="pageHeader">
+                <h1>Our Courses</h1>
+                <p class="muted">
+                    Choose a course and explore available sessions
+                </p>
             </div>
 
-            {% if request.user.role == 'admin' %}
-                <div class="col-md-6 text-md-end">
-                    <a href="/courses/create/" class="add-course-btn">
-                        <i class="fas fa-plus-circle me-2"></i> Yangi kurs qo‘shish
-                    </a>
+            <!-- OPTIONAL CATEGORY FILTER (STATIC UI) -->
+            {% if categories %}
+                <div class="categoryFilter">
+                    <a href="{% url 'courses:list' %}" class="pill active">All</a>
+                    {% for cat in categories %}
+                        <a href="?category={{ cat.id }}" class="pill">
+                            {{ cat.name }}
+                        </a>
+                    {% endfor %}
                 </div>
             {% endif %}
+
+            <!-- COURSE GRID -->
+            <div class="courseGrid">
+
+                {% for course in courses %}
+                    <article class="courseCard">
+
+                        <!-- IMAGE -->
+                        <div class="courseCard__image">
+                            {% if course.small_image %}
+                                <img src="{{ course.small_image.url }}" alt="{{ course.name }}">
+                            {% else %}
+                                <img src="{% static 'images/course-placeholder.png' %}" alt="">
+                            {% endif %}
+                        </div>
+
+                        <!-- BODY -->
+                        <div class="courseCard__body">
+                            <div class="courseCard__top">
+                                {% if course.category %}
+                                    <span class="badge">{{ course.category.name }}</span>
+                                {% endif %}
+                                <h3 class="courseTitle">{{ course.name }}</h3>
+                            </div>
+
+                            <p class="courseDesc">
+                                {{ course.small_description }}
+                            </p>
+
+                            <!-- META -->
+                            <div class="courseMeta">
+                                {% if course.price %}
+                                    <div class="price">$ {{ course.price }}</div>
+                                {% else %}
+                                    <div class="price muted">Free</div>
+                                {% endif %}
+
+                                <div class="sessionsCount">
+                                    {{ course.sessions.count }} sessions
+                                </div>
+                            </div>
+
+                            <!-- ACTION -->
+                            <a href="{% url 'courses:detail' course.id %}"
+                               class="btn btn--pill btn--primary btn--block">
+                                View course
+                            </a>
+                        </div>
+
+                    </article>
+                {% empty %}
+                    <p class="muted">No courses available.</p>
+                {% endfor %}
+
+            </div>
+
         </div>
-
-        <div class="courses-grid">
-            {% for course in courses %}
-                <div class="course-item-card">
-                    <div class="course-icon-bg">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-
-                    <h4 class="course-title">{{ course.name }}</h4>
-
-                    <div class="course-meta">
-                        <span><i class="fas fa-users me-1"></i> Guruhlar: {{ course.groups.count|default:"0" }}</span>
-                        <span><i class="fas fa-circle text-success me-1" style="font-size: 8px;"></i> Faol</span>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12 text-center py-5">
-                    <div class="bg-white p-5 rounded-4 shadow-sm border">
-                        <i class="fas fa-book-open fa-3x text-muted mb-3 opacity-50"></i>
-                        <h5 class="text-muted">Hozircha kurslar qo‘shilmagan</h5>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    [Image of a modern course catalog UI with card grid layout]
-
+    </section>
 {% endblock %}

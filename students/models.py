@@ -1,41 +1,35 @@
 from django.db import models
-from accounts.models import User
-from courses.models import Course
-# Create your models here.
-
-class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=20)
-    address = models.CharField(max_length=250)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ('user__username',)
-        verbose_name = 'Student'
-        verbose_name_plural = 'Students'
-
-    def __str__(self):
-        return self.user.username
+from courses.models import Course, Session
 
 
 class Enrollment(models.Model):
-    Status = (
+    STATUS_CHOICES = (
         ('graduated', 'Graduated'),
         ('failed', 'Failed'),
         ('studying', 'Studying'),
+        ('dropped',
+         'Dropped'),
     )
-    student = models.ForeignKey(
-        Student,
-        on_delete=models.CASCADE
-    )
-    course = models.ForeignKey(
-        Course,
-        related_name='enrollments',
-        on_delete=models.CASCADE
-    )
-    status = models.CharField(max_length=10, choices=Status)
+
+    student = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='enrollments',
+                                limit_choices_to={
+                                    'role': 'student',
+                                    },
+                                )
+    course = models.ForeignKey(Course, related_name='enrollments', on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='enrollments', null=True, blank=True)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='studying')
+    grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    last_attended = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__( self ):
+        return f"{self.student.username} - {self.course.name}"
 
+    class Meta:
+        ordering = [ '-created_at' ]
+        verbose_name = 'Enrollment'
+        verbose_name_plural = 'Enrollments'
+        unique_together = ('student',
+                           'course')

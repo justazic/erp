@@ -3,8 +3,6 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .models import Assignment, Submission
-from teachers.models import Teacher
-from students.models import Student
 
 
 # Create your views here.
