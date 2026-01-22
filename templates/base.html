@@ -25,8 +25,16 @@
         <nav class="nav__links">
             <a href="{% url 'index' %}">Home</a>
             {% if user.is_authenticated %}
-                <a href="#">My Courses</a>
-                <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+                {% if user.role == 'admin' %}
+                    <a href="{% url 'courses:admin_dashboard' %}">Dashboard</a>
+                    <a href="{% url 'courses:list' %}">Courses</a>
+                {% elif user.role == 'teacher' %}
+                    <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'courses:list' %}">My Courses</a>
+                {% elif user.role == 'student' %}
+                    <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'courses:list' %}">My Courses</a>
+                {% endif %}
             {% endif %}
             {% if not user.is_authenticated %}
                 <a href="{% url 'courses:list' %}">Courses</a>
@@ -43,11 +51,23 @@
                     </button>
 
                     <div class="navUser__menu">
-                        <a href="{% url 'accounts:profile' %}">Profile</a>
-                        {% if user.role == 'student' %}
-                            <a href="{% url 'finance:student_payments' %}">Payments</a>
+                        <a href="{% url 'accounts:profile' %}">👤 Profile</a>
+                        {% if user.role == 'admin' %}
+                            <a href="{% url 'courses:admin_dashboard' %}">📊 Admin Dashboard</a>
+                            <a href="{% url 'courses:list' %}">📚 Manage Courses</a>
+                            <a href="{% url 'courses:admin_student_list' %}">👨‍🎓 Students</a>
+                            <a href="{% url 'teachers:admin_list' %}">👨‍🏫 Teachers</a>
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid #eee;">
+                        {% elif user.role == 'teacher' %}
+                            <a href="{% url 'accounts:dashboard' %}">📊 My Dashboard</a>
+                            <a href="{% url 'courses:list' %}">📚 My Courses</a>
+                        {% elif user.role == 'student' %}
+                            <a href="{% url 'accounts:dashboard' %}">📊 My Dashboard</a>
+                            <a href="{% url 'courses:list' %}">📚 My Courses</a>
+                            <a href="{% url 'finance:student_payments' %}">💳 Payments</a>
                         {% endif %}
-                        <a href="{% url 'accounts:logout' %}">Logout</a>
+                        <hr style="margin: 8px 0; border: none; border-top: 1px solid #eee;">
+                        <a href="{% url 'accounts:logout' %}">🚪 Logout</a>
                     </div>
                 </div>
             {% else %}

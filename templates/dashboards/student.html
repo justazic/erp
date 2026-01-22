@@ -73,10 +73,18 @@
 
                     <ul class="dashList">
                         {% for assignment in pending_assignments %}
-                            <li class="dashList__item">
+                            <li class="dashList__item" style="cursor: pointer; transition: background 0.2s;"
+                                onmouseover="this.style.background='var(--soft)'"
+                                onmouseout="this.style.background='transparent'">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div>
-                                        <div class="dashList__main">{{ assignment.title }}</div>
+                                    <div style="flex: 1;">
+                                        <a href="{% url 'tasks:submission_create' assignment.id %}" style="text-decoration: none; color: inherit;">
+                                            <div class="dashList__main" style="color: var(--teal2); transition: color 0.2s;"
+                                                onmouseover="this.style.color='#009688'; this.style.textDecoration='underline';"
+                                                onmouseout="this.style.color='var(--teal2)'; this.style.textDecoration='none';">
+                                                {{ assignment.title }}
+                                            </div>
+                                        </a>
                                         <div class="dashList__sub muted small">Due: {{ assignment.deadline|date:"M d, H:i" }}</div>
                                     </div>
                                     <a href="{% url 'tasks:submission_create' assignment.id %}" class="btn btn--pill btn--primary btn--small">Submit</a>
@@ -110,19 +118,62 @@
                                 <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Course</th>
                                 <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Group</th>
                                 <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Room</th>
+                                <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Attendance</th>
+                                <th style="padding: 12px; border-bottom: 1px solid #eee; color: var(--muted); font-size: 12px;">Assignments</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for slot in schedule %}
-                                <tr>
-                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot.get_day_of_week_display }}</td>
-                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</td>
-                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small font-weight-600">{{ slot.group.course.name }}</td>
-                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot.group.name }}</td>
-                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot.room|default:"—" }}</td>
+                            {% for slot_data in schedule %}
+                                <tr style="background: {% if slot_data.is_passed %}#f5f5f5{% else %}#fafafa{% endif %}; cursor: pointer; transition: background 0.2s;"
+                                    onclick="openLessonModal({{ slot_data.slot.id }}, '{{ slot_data.slot.group.course.name }}', '{{ slot_data.slot.group.name }}', '{{ slot_data.slot.get_day_of_week_display }}', '{{ slot_data.slot.start_time|time:'H:i' }}', '{{ slot_data.slot.end_time|time:'H:i' }}')"
+                                    onmouseover="this.style.background='{% if slot_data.is_passed %}#e8e8e8{% else %}#f0f0f0{% endif %}'"
+                                    onmouseout="this.style.background='{% if slot_data.is_passed %}#f5f5f5{% else %}#fafafa{% endif %}'">
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot_data.slot.get_day_of_week_display }}</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot_data.slot.start_time|time:"H:i" }} - {{ slot_data.slot.end_time|time:"H:i" }}</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small font-weight-600">{{ slot_data.slot.group.course.name }}</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot_data.slot.group.name }}</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot_data.slot.room|default:"—" }}</td>
+                                    <!-- ATTENDANCE STATUS -->
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem;">
+                                        {% if slot_data.attendance %}
+                                            <span style="display: inline-block; padding: 4px 8px; border-radius: 12px; font-weight: 600;
+                                                {% if slot_data.attendance.status == 'present' %}
+                                                    background: #e8f5e9; color: #2e7d32;
+                                                {% elif slot_data.attendance.status == 'absent' %}
+                                                    background: #ffebee; color: #c62828;
+                                                {% elif slot_data.attendance.status == 'late' %}
+                                                    background: #fff3e0; color: #e65100;
+                                                {% elif slot_data.attendance.status == 'excused' %}
+                                                    background: #e0f2f1; color: #00695c;
+                                                {% endif %}
+                                            ">
+                                                {{ slot_data.attendance.get_status_display }}
+                                            </span>
+                                        {% else %}
+                                            <span style="color: #999; font-size: 0.85rem;">
+                                                {% if slot_data.is_passed %}Not Marked{% else %}Pending{% endif %}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <!-- ASSIGNMENTS STATUS -->
+                                    <td style="padding: 12px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem;">
+                                        {% if slot_data.assignments %}
+                                            <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                                {% for assignment_status in slot_data.assignments %}
+                                                    {% if assignment_status.submitted %}
+                                                        <span style="display: inline-block; width: 20px; height: 20px; background: #e8f5e9; border: 1px solid #4caf50; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: #2e7d32; font-weight: bold; font-size: 0.7rem;" title="{{ assignment_status.title }}: Submitted">✓</span>
+                                                    {% else %}
+                                                        <span style="display: inline-block; width: 20px; height: 20px; background: #ffebee; border: 1px solid #f44336; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: #c62828; font-weight: bold; font-size: 0.85rem;" title="{{ assignment_status.title }}: Not Submitted">✕</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            <span style="color: #999; font-size: 0.85rem;">—</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% empty %}
-                                <tr><td colspan="5" style="padding: 24px; text-align: center;" class="muted small">No scheduled classes.</td></tr>
+                                <tr><td colspan="7" style="padding: 24px; text-align: center;" class="muted small">No scheduled classes.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -131,4 +182,131 @@
 
         </div>
     </section>
+
+    <!-- LESSON DETAIL MODAL -->
+    <div id="lessonModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 12px; padding: 32px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <!-- HEADER -->
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px; border-bottom: 2px solid #eee; padding-bottom: 16px;">
+                <div>
+                    <h2 id="modalTitle" style="margin: 0 0 8px 0;"></h2>
+                    <div id="modalSubtitle" style="color: var(--muted); font-size: 0.95rem;"></div>
+                </div>
+                <button onclick="closeLessonModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">✕</button>
+            </div>
+
+            <!-- LESSON INFO -->
+            <div style="margin-bottom: 24px;">
+                <h3 style="margin-bottom: 16px; font-size: 0.95rem; color: var(--muted);">Lesson Details</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Day</label>
+                        <div id="modalDay" style="font-weight: 600;"></div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Time</label>
+                        <div id="modalTime" style="font-weight: 600;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ASSIGNMENTS -->
+            <div style="margin-bottom: 16px;">
+                <h3 style="margin-bottom: 16px; font-size: 0.95rem; color: var(--muted);">Assignments for this Lesson</h3>
+                <div id="assignmentsContainer" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- CLOSE BUTTON -->
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button onclick="closeLessonModal()" style="flex: 1; padding: 10px 16px; background: #e0e0e0; color: #333; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scheduleData = {
+            {% for slot_data in schedule %}
+            "{{ slot_data.slot.id }}": {
+                "course": "{{ slot_data.slot.group.course.name }}",
+                "group": "{{ slot_data.slot.group.name }}",
+                "teacher": "{{ slot_data.slot.group.teacher.get_full_name|default:slot_data.slot.group.teacher.username }}",
+                "room": "{{ slot_data.slot.room|default:'—' }}",
+                "assignments": [
+                    {% for assignment_status in slot_data.assignments %}
+                    {
+                        "title": "{{ assignment_status.title }}",
+                        "submitted": {{ assignment_status.submitted|lower }},
+                        "assignment_id": {{ assignment_status.assignment_id }},
+                        "submission_id": {% if assignment_status.submission_id %}{{ assignment_status.submission_id }}{% else %}null{% endif %}
+                    }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        function openLessonModal(scheduleId, course, group, day, startTime, endTime) {
+            const data = scheduleData[scheduleId];
+            if (!data) return;
+
+            document.getElementById('modalTitle').textContent = data.course + ' - ' + data.group;
+            document.getElementById('modalSubtitle').textContent = 'Teacher: ' + data.teacher + ' | Room: ' + data.room;
+            document.getElementById('modalDay').textContent = day;
+            document.getElementById('modalTime').textContent = startTime + ' - ' + endTime;
+
+            // Populate assignments
+            const container = document.getElementById('assignmentsContainer');
+            container.innerHTML = '';
+
+            if (data.assignments.length === 0) {
+                container.innerHTML = '<p style="color: #999; font-size: 0.9rem;">No assignments for this lesson</p>';
+            } else {
+                data.assignments.forEach(assignment => {
+                    const div = document.createElement('div');
+                    div.style.cssText = 'padding: 12px; background: var(--soft); border-radius: 8px; border-left: 4px solid ' + (assignment.submitted ? '#4caf50' : '#f44336') + '; display: flex; align-items: center; justify-content: space-between;';
+
+                    const icon = assignment.submitted ?
+                        '<span style="display: inline-block; width: 24px; height: 24px; background: #e8f5e9; border: 1px solid #4caf50; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #2e7d32; font-weight: bold; font-size: 0.7rem;">✓</span>' :
+                        '<span style="display: inline-block; width: 24px; height: 24px; background: #ffebee; border: 1px solid #f44336; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #c62828; font-weight: bold; font-size: 0.85rem;">✕</span>';
+
+                    const status = assignment.submitted ? 'Submitted' : 'Not Submitted';
+                    const statusColor = assignment.submitted ? '#2e7d32' : '#c62828';
+
+                    // Determine action button
+                    let actionButton = '';
+                    if (assignment.submitted) {
+                        actionButton = '<a href="/attendance/submission/' + assignment.submission_id + '/" target="_blank" style="padding: 6px 12px; background: var(--teal2); color: white; border: none; border-radius: 6px; text-decoration: none; cursor: pointer; font-size: 0.85rem; font-weight: 600;">View Submission</a>';
+                    } else {
+                        actionButton = '<a href="/tasks/submission/create/' + assignment.assignment_id + '/" target="_blank" style="padding: 6px 12px; background: var(--teal2); color: white; border: none; border-radius: 6px; text-decoration: none; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Submit</a>';
+                    }
+
+                    div.innerHTML = icon +
+                        '<div style="flex: 1; margin-left: 12px;">' +
+                            '<a href="/tasks/submission/create/' + assignment.assignment_id + '/" target="_blank" style="color: inherit; text-decoration: none; cursor: pointer;">' +
+                                '<div style="font-weight: 600; margin-bottom: 4px; color: var(--teal2); transition: color 0.2s;" onmouseover="this.style.color=\'#009688\'" onmouseout="this.style.color=\'var(--teal2)\';">' + assignment.title + '</div>' +
+                            '</a>' +
+                            '<div style="font-size: 0.85rem; color: ' + statusColor + ';">' + status + '</div>' +
+                        '</div>' +
+                        actionButton;
+
+                    container.appendChild(div);
+                });
+            }
+
+            document.getElementById('lessonModal').style.display = 'flex';
+        }
+
+        function closeLessonModal() {
+            document.getElementById('lessonModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('lessonModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLessonModal();
+        });
+    </script>
 {% endblock %}

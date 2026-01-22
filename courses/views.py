@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Avg, Count, Q
+from django.http import HttpResponseRedirect, JsonResponse
 from .models import Course, Category, Comment, Group, Session
 from accounts.models import User
 from students.models import Enrollment
@@ -12,6 +13,7 @@ from decimal import Decimal
 from finance.models import Payment
 import uuid
 import datetime
+import json
 
 class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -100,7 +102,7 @@ class GroupUpdateView(AdminRequiredMixin, View):
             'schedules': schedules,
             'schedules_sorted': schedules_sorted,
             'assignments': assignments,
-            'enrollments': enrollments
+            'enrollments': enrollments,
         })
 
     def post(self, request, pk):
@@ -123,13 +125,13 @@ class SessionUpdateView(AdminRequiredMixin, View):
         session = get_object_or_404(Session, pk=pk)
         courses = Course.objects.all()
         groups = session.groups.all().annotate(student_count=Count('enrollments'))
-        
+
         # Students in this session but not assigned to any group
         unassigned_students = Enrollment.objects.filter(
             session=session,
             group__isnull=True
         ).select_related('student')
-        
+
         # All students in this session
         session_students = Enrollment.objects.filter(
             session=session
@@ -145,7 +147,7 @@ class SessionUpdateView(AdminRequiredMixin, View):
 
     def post(self, request, pk):
         session = get_object_or_404(Session, pk=pk)
-        
+
         if "update_session" in request.POST:
             session.course_id = request.POST.get('course')
             session.session_type = request.POST.get('session_type')
@@ -154,7 +156,7 @@ class SessionUpdateView(AdminRequiredMixin, View):
             session.capacity = request.POST.get('capacity', 30)
             session.save()
             return redirect('courses:admin_dashboard')
-            
+
         elif "assign_student" in request.POST:
             student_id = request.POST.get('student_id')
             if User.objects.filter(id=student_id, role='student').exists():
@@ -165,7 +167,7 @@ class SessionUpdateView(AdminRequiredMixin, View):
                     defaults={'status': 'studying'}
                 )
             return redirect('courses:session_update', pk=pk)
-            
+
         elif "remove_student" in request.POST:
             student_id = request.POST.get('student_id')
             Enrollment.objects.filter(student_id=student_id, session=session).delete()
@@ -182,7 +184,11 @@ class SessionDeleteView(AdminRequiredMixin, View):
 class CourseCreateView(AdminRequiredMixin, View):
     def get(self, request):
         categories = Category.objects.all()
-        return render(request, 'courses/admin/course_form.html', {'categories': categories})
+        selected_category_id = request.GET.get('category')
+        return render(request, 'courses/admin/course_form.html', {
+            'categories': categories,
+            'selected_category_id': selected_category_id
+        })
 
     def post(self, request):
         Course.objects.create(
@@ -268,8 +274,8 @@ class AdminStudentListView(AdminRequiredMixin, View):
         students = User.objects.filter(role='student').prefetch_related('enrollments')
         if search:
             students = students.filter(
-                Q(username__icontains=search) | 
-                Q(first_name__icontains=search) | 
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
                 Q(last_name__icontains=search) |
                 Q(email__icontains=search)
             )
@@ -299,10 +305,10 @@ class AdminStudentCreateView(AdminRequiredMixin, View):
         password = request.POST.get('password')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        
+
         if User.objects.filter(username=username).exists():
             return render(request, 'courses/admin/student_form.html', {'error': 'Username already exists'})
-            
+
         student = User.objects.create(
             username=username,
             email=email,
@@ -317,7 +323,7 @@ class AdminStudentCreateView(AdminRequiredMixin, View):
 class AdminStudentDepositView(AdminRequiredMixin, View):
     def post(self, request, pk):
         student = get_object_or_404(User, pk=pk, role='student')
-        
+
         if "charge_monthly" in request.POST:
             # Charge monthly fee for all active enrollments
             enrollments = Enrollment.objects.filter(student=student, status='studying')
@@ -325,11 +331,11 @@ class AdminStudentDepositView(AdminRequiredMixin, View):
             for enr in enrollments:
                 price = Decimal(enr.course.price or 0)
                 monthly_fee = price / 3 # Simple logic: monthly fee is 1/3 of course price
-                
+
                 if student.balance >= monthly_fee:
                     student.balance -= monthly_fee
                     student.save()
-                    
+
                     Payment.objects.create(
                         student=student,
                         enrollment=enr,
@@ -343,17 +349,17 @@ class AdminStudentDepositView(AdminRequiredMixin, View):
                         notes=f"Monthly charge for {enr.course.name}"
                     )
                     total_charged += monthly_fee
-            
+
             return redirect('courses:admin_student_detail', pk=pk)
 
         amount = Decimal(request.POST.get('amount', '0'))
-        
+
         if amount <= 0:
             return redirect('courses:admin_student_detail', pk=pk)
-            
+
         student.balance += amount
         student.save()
-        
+
         Payment.objects.create(
             student=student,
             amount=amount,
@@ -365,20 +371,20 @@ class AdminStudentDepositView(AdminRequiredMixin, View):
             reference_number=f"DEP-{uuid.uuid4().hex[:8].upper()}",
             notes=f"Admin deposit: {request.POST.get('notes', '')}"
         )
-        
+
         return redirect('courses:admin_student_detail', pk=pk)
 
 class AdminGroupStudentsView(AdminRequiredMixin, View):
     def get(self, request, pk):
         group = get_object_or_404(Group, pk=pk)
         group_enrollments = Enrollment.objects.filter(group=group).select_related('student')
-        
+
         # Students in the same session but NOT in this group (to add them)
         available_students = Enrollment.objects.filter(
             session=group.session,
             course=group.course
         ).exclude(group=group).select_related('student')
-        
+
         return render(request, 'courses/admin/group_students_manage.html', {
             'group': group,
             'group_enrollments': group_enrollments,
@@ -389,7 +395,7 @@ class AdminGroupStudentsView(AdminRequiredMixin, View):
         group = get_object_or_404(Group, pk=pk)
         action = request.POST.get('action')
         student_id = request.POST.get('student_id')
-        
+
         if action == 'add':
             enrollment = get_object_or_404(Enrollment, student_id=student_id, course=group.course, session=group.session)
             enrollment.group = group
@@ -398,26 +404,26 @@ class AdminGroupStudentsView(AdminRequiredMixin, View):
             enrollment = get_object_or_404(Enrollment, student_id=student_id, group=group)
             enrollment.group = None
             enrollment.save()
-            
+
         return redirect('courses:admin_group_students', pk=pk)
 
 class CourseListView(View):
   def get( self, request ):
     search = request.GET.get('search', '')
     category_id = request.GET.get('category')
-    
+
     courses = Course.objects.prefetch_related("sessions", "category")
-    
+
     if search:
         courses = courses.filter(
             Q(name__icontains=search) |
             Q(small_description__icontains=search) |
             Q(large_description__icontains=search)
         )
-    
+
     if category_id:
         courses = courses.filter(category_id=category_id)
-        
+
     categories = Category.objects.all()
 
     return render(request, "courses/list.html", {
@@ -438,7 +444,7 @@ class CourseDetailCreateView(View):
     if request.user.is_authenticated:
       is_enrolled = Enrollment.objects.filter(student=request.user, course_id=pk).exists()
     else: is_enrolled = False
-    
+
     rating_counts = { i: 0 for i in range(1, 6) }
     for c in comments:
       if 1 <= c.rating <= 5:
@@ -454,9 +460,9 @@ class CourseDetailCreateView(View):
         "percent": percent,
         }
         )
-    
+
     sessions = Session.objects.filter(course=course, is_active=True).prefetch_related('groups', 'groups__teacher')
-    
+
     return render(request, "courses/detail.html", {
       "course": course,
       "comments": comments,
@@ -472,19 +478,19 @@ class CourseDetailCreateView(View):
   def post(self, request, pk):
     if not request.user.is_authenticated or request.user.role != 'student':
         return redirect('accounts:login')
-        
+
     course = get_object_or_404(Course, pk=pk)
-    
+
     if "enroll" in request.POST:
         session_id = request.POST.get('session')
         group_id = request.POST.get('group')
-        
+
         if not session_id or not group_id:
             return redirect('courses:detail', pk=pk)
-            
+
         session = get_object_or_404(Session, id=session_id, course=course)
         group = get_object_or_404(Group, id=group_id, course=course, session=session)
-        
+
         # Check if already enrolled
         if Enrollment.objects.filter(student=request.user, course=course).exists():
              return redirect('accounts:dashboard')
@@ -494,11 +500,11 @@ class CourseDetailCreateView(View):
         if request.user.balance < price:
             # In a real app we'd show an error message
             return redirect('courses:detail', pk=pk)
-            
+
         # Deduct balance
         request.user.balance -= price
         request.user.save()
-        
+
         # Create Enrollment
         Enrollment.objects.create(
             student=request.user,
@@ -507,7 +513,7 @@ class CourseDetailCreateView(View):
             group=group,
             status='studying'
         )
-        
+
         # Create Payment record
         Payment.objects.create(
             student=request.user,
@@ -520,9 +526,9 @@ class CourseDetailCreateView(View):
             reference_number=f"ENR-{uuid.uuid4().hex[:8].upper()}",
             notes=f"Enrollment in {course.name}"
         )
-        
+
         return redirect('accounts:dashboard')
-        
+
     elif "rating" in request.POST:
         Comment.objects.create(
             course=course,
@@ -531,5 +537,80 @@ class CourseDetailCreateView(View):
             text=request.POST.get('text')
         )
         return redirect('courses:detail', pk=pk)
-        
+
     return redirect('courses:detail', pk=pk)
+
+class GroupStudentSearchAPIView(AdminRequiredMixin, View):
+    """API endpoint for searching available students for a group"""
+    def get(self, request, pk):
+        group = get_object_or_404(Group, pk=pk)
+        search_term = request.GET.get('q', '').lower().strip()
+
+        # Get enrolled student IDs
+        enrolled_student_ids = Enrollment.objects.filter(group=group).values_list('student_id', flat=True)
+
+        # Get all students not enrolled in this group
+        available_students = User.objects.filter(role='student').exclude(id__in=enrolled_student_ids)
+
+        # Filter based on search term
+        if search_term:
+            available_students = available_students.filter(
+                Q(first_name__icontains=search_term) |
+                Q(last_name__icontains=search_term) |
+                Q(username__icontains=search_term) |
+                Q(email__icontains=search_term) |
+                Q(id__iexact=search_term)
+            )
+
+        # Limit results
+        available_students = available_students[:20]
+
+        students_data = [{
+            'id': student.id,
+            'name': student.get_full_name() or student.username,
+            'email': student.email,
+            'username': student.username
+        } for student in available_students]
+
+        return JsonResponse({'students': students_data})
+
+class EnrollmentAddView(AdminRequiredMixin, View):
+    def post(self, request, pk):
+        """Add a student to a group"""
+        group = get_object_or_404(Group, pk=pk)
+        student_id = request.POST.get('student_id')
+        search_term = request.POST.get('search_term', '')
+        student = get_object_or_404(User, pk=student_id, role='student')
+
+        # Check if already enrolled
+        if not Enrollment.objects.filter(student=student, group=group).exists():
+            Enrollment.objects.create(
+                student=student,
+                group=group,
+                course=group.course,
+                session=group.session,
+                status='active'
+            )
+
+        redirect_url = f"{redirect('courses:group_update', pk=pk).url}?tab=students"
+        if search_term:
+            import urllib.parse
+            redirect_url += f"&search={urllib.parse.quote(search_term)}"
+
+        return HttpResponseRedirect(redirect_url)
+
+
+class EnrollmentRemoveView(AdminRequiredMixin, View):
+    def post(self, request, pk):
+        """Remove a student from a group"""
+        enrollment = get_object_or_404(Enrollment, pk=pk)
+        group_id = enrollment.group.id
+        search_term = request.POST.get('search_term', '')
+        enrollment.delete()
+
+        redirect_url = f"{redirect('courses:group_update', pk=group_id).url}?tab=students"
+        if search_term:
+            import urllib.parse
+            redirect_url += f"&search={urllib.parse.quote(search_term)}"
+
+        return HttpResponseRedirect(redirect_url)

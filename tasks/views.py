@@ -10,16 +10,32 @@ from courses.models import Group
 # Create your views here.
 
 class AssigmentCreateView(LoginRequiredMixin, View):
-  def get( self, request ):
-    if request.user.role != 'teacher':
+  def get( self, request, group_id=None ):
+    if request.user.role not in ['teacher', 'admin']:
       return redirect('/')
 
-    groups = Group.objects.filter(teacher=request.user)
-    return render(request, 'tasks/assignment_create.html', {'groups': groups})
+    if request.user.role == 'admin':
+      groups = Group.objects.all()
+    else:
+      groups = Group.objects.filter(teacher=request.user)
 
-  def post( self, request ):
-    if request.user.role != 'teacher':
+    selected_group = None
+    if group_id:
+      selected_group = get_object_or_404(Group, id=group_id)
+
+    schedule_id = request.GET.get('schedule_id')
+
+    return render(request, 'tasks/assignment_create.html', {
+      'groups': groups,
+      'selected_group': selected_group,
+      'schedule_id': schedule_id,
+    })
+
+  def post( self, request, group_id=None ):
+    if request.user.role not in ['teacher', 'admin']:
       return redirect('/')
+
+    schedule_id = request.POST.get('schedule_id')
 
     Assignment.objects.create(
       teacher=request.user,
@@ -27,8 +43,14 @@ class AssigmentCreateView(LoginRequiredMixin, View):
       description=request.POST.get('description'),
       deadline=request.POST.get('deadline'),
       group_id=request.POST.get('group'),
+      schedule_id=schedule_id if schedule_id else None,
       status='published'
       )
+
+    # Redirect back to schedule detail if schedule_id was provided
+    if schedule_id:
+      return redirect('attendance:schedule_detail', schedule_id=schedule_id)
+
     return redirect('tasks:assignment_list')
 
 
@@ -129,21 +151,31 @@ class SubmissionCheckView(LoginRequiredMixin, View):
 
 class AssigmentUpdateView(LoginRequiredMixin, View):
   def get( self, request, assignment_id ):
-    if request.user.role != 'teacher':
+    if request.user.role not in ['teacher', 'admin']:
       return redirect('/')
 
-    assignment = get_object_or_404(Assignment, id=assignment_id, teacher=request.user)
-    groups = Group.objects.filter(teacher=request.user)
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if request.user.role == 'teacher' and assignment.teacher != request.user:
+      return redirect('/')
+
+    if request.user.role == 'admin':
+      groups = Group.objects.all()
+    else:
+      groups = Group.objects.filter(teacher=request.user)
+
     return render(request, 'tasks/assignment_edit.html', {
       'assignment': assignment,
       'groups': groups
     })
 
   def post( self, request, assignment_id ):
-    if request.user.role != 'teacher':
+    if request.user.role not in ['teacher', 'admin']:
       return redirect('/')
 
-    assignment = get_object_or_404(Assignment, id=assignment_id, teacher=request.user)
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if request.user.role == 'teacher' and assignment.teacher != request.user:
+      return redirect('/')
+
     assignment.title = request.POST.get('title')
     assignment.description = request.POST.get('description')
     assignment.deadline = request.POST.get('deadline')
@@ -154,8 +186,10 @@ class AssigmentUpdateView(LoginRequiredMixin, View):
 
 class AssigmentDeleteView(LoginRequiredMixin, View):
   def post( self, request, assignment_id ):
-    if request.user.role != 'teacher':
+    if request.user.role not in ['teacher', 'admin']:
       return redirect('/')
-    assignment = get_object_or_404(Assignment, id=assignment_id, teacher=request.user)
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if request.user.role == 'teacher' and assignment.teacher != request.user:
+      return redirect('/')
     assignment.delete()
     return redirect('/tasks/assignments/')

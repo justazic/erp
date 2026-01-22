@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} - Mark Attendance | Teacher Dashboard{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <!-- HEADER -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                <div>
+                    <h1 style="margin: 0; margin-bottom: 8px;">{{ group.name }}</h1>
+                    <p class="muted" style="margin: 0;">📍 {{ group.course.name }} • {{ group.session.get_session_type_display|default:"No Session" }}</p>
+                </div>
+                <a href="{% url 'teachers:my_groups' %}" style="text-decoration: none;">
+                    <button class="btn btn--pill btn--outlineTeal">← Back to Groups</button>
+                </a>
+            </div>
+
+            <!-- STATS -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
+                <div style="padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                    <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">👥 Total Students</div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--teal2);">{{ enrollments.count }}</div>
+                </div>
+                <div style="padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                    <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">📚 Course</div>
+                    <div style="font-size: 1.1rem; font-weight: 600;">{{ group.course.name }}</div>
+                </div>
+                <div style="padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                    <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">📅 Session</div>
+                    <div style="font-size: 1.1rem; font-weight: 600;">{{ group.session.get_session_type_display|default:"—" }}</div>
+                </div>
+            </div>
+
+            <!-- STUDENTS TABLE - MARK ATTENDANCE -->
+            <div style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden;">
+                {% if enrollments %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--soft); border-bottom: 2px solid #ddd;">
+                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Student Name</th>
+                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Email</th>
+                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Enrollment Status</th>
+                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Joined</th>
+                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in enrollments %}
+                                    <tr style="border-bottom: 1px solid #eee; background: white; transition: background 0.2s;"
+                                        onmouseover="this.style.background='#f9f9f9'"
+                                        onmouseout="this.style.background='white'">
+                                        <td style="padding: 12px 16px; font-size: 0.95rem; font-weight: 500; color: var(--teal2);">
+                                            {{ enrollment.student.get_full_name|default:enrollment.student.username }}
+                                        </td>
+                                        <td style="padding: 12px 16px; font-size: 0.9rem;">{{ enrollment.student.email|default:"—" }}</td>
+                                        <td style="padding: 12px 16px; text-align: center; font-size: 0.85rem;">
+                                            <span style="padding: 4px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 12px; font-weight: 600; display: inline-block;">
+                                                ✓ Active
+                                            </span>
+                                        </td>
+                                        <td style="padding: 12px 16px; text-align: center; font-size: 0.85rem; color: var(--muted);">{{ enrollment.enrolled_at|date:"M d, Y" }}</td>
+                                        <td style="padding: 12px 16px; text-align: center; display: flex; gap: 6px; justify-content: center;">
+                                            <a href="#" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--teal2); color: white; border-radius: 4px; transition: all 0.2s;"
+                                               title="Mark attendance"
+                                               onmouseover="this.style.transform='scale(1.1)'; this.style.background='#1a9999'"
+                                               onmouseout="this.style.transform='scale(1)'; this.style.background='var(--teal2)'">
+                                                ✓
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div style="padding: 60px 40px; text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">👥</div>
+                        <p class="muted" style="font-size: 1.1rem; margin: 0;">No students enrolled in this group yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+

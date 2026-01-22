@@ -9,11 +9,12 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from django.db.models import Count, Q
-from courses.models import Group, Session, Course
+from courses.models import Group, Session, Course, Category
 from students.models import Enrollment
 from tasks.models import Assignment, Submission
 from finance.models import Payment
 from attendance.models import Attendance, Schedule
+from accounts.models import User
 
 from .forms import LoginForm, UserProfileForm
 
@@ -177,8 +178,71 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # Payments
         recent_payments = Payment.objects.filter(student=user).order_by('-created_at')[:5]
         
-        # Schedule
-        schedule = Schedule.objects.filter(group__enrollments__student=user).select_related('group', 'group__course').order_by('day_of_week', 'start_time')
+        # Schedule with attendance and assignment status
+        from django.utils import timezone
+        from datetime import timedelta
+
+        schedule_slots = Schedule.objects.filter(group__enrollments__student=user).select_related('group', 'group__course', 'group__teacher').order_by('day_of_week', 'start_time')
+
+        today = timezone.now().date()
+        schedule_data = []
+
+        for slot in schedule_slots:
+            # Calculate the date for this schedule's day_of_week
+            current_day_of_week = today.weekday()  # Monday=0, Sunday=6
+            target_day_of_week = slot.day_of_week
+
+            # Calculate days difference
+            days_diff = (target_day_of_week - current_day_of_week) % 7
+            if days_diff == 0:
+                slot_date = today
+                is_passed = False
+            else:
+                if days_diff <= current_day_of_week:
+                    slot_date = today - timedelta(days=current_day_of_week - target_day_of_week)
+                else:
+                    slot_date = today - timedelta(days=(7 - days_diff))
+
+                # Check if this slot is in the past
+                is_passed = slot_date < today
+
+            # Get attendance for this slot
+            attendance = Attendance.objects.filter(
+                student=user,
+                schedule=slot,
+                date=slot_date
+            ).first()
+
+            # Get assignments for this slot
+            assignments = Assignment.objects.filter(
+                schedule=slot,
+                status='published'
+            ).select_related('group')
+
+            assignment_statuses = []
+            for assignment in assignments:
+                submission = Submission.objects.filter(
+                    assignment=assignment,
+                    student=user
+                ).first()
+
+                assignment_statuses.append({
+                    'title': assignment.title,
+                    'submitted': submission is not None,
+                    'assignment_id': assignment.id,
+                    'submission_id': submission.id if submission else None,
+                })
+
+            schedule_data.append({
+                'slot': slot,
+                'date': slot_date,
+                'is_passed': is_passed,
+                'attendance': attendance,
+                'assignments': assignment_statuses,
+            })
+
+        # Sort: upcoming first, then past
+        schedule_data.sort(key=lambda x: (x['is_passed'], x['slot'].day_of_week, x['slot'].start_time))
 
         ctx.update({
             "enrollments": enrollments,
@@ -188,13 +252,20 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             "pending_assignments": pending_assignments,
             "recent_payments": recent_payments,
             "balance": user.balance,
-            "schedule": schedule,
+            "schedule": schedule_data,
         })
     elif user.role == 'admin':
+        students_count = User.objects.filter(role='student').count()
+        teachers_count = User.objects.filter(role='teacher').count()
+        categories = Category.objects.all()
+
         ctx.update({
             'groups': Group.objects.all().select_related('course', 'session', 'teacher'),
             'sessions': Session.objects.all().select_related('course'),
-            'courses': Course.objects.all()
+            'courses': Course.objects.all(),
+            'categories': categories,
+            'students_count': students_count,
+            'teachers_count': teachers_count,
         })
     else:
         ctx.update({

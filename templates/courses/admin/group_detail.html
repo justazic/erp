@@ -71,7 +71,7 @@
                                     <tbody>
                                         {% for schedule in schedules_sorted %}
                                             <tr style="background: {% if schedule.is_upcoming %}#e8f5f3{% else %}#f5f5f5{% endif %}; cursor: pointer; border-bottom: 1px solid #eee; border-left: 4px solid {% if schedule.is_upcoming %}var(--teal2){% else %}#ccc{% endif %}; transition: background 0.2s;"
-                                                 onclick="window.location.href='{% url 'attendance:class_detail' group.id schedule.id %}'"
+                                                 onclick="window.location.href='{% url 'attendance:schedule_detail' schedule.id %}'"
                                                  onmouseover="this.style.background='{% if schedule.is_upcoming %}#d0f0ed{% else %}#efefef{% endif %}'"
                                                  onmouseout="this.style.background='{% if schedule.is_upcoming %}#e8f5f3{% else %}#f5f5f5{% endif %}'">
                                                 <td style="padding: 12px; border: 1px solid #eee; font-weight: 600;">{{ schedule.get_day_of_week_display }}</td>
@@ -121,23 +121,269 @@
 
                     <!-- STUDENTS TAB -->
                     <div id="students-content" style="display: none; margin-top: 32px;">
-                        <h3 style="margin-top: 0; margin-bottom: 24px;">Enrolled Students</h3>
-                        {% if enrollments %}
-                            <div style="display: grid; gap: 12px;">
-                                {% for enrollment in enrollments %}
-                                    <div style="padding: 16px; background: var(--soft); border-radius: 12px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; border-left: 4px solid transparent;"
-                                         onmouseover="this.style.transform='translateX(4px)'; this.style.borderColor='var(--teal2)'"
-                                         onmouseout="this.style.transform='none'; this.style.borderColor='transparent'">
-                                        <div style="font-weight: 600;">{{ enrollment.student.get_full_name|default:enrollment.student.username }}</div>
-                                        <div class="tiny muted">{{ enrollment.student.email }}</div>
-                                    </div>
-                                {% endfor %}
+                        <h3 style="margin-top: 0; margin-bottom: 24px;">Manage Students</h3>
+
+                        <!-- ADD STUDENT SECTION -->
+                        <div style="margin-bottom: 32px; padding: 24px; background: linear-gradient(135deg, #e8f5f3 0%, #f0fffe 100%); border-radius: 12px; border-left: 4px solid var(--teal2); box-shadow: 0 4px 12px rgba(26, 153, 153, 0.1);">
+                            <h4 style="margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 1.1rem;">🔍 <span>Add Student to Group</span></h4>
+                            <p style="font-size: 0.9rem; color: #555; margin-bottom: 16px; line-height: 1.6;">Search by name, email, username, or ID. Added students will automatically appear in the enrolled list.</p>
+                            <div style="display: flex; gap: 12px; margin-bottom: 0;">
+                                <div style="position: relative; flex: 1;">
+                                    <input type="text" id="studentSearch" placeholder="e.g., John Smith, john@example.com, 5..."
+                                           style="width: 100%; padding: 14px 40px 14px 16px; border: 2px solid #ccc; border-radius: 8px; font-family: inherit; font-size: 1rem; transition: all 0.3s; background: white;"
+                                           onfocus="this.style.borderColor='var(--teal2)'; this.style.boxShadow='0 0 0 3px rgba(26, 153, 153, 0.15)'"
+                                           onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none'">
+                                    <div style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #999; font-size: 1rem; pointer-events: none; transition: all 0.2s;" id="searchIcon">🔍</div>
+                                </div>
                             </div>
-                        {% else %}
-                            <p class="muted">No students enrolled in this group yet.</p>
-                        {% endif %}
+                            <div id="studentSearchResults" style="display: none; max-height: 450px; overflow-y: auto; border: 1px solid #d0d0d0; border-radius: 8px; margin-top: 12px; background: white; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
+                                <!-- Results will be inserted here -->
+                            </div>
+                        </div>
+
+                        <!-- ENROLLED STUDENTS LIST -->
+                        <div style="background: #f9f9f9; padding: 24px; border-radius: 12px;">
+                            <h4 style="margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 1.05rem;">👥 <span>Enrolled Students ({{ enrollments.count }})</span></h4>
+                            {% if enrollments %}
+                                <div style="display: grid; gap: 12px;">
+                                    {% for enrollment in enrollments %}
+                                        <div id="enrollment-{{ enrollment.id }}" style="padding: 16px; background: white; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--teal2); transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"
+                                             onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'; this.style.transform='translateX(4px)'"
+                                             onmouseout="this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)'; this.style.transform='translateX(0)'">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: #333; font-size: 1rem;">{{ enrollment.student.get_full_name|default:enrollment.student.username }}</div>
+                                                <div class="tiny muted" style="margin-top: 4px;">ID: {{ enrollment.student.id }} • {{ enrollment.student.email }}</div>
+                                            </div>
+                                            <form method="post" action="{% url 'courses:enrollment_remove' enrollment.id %}" onsubmit="return handleRemoveStudent(this, event)" style="display: inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="search_term" value="">
+                                                <button type="submit" style="padding: 8px 16px; background: #ffcdd2; color: #c62828; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;"
+                                                        onmouseover="this.style.background='#ef9a9a'; this.style.transform='scale(1.05)'"
+                                                        onmouseout="this.style.background='#ffcdd2'; this.style.transform='scale(1)'">
+                                                    🗑️ Remove
+                                                </button>
+                                            </form>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div style="text-align: center; padding: 32px; color: #999;">
+                                    <div style="font-size: 2.5rem; margin-bottom: 12px;">👤</div>
+                                    <p style="margin: 0; font-size: 1rem;">No students enrolled yet</p>
+                                    <p style="margin: 8px 0 0 0; font-size: 0.9rem;">Search and add students above</p>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+
+                <script>
+                    let searchTimeout;
+                    const groupId = {{ group.id }};
+                    const enrolledStudentIds = new Set([{% for e in enrollments %}{{ e.student.id }},{% endfor %}]);
+
+                    // Setup event listeners for search
+                    const searchInput = document.getElementById('studentSearch');
+                    const searchIcon = document.getElementById('searchIcon');
+
+                    searchInput.addEventListener('input', function() {
+                        clearTimeout(searchTimeout);
+
+                        // Update search icon
+                        if (this.value.trim()) {
+                            searchIcon.textContent = '✕';
+                            searchIcon.style.cursor = 'pointer';
+                            searchIcon.style.opacity = '0.7';
+                            searchIcon.onclick = () => {
+                                searchInput.value = '';
+                                document.getElementById('studentSearchResults').style.display = 'none';
+                                searchIcon.textContent = '🔍';
+                                searchIcon.style.cursor = 'default';
+                                searchIcon.style.opacity = '1';
+                                searchIcon.onclick = null;
+                                searchInput.focus();
+                            };
+                        } else {
+                            searchIcon.textContent = '🔍';
+                            searchIcon.style.cursor = 'default';
+                            searchIcon.style.opacity = '1';
+                            searchIcon.onclick = null;
+                        }
+
+                        // Debounce the search
+                        searchTimeout = setTimeout(() => {
+                            searchStudents();
+                        }, 300);
+                    });
+
+                    // Allow Enter key to trigger search
+                    searchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            clearTimeout(searchTimeout);
+                            searchStudents();
+                        }
+                    });
+
+                    function searchStudents() {
+                        const searchInput = document.getElementById('studentSearch').value.trim();
+                        const resultsDiv = document.getElementById('studentSearchResults');
+
+                        if (!searchInput) {
+                            resultsDiv.style.display = 'none';
+                            resultsDiv.innerHTML = '';
+                            return;
+                        }
+
+                        // Show loading state
+                        resultsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;"><div style="display: inline-block; animation: spin 1s linear infinite; font-size: 1.5rem;">⟳</div><div style="margin-top: 8px;">Searching...</div></div>';
+                        resultsDiv.style.display = 'block';
+
+                        // Fetch from API
+                        fetch(`{% url 'courses:group_students_search_api' group.id %}?q=${encodeURIComponent(searchInput)}`)
+                            .then(response => {
+                                if (!response.ok) throw new Error('Network response was not ok');
+                                return response.json();
+                            })
+                            .then(data => {
+                                const students = data.students || [];
+
+                                if (students.length === 0) {
+                                    resultsDiv.innerHTML = `
+                                        <div style="padding: 24px; text-align: center;">
+                                            <div style="font-size: 2.5rem; margin-bottom: 12px;">😔</div>
+                                            <div style="color: #666; font-weight: 500;">No available students found</div>
+                                            <div style="font-size: 0.85rem; color: #999; margin-top: 8px;">Try searching with different keywords</div>
+                                        </div>
+                                    `;
+                                } else {
+                                    resultsDiv.innerHTML = `
+                                        <div style="padding: 12px 16px; background: #f5f5f5; border-bottom: 1px solid #eee; font-size: 0.85rem; color: #666; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                                            <span>📋</span>
+                                            <span>Found ${students.length} student${students.length !== 1 ? 's' : ''}</span>
+                                        </div>
+                                    ` + students.map((student, index) => `
+                                        <div style="padding: 12px 16px; border-bottom: ${index < students.length - 1 ? '1px solid #eee' : 'none'}; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; background: white;"
+                                             onmouseover="this.style.background='#f9f9f9'"
+                                             onmouseout="this.style.background='white'">
+                                            <div style="flex: 1; min-width: 0;">
+                                                <div style="font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem;">${escapeHtml(student.name)}</div>
+                                                <div style="font-size: 0.85rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ID: ${student.id} • ${escapeHtml(student.email)}</div>
+                                                <div style="font-size: 0.8rem; color: #bbb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@${escapeHtml(student.username)}</div>
+                                            </div>
+                                            <button type="button" onclick="addStudentToGroup(${student.id}, this)"
+                                                    class="add-btn"
+                                                    style="padding: 8px 16px; background: var(--teal2); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; white-space: nowrap; margin-left: 12px; flex-shrink: 0;">
+                                                ✓ Add
+                                            </button>
+                                        </div>
+                                    `).join('');
+                                }
+                                resultsDiv.style.display = 'block';
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                resultsDiv.innerHTML = '<div style="padding: 16px; text-align: center; color: #c62828;">⚠️ Error searching students</div>';
+                            });
+                    }
+
+                    function escapeHtml(text) {
+                        const map = {
+                            '&': '&amp;',
+                            '<': '&lt;',
+                            '>': '&gt;',
+                            '"': '&quot;',
+                            "'": '&#039;'
+                        };
+                        return text.replace(/[&<>"']/g, m => map[m]);
+                    }
+
+                    function addStudentToGroup(studentId, button) {
+                        // Disable button and show loading state
+                        button.disabled = true;
+                        const originalText = button.textContent;
+                        button.textContent = '⏳ Adding...';
+                        button.style.background = '#999';
+                        button.style.cursor = 'not-allowed';
+
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '{% url 'courses:enrollment_add' group.id %}';
+
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = 'csrfmiddlewaretoken';
+                        csrfInput.value = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+                        const studentInput = document.createElement('input');
+                        studentInput.type = 'hidden';
+                        studentInput.name = 'student_id';
+                        studentInput.value = studentId;
+
+                        const searchInput = document.createElement('input');
+                        searchInput.type = 'hidden';
+                        searchInput.name = 'search_term';
+                        searchInput.value = document.getElementById('studentSearch').value;
+
+                        form.appendChild(csrfInput);
+                        form.appendChild(studentInput);
+                        form.appendChild(searchInput);
+                        document.body.appendChild(form);
+
+                        // Show success feedback before submitting
+                        setTimeout(() => {
+                            button.textContent = '✓ Added!';
+                            button.style.background = '#4caf50';
+
+                            // Auto-switch to Students tab to show the added student
+                            switchTab('students');
+
+                            // Submit the form after brief delay
+                            setTimeout(() => {
+                                form.submit();
+                            }, 500);
+                        }, 300);
+                    }
+
+                    function handleRemoveStudent(form, event) {
+                        if (!confirm('Remove this student from the group?')) {
+                            return false;
+                        }
+                        form.querySelector('[name="search_term"]').value = document.getElementById('studentSearch').value;
+                        return true;
+                    }
+
+                    // Load page and handle URL parameters
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Check for tab parameter in URL
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const tab = urlParams.get('tab');
+                        const search = urlParams.get('search');
+
+                        if (tab) {
+                            switchTab(tab);
+                        }
+
+                        if (search) {
+                            document.getElementById('studentSearch').value = search;
+                            searchStudents();
+                        }
+                    });
+
+                    // Add animation keyframes
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes spin {
+                            to { transform: rotate(360deg); }
+                        }
+                        .add-btn:hover {
+                            background: #1a9999 !important;
+                            transform: translateY(-2px) !important;
+                            box-shadow: 0 4px 12px rgba(26, 153, 153, 0.3) !important;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                </script>
 
                 <!-- EDIT FORM (Hidden by default) -->
                 <form id="editForm" method="post" style="display: none;">

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ teacher.get_full_name|default:teacher.username }} - Teacher Profile | Admin{% endblock %}
+
+{% block content %}
+    <section class="section section--soft">
+        <div class="container">
+            <!-- HEADER -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                <a href="{% url 'teachers:admin_list' %}" style="color: var(--teal2); text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    ← Back to Teachers
+                </a>
+                <div style="display: flex; gap: 12px;">
+                    <a href="{% url 'teachers:admin_edit' teacher.id %}" style="text-decoration: none;">
+                        <button class="btn btn--pill btn--outlineTeal">✏️ Edit Teacher</button>
+                    </a>
+                    <form method="post" action="{% url 'teachers:admin_delete' teacher.id %}" onsubmit="return confirm('Are you sure you want to delete this teacher?')" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn--pill btn--white" style="color: var(--pink); border-color: var(--pink);">🗑️ Delete</button>
+                    </form>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <!-- TEACHER DETAILS -->
+                <h1 style="margin-top: 0; margin-bottom: 32px;">{{ teacher.get_full_name|default:teacher.username }}</h1>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid #eee;">
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Full Name</label>
+                        <div style="font-size: 1.1rem;">{{ teacher.get_full_name|default:"—" }}</div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Email</label>
+                        <div style="font-size: 1.1rem;">{{ teacher.email|default:"—" }}</div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Phone</label>
+                        <div style="font-size: 1.1rem;">{{ teacher.phone|default:"—" }}</div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Username</label>
+                        <div style="font-size: 1.1rem;">{{ teacher.username }}</div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Date Joined</label>
+                        <div style="font-size: 1.1rem;">{{ teacher.date_joined|date:"M d, Y H:i" }}</div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">Status</label>
+                        <div style="font-size: 1.1rem; color: #4caf50; font-weight: 600;">✓ Active</div>
+                    </div>
+                </div>
+
+                <!-- TAUGHT GROUPS -->
+                <div style="margin-top: 48px;">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 16px;">Groups Taught ({{ teacher.taught_groups.count }})</h2>
+
+                    {% if teacher.taught_groups.all %}
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: var(--soft); border-bottom: 2px solid #ddd;">
+                                        <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Group Name</th>
+                                        <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Course</th>
+                                        <th style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Students</th>
+                                        <th style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Created</th>
+                                        <th style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for group in teacher.taught_groups.all %}
+                                        <tr style="border-bottom: 1px solid #eee; background: white; transition: background 0.2s;"
+                                            onmouseover="this.style.background='#f9f9f9'"
+                                            onmouseout="this.style.background='white'">
+                                            <td style="padding: 10px 12px; font-size: 0.95rem; font-weight: 500; color: var(--teal2);">
+                                                <a href="{% url 'courses:group_update' group.id %}" style="text-decoration: none; color: inherit; cursor: pointer;">
+                                                    {{ group.name }}
+                                                </a>
+                                            </td>
+                                            <td style="padding: 10px 12px; font-size: 0.9rem;">{{ group.course.name }}</td>
+                                            <td style="padding: 10px 12px; text-align: center; font-size: 0.9rem; font-weight: 600;">{{ group.enrollments.count }}</td>
+                                            <td style="padding: 10px 12px; text-align: center; font-size: 0.85rem; color: var(--muted);">{{ group.created_at|date:"M d, Y" }}</td>
+                                            <td style="padding: 10px 12px; text-align: center; display: flex; gap: 6px; justify-content: center;">
+                                                <a href="{% url 'courses:group_update' group.id %}" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--teal2); color: white; border-radius: 4px; transition: all 0.2s;"
+                                                   title="Edit group"
+                                                   onmouseover="this.style.transform='scale(1.1)'; this.style.background='#1a9999'"
+                                                   onmouseout="this.style.transform='scale(1)'; this.style.background='var(--teal2)'">
+                                                    ✏️
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div style="padding: 30px; text-align: center; background: #f9f9f9; border-radius: 12px;">
+                            <p class="muted" style="margin: 0;">This teacher hasn't been assigned to any groups yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+

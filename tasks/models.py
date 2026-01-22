@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 from courses.models import Group
+from attendance.models import Schedule
 from django.utils import timezone
 
 
@@ -19,6 +20,7 @@ class Assignment(models.Model):
     },
                               )
   group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='assignments', null=True, blank=True)
+  schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name='assignments', null=True, blank=True)
   title = models.CharField(max_length=100)
   description = models.TextField()
   status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='draft')

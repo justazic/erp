@@ -13,6 +13,7 @@
             <div style="max-width: 600px; margin: 0 auto;">
                 <form method="post" class="card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow);">
                     {% csrf_token %}
+                    {% if schedule_id %}<input type="hidden" name="schedule_id" value="{{ schedule_id }}">{% endif %}
 
                     <div style="margin-bottom: 24px;">
                         <label class="small" style="display: block; margin-bottom: 8px; font-weight: 600;">Assignment Title</label>
@@ -31,7 +32,7 @@
                         <select name="group" required style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
                             <option value="">Select a group</option>
                             {% for group in groups %}
-                                <option value="{{ group.id }}">{{ group.name }} ({{ group.course.name }})</option>
+                                <option value="{{ group.id }}" {% if selected_group.id == group.id %}selected{% endif %}>{{ group.name }} ({{ group.course.name }})</option>
                             {% endfor %}
                         </select>
                     </div>

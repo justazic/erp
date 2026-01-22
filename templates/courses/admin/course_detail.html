@@ -54,21 +54,56 @@
 
                     <!-- RELATED SESSIONS -->
                     <div style="margin-top: 48px; padding-top: 32px; border-top: 1px solid #eee;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 24px;">Related Sessions</h2>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 16px;">Related Sessions ({{ course.sessions.count }})</h2>
 
                         {% if course.sessions.all %}
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
-                                {% for session in course.sessions.all %}
-                                    <a href="{% url 'courses:session_update' session.id %}" style="text-decoration: none; color: inherit; display: block;">
-                                        <div style="padding: 20px; background: var(--soft); border-radius: 12px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
-                                             onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'"
-                                             onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                                            <div style="font-weight: 600; color: var(--teal2); margin-bottom: 8px;">{{ session.get_session_type_display }}</div>
-                                            <div class="tiny muted">{{ session.start_date|date:"M d, Y" }} - {{ session.end_date|date:"M d, Y" }}</div>
-                                            <div class="tiny muted" style="margin-top: 8px;">{{ session.groups.count }} Groups</div>
-                                        </div>
-                                    </a>
-                                {% endfor %}
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background: var(--soft); border-bottom: 2px solid #ddd;">
+                                            <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Session Type</th>
+                                            <th style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Start Date</th>
+                                            <th style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">End Date</th>
+                                            <th style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Groups</th>
+                                            <th style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Capacity</th>
+                                            <th style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--muted);">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for session in course.sessions.all %}
+                                            <tr style="border-bottom: 1px solid #eee; background: white; transition: background 0.2s;"
+                                                onmouseover="this.style.background='#f9f9f9'"
+                                                onmouseout="this.style.background='white'">
+                                                <td style="padding: 10px 12px; font-size: 0.95rem; font-weight: 500; color: var(--teal2);">
+                                                    <a href="{% url 'courses:session_update' session.id %}" style="text-decoration: none; color: inherit; cursor: pointer;">
+                                                        {{ session.get_session_type_display }}
+                                                    </a>
+                                                </td>
+                                                <td style="padding: 10px 12px; text-align: center; font-size: 0.9rem;">{{ session.start_date|date:"M d, Y" }}</td>
+                                                <td style="padding: 10px 12px; text-align: center; font-size: 0.9rem;">{{ session.end_date|date:"M d, Y" }}</td>
+                                                <td style="padding: 10px 12px; text-align: center; font-size: 0.9rem; font-weight: 600;">{{ session.groups.count }}</td>
+                                                <td style="padding: 10px 12px; text-align: center; font-size: 0.9rem; font-weight: 600;">{{ session.capacity }}</td>
+                                                <td style="padding: 10px 12px; text-align: center; display: flex; gap: 6px; justify-content: center;">
+                                                    <a href="{% url 'courses:session_update' session.id %}" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--teal2); color: white; border-radius: 4px; transition: all 0.2s;"
+                                                       title="Edit session"
+                                                       onmouseover="this.style.transform='scale(1.1)'; this.style.background='#1a9999'"
+                                                       onmouseout="this.style.transform='scale(1)'; this.style.background='var(--teal2)'">
+                                                        ✏️
+                                                    </a>
+                                                    <form method="post" action="{% url 'courses:session_delete' session.id %}" onsubmit="return confirm('Delete this session?')" style="display: inline;">
+                                                        {% csrf_token %}
+                                                        <button type="submit" style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;"
+                                                                title="Delete session"
+                                                                onmouseover="this.style.transform='scale(1.1)'; this.style.background='#da190b'"
+                                                                onmouseout="this.style.transform='scale(1)'; this.style.background='#f44336'">
+                                                            🗑️
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         {% else %}
                             <p class="muted">No sessions for this course yet.</p>

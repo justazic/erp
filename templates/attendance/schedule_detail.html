@@ -1,0 +1,535 @@
+{% extends "base.html" %}
+{% load attendance_tags %}
+{% block title %}{{ schedule.group.name }} - {{ schedule.get_day_of_week_display }} | Schedule Detail{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<section class="section section--soft">
+    <div class="container">
+
+        <!-- BACK BUTTON -->
+        <div style="margin-bottom: 32px;">
+            <a href="javascript:history.back()" style="color: var(--teal2); text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                ← Back
+            </a>
+        </div>
+
+            <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <!-- SCHEDULE HEADER -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 32px;">
+                    <div>
+                        <h1 style="margin: 0 0 16px 0;">{{ schedule.group.name }}</h1>
+                        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                            <div>
+                                <span style="color: var(--muted); font-size: 0.9rem;">Day:</span>
+                                <span style="font-weight: 600;">{{ schedule.get_day_of_week_display }}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--muted); font-size: 0.9rem;">Time:</span>
+                                <span style="font-weight: 600;">{{ schedule.start_time|time:"H:i" }} - {{ schedule.end_time|time:"H:i" }}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--muted); font-size: 0.9rem;">Room:</span>
+                                <span style="font-weight: 600;">{{ schedule.room|default:"—" }}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--muted); font-size: 0.9rem;">Teacher:</span>
+                                <span style="font-weight: 600;">{{ schedule.teacher.get_full_name|default:schedule.teacher.username }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'tasks:assignment_create' schedule.group.id %}?schedule_id={{ schedule.id }}" style="text-decoration: none; flex-shrink: 0;">
+                        <button type="button" style="padding: 10px 20px; background: var(--teal2); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; white-space: nowrap;">
+                            + Create Assignment
+                        </button>
+                    </a>
+                </div>
+
+                <!-- STUDENTS TABLE AND SIDEBAR CONTAINER -->
+                <div style="display: flex; gap: 24px;">
+                    <!-- LEFT: FULL-WIDTH TABLE -->
+                    <div style="flex: 1;">
+                        <h2 style="margin-top: 32px; margin-bottom: 24px;">Students</h2>
+                        {% if students_data %}
+                            <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;" id="attendanceTable">
+                            <thead>
+                                <tr style="background: var(--soft);">
+                                    <th style="padding: 12px; text-align: left; border: 1px solid #eee; width: 40px;">
+                                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" style="cursor: pointer; width: 18px; height: 18px;">
+                                    </th>
+                                    <th style="padding: 12px; text-align: left; border: 1px solid #eee;">Student Name</th>
+                                    <th style="padding: 12px; text-align: left; border: 1px solid #eee;">
+                                        <span>Attendance</span>
+                                    </th>
+                                    <th style="padding: 12px; text-align: left; border: 1px solid #eee;">Assignments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in students_data %}
+                                    <tr style="border-bottom: 1px solid #eee; background: #fafafa; transition: all 0.2s;" data-student-id="{{ item.student.id }}" data-student-name="{{ item.student.get_full_name|default:item.student.username }}">
+                                        <td style="padding: 12px; border: 1px solid #eee; text-align: center;">
+                                            <input type="checkbox" class="studentCheckbox" onchange="updateStats()" style="cursor: pointer; width: 18px; height: 18px;">
+                                        </td>
+                                        <!-- STUDENT NAME WITH LINK -->
+                                        <td style="padding: 12px; border: 1px solid #eee;">
+                                            <a href="{% url 'courses:admin_student_detail' item.student.id %}" style="color: var(--teal2); text-decoration: none; font-weight: 600;">
+                                                {{ item.student.get_full_name|default:item.student.username }} →
+                                            </a>
+                                        </td>
+
+                                        <!-- ATTENDANCE WITH INLINE OPTIONS -->
+                                        <td style="padding: 12px; border: 1px solid #eee;">
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <span style="display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; font-weight: 600;
+                                                    {% if item.attendance %}
+                                                        {% if item.attendance.status == 'present' %}
+                                                            background: #e8f5e9; color: #2e7d32;
+                                                        {% elif item.attendance.status == 'absent' %}
+                                                            background: #ffebee; color: #c62828;
+                                                        {% elif item.attendance.status == 'late' %}
+                                                            background: #fff3e0; color: #e65100;
+                                                        {% elif item.attendance.status == 'excused' %}
+                                                            background: #e0f2f1; color: #00695c;
+                                                        {% endif %}
+                                                    {% else %}
+                                                        color: var(--muted); font-style: italic;
+                                                    {% endif %}
+                                                " id="status-{{ item.student.id }}">
+                                                    {{ item.attendance.get_status_display|default:"Not marked" }}
+                                                </span>
+                                                <div style="display: flex; gap: 2px;">
+                                                    <label title="Present" style="display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 2px 4px; border-radius: 3px; background: #f0f0f0; transition: all 0.2s;" onmouseover="this.style.background='#e0e0e0'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='#f0f0f0'; this.style.transform='scale(1)'">
+                                                        <input type="radio" name="attendance-{{ item.student.id }}" value="present"
+                                                               onchange="markAttendance({{ item.student.id }}, 'present')"
+                                                               {% if item.attendance.status == 'present' %}checked{% endif %}
+                                                               style="cursor: pointer; margin: 0; width: 12px; height: 12px;">
+                                                        <span style="font-size: 0.7rem; color: #4caf50; font-weight: 700; margin-left: 1px;">✓</span>
+                                                    </label>
+                                                    <label title="Absent" style="display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 2px 4px; border-radius: 3px; background: #f0f0f0; transition: all 0.2s;" onmouseover="this.style.background='#e0e0e0'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='#f0f0f0'; this.style.transform='scale(1)'">
+                                                        <input type="radio" name="attendance-{{ item.student.id }}" value="absent"
+                                                               onchange="markAttendance({{ item.student.id }}, 'absent')"
+                                                               {% if item.attendance.status == 'absent' %}checked{% endif %}
+                                                               style="cursor: pointer; margin: 0; width: 12px; height: 12px;">
+                                                        <span style="font-size: 0.7rem; color: #f44336; font-weight: 700; margin-left: 1px;">✗</span>
+                                                    </label>
+                                                    <label title="Late" style="display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 2px 4px; border-radius: 3px; background: #f0f0f0; transition: all 0.2s;" onmouseover="this.style.background='#e0e0e0'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='#f0f0f0'; this.style.transform='scale(1)'">
+                                                        <input type="radio" name="attendance-{{ item.student.id }}" value="late"
+                                                               onchange="markAttendance({{ item.student.id }}, 'late')"
+                                                               {% if item.attendance.status == 'late' %}checked{% endif %}
+                                                               style="cursor: pointer; margin: 0; width: 12px; height: 12px;">
+                                                        <span style="font-size: 0.7rem; color: #ff9800; font-weight: 700; margin-left: 1px;">⏱</span>
+                                                    </label>
+                                                    <label title="Excused" style="display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 2px 4px; border-radius: 3px; background: #f0f0f0; transition: all 0.2s;" onmouseover="this.style.background='#e0e0e0'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='#f0f0f0'; this.style.transform='scale(1)'">
+                                                        <input type="radio" name="attendance-{{ item.student.id }}" value="excused"
+                                                               onchange="markAttendance({{ item.student.id }}, 'excused')"
+                                                               {% if item.attendance.status == 'excused' %}checked{% endif %}
+                                                               style="cursor: pointer; margin: 0; width: 12px; height: 12px;">
+                                                        <span style="font-size: 0.7rem; color: #00695c; font-weight: 700; margin-left: 1px;">📋</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- ASSIGNMENTS -->
+                                        <td style="padding: 12px; border: 1px solid #eee;">
+                                            {% if item.submission_list %}
+                                                <div style="display: flex; flex-direction: column; gap: 12px;">
+                                                    {% for submission in item.submission_list %}
+                                                        {% if submission %}
+                                                            <div style="font-size: 0.85rem; display: flex; align-items: center; gap: 8px; justify-content: space-between;">
+                                                                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                                                                    {% if submission.id %}
+                                                                        <span style="display: inline-block; width: 18px; height: 18px; background: #e8f5e9; border: 1px solid #4caf50; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: #2e7d32; font-weight: bold; font-size: 0.7rem;">✓</span>
+                                                                        <span style="font-weight: 500; color: #333;">{{ submission.assignment_title }}</span>
+                                                                        {% if submission.grade is not None %}
+                                                                            <span style="display: inline-block; padding: 2px 8px; background: #f0f0f0; border-radius: 4px; font-size: 0.75rem; font-weight: 600; white-space: nowrap;">
+                                                                                {{ submission.grade }}/100
+                                                                            </span>
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        <span style="display: inline-block; width: 18px; height: 18px; background: #ffebee; border: 1px solid #f44336; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: #c62828; font-weight: bold; font-size: 0.85rem;">✕</span>
+                                                                        <span style="color: #999;">{{ submission.assignment_title }}</span>
+                                                                    {% endif %}
+                                                                </div>
+                                                                {% if submission.id %}
+                                                                    <a href="/attendance/submission/{{ submission.id }}/" style="text-decoration: none;">
+                                                                        <button type="button" style="padding: 4px 12px; background: var(--teal2); color: white; border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                                                                            View
+                                                                        </button>
+                                                                    </a>
+                                                                {% else %}
+                                                                    <span style="padding: 4px 12px; background: #f0f0f0; color: #999; border-radius: 6px; font-size: 0.75rem; font-weight: 600; white-space: nowrap;">
+                                                                        Not Submitted
+                                                                    </span>
+                                                                {% endif %}
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <span style="color: var(--muted); font-size: 0.85rem;">No assignments for this lesson</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="muted">No students enrolled in this group.</p>
+                    {% endif %}
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDEBAR: SEPARATED STATS & BUTTONS PANEL -->
+                <div style="
+                    position: fixed;
+                    right: 40px;
+                    top: 200px;
+                    width: auto;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+                    padding: 14px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    z-index: 100;
+                ">
+                        <!-- STATS DISPLAY -->
+                        <div id="attendanceStats" style="
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            text-align: center;
+                            padding: 6px 10px;
+                            background: #f5f5f5;
+                            border-radius: 6px;
+                            white-space: nowrap;
+                        ">
+                            ✓ All Present
+                        </div>
+
+                        <!-- BUTTONS ROW -->
+                        <div style="display: flex; gap: 6px;">
+                            <!-- MARK SELECTED PRESENT BUTTON -->
+                            <button type="button" onclick="markSelectedPresent()" id="markSelectedPresentBtn"
+                                    style="
+                                        padding: 6px 10px;
+                                        background: #4caf50;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 4px;
+                                        font-size: 0.7rem;
+                                        font-weight: 600;
+                                        cursor: pointer;
+                                        transition: all 0.2s;
+                                        white-space: nowrap;
+                                        opacity: 0.5;
+                                        pointer-events: none;
+                                    "
+                                    onmouseover="if(!this.disabled) { this.style.background='#45a049'; this.style.transform='scale(1.05)'; }"
+                                    onmouseout="if(!this.disabled) { this.style.background='#4caf50'; this.style.transform='scale(1)'; }"
+                                    disabled>
+                                ✓ Present
+                            </button>
+
+                            <!-- MARK SELECTED ABSENT BUTTON -->
+                            <button type="button" onclick="markSelectedAbsent()" id="markSelectedAbsentBtn"
+                                    style="
+                                        padding: 6px 10px;
+                                        background: #f44336;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 4px;
+                                        font-size: 0.7rem;
+                                        font-weight: 600;
+                                        cursor: pointer;
+                                        transition: all 0.2s;
+                                        white-space: nowrap;
+                                        opacity: 0.5;
+                                        pointer-events: none;
+                                    "
+                                    onmouseover="if(!this.disabled) { this.style.background='#da190b'; this.style.transform='scale(1.05)'; }"
+                                    onmouseout="if(!this.disabled) { this.style.background='#f44336'; this.style.transform='scale(1)'; }"
+                                    disabled>
+                                ✗ Absent
+                            </button>
+
+                            <!-- AUTO-SAVE INDICATOR -->
+                            <div id="autoSaveIndicator" style="
+                                padding: 6px 10px;
+                                background: #e8f5e9;
+                                color: #2e7d32;
+                                border-radius: 4px;
+                                font-size: 0.7rem;
+                                font-weight: 600;
+                                display: flex;
+                                align-items: center;
+                                gap: 4px;
+                                white-space: nowrap;
+                            ">
+                                ✓ Saved
+                            </div>
+                        </div>
+                </div>
+
+                <!-- ASSIGNMENTS MANAGEMENT -->
+                <div style="margin-top: 32px; padding-top: 32px; border-top: 2px solid #eee;">
+                    <h2 style="margin-top: 0; margin-bottom: 24px;">Assignments for This Lesson</h2>
+                    {% if assignments %}
+                        <div style="display: grid; gap: 16px;">
+                            {% for assignment in assignments %}
+                                <div style="padding: 16px; background: var(--soft); border-radius: 12px; border-left: 4px solid var(--teal2); display: flex; justify-content: space-between; align-items: start;">
+                                    <div>
+                                        <h4 style="margin: 0 0 4px 0;">{{ assignment.title }}</h4>
+                                        <div class="tiny muted">Due: {{ assignment.deadline|date:"M d, Y H:i" }}</div>
+                                        <p class="tiny" style="margin: 8px 0; color: #666;">{{ assignment.description|truncatewords:20 }}</p>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                                        <a href="{% url 'tasks:assignment_edit' assignment.id %}" class="btn btn--pill btn--white btn--small" style="color: var(--teal2); border-color: var(--teal2); text-decoration: none;">✏️ Edit</a>
+                                        <form method="post" action="{% url 'tasks:assignment_delete' assignment.id %}" style="display: inline;" onsubmit="return confirm('Delete this assignment?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn--pill btn--white btn--small" style="color: var(--pink); border-color: var(--pink); cursor: pointer;">🗑️ Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                                    {% else %}
+                        <p class="muted">No assignments created for this lesson yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ATTENDANCE DATA & FUNCTIONS -->
+<script>
+    const schedule_id = {{ schedule.id }};
+    const attendanceData = {};
+    let changedStudents = new Set();
+    let saveQueue = [];
+    let isSaving = false;
+
+    // Initialize attendance data from current marks
+    function initializeAttendanceData() {
+        document.querySelectorAll('[data-student-id]').forEach(row => {
+            const studentId = parseInt(row.dataset.studentId);
+            const checkedRadio = row.querySelector('input[type="radio"]:checked');
+            attendanceData[studentId] = checkedRadio ? checkedRadio.value : 'unmarked';
+        });
+        updateStats();
+    }
+
+    // Queue save requests to avoid database locks
+    function queueSave(studentId, status) {
+        saveQueue.push({studentId, status});
+        processSaveQueue();
+    }
+
+    // Process save queue one at a time
+    function processSaveQueue() {
+        if (isSaving || saveQueue.length === 0) return;
+
+        isSaving = true;
+        const {studentId, status} = saveQueue.shift();
+
+        autoSaveAttendance(studentId, status, () => {
+            isSaving = false;
+            // Process next item after a small delay
+            setTimeout(processSaveQueue, 200);
+        });
+    }
+
+    // Mark attendance for a single student
+    function markAttendance(studentId, status) {
+        attendanceData[studentId] = status;
+        changedStudents.add(studentId);
+
+        // Update status badge
+        const statusSpan = document.getElementById(`status-${studentId}`);
+        const statusMap = {
+            'present': { text: 'Present', bg: '#e8f5e9', color: '#2e7d32' },
+            'absent': { text: 'Absent', bg: '#ffebee', color: '#c62828' },
+            'late': { text: 'Late', bg: '#fff3e0', color: '#e65100' },
+            'excused': { text: 'Excused', bg: '#e0f2f1', color: '#00695c' }
+        };
+
+        const info = statusMap[status];
+        statusSpan.textContent = info.text;
+        statusSpan.style.background = info.bg;
+        statusSpan.style.color = info.color;
+
+        updateStats();
+        updateSelectedButtons();
+
+        // Queue save instead of immediate save
+        queueSave(studentId, status);
+    }
+
+    // Auto-save single attendance record
+    function autoSaveAttendance(studentId, status, callback) {
+        const formData = new FormData();
+        formData.append('student_id', studentId);
+        formData.append('status', status);
+
+        // Get CSRF token from the page
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfToken) {
+            formData.append('csrfmiddlewaretoken', csrfToken.value);
+            console.log('Saving student', studentId, 'with status:', status);
+        } else {
+            console.warn('CSRF token NOT found on page!');
+            if (callback) callback();
+            return;
+        }
+
+        const url = `/attendance/schedule/${schedule_id}/mark/${studentId}/`;
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken ? csrfToken.value : ''
+            }
+        }).then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                console.error('Response not ok:', response.status, response.statusText);
+                throw new Error(`HTTP ${response.status}`);
+            }
+            updateSaveIndicator('✓ Saved', '#e8f5e9', '#2e7d32');
+            return response.json().then(data => {
+                console.log('Save successful for student', studentId);
+                if (callback) callback();
+                return data;
+            });
+        }).catch(error => {
+            console.error('Save error:', error);
+            updateSaveIndicator('⚠️ Error', '#ffebee', '#c62828');
+            if (callback) callback();
+        });
+    }
+
+    // Update the save indicator
+    function updateSaveIndicator(text, bg, color) {
+        const indicator = document.getElementById('autoSaveIndicator');
+        indicator.textContent = text;
+        indicator.style.background = bg;
+        indicator.style.color = color;
+
+        // Reset to "Saved" after 3 seconds
+        if (text !== '✓ Saved') {
+            setTimeout(() => {
+                indicator.textContent = '✓ Saved';
+                indicator.style.background = '#e8f5e9';
+                indicator.style.color = '#2e7d32';
+            }, 3000);
+        }
+    }
+
+    // Update statistics display
+    function updateStats() {
+        const totalStudents = Object.keys(attendanceData).length;
+        const absentCount = Object.values(attendanceData).filter(s => s === 'absent').length;
+        const statsDiv = document.getElementById('attendanceStats');
+
+        if (absentCount === 0) {
+            statsDiv.innerHTML = '<span style="color: #4caf50; font-weight: 600;">✓ All Present</span>';
+        } else {
+            statsDiv.innerHTML = `<span style="color: #f44336; font-weight: 600;">✗ ${absentCount} Absent</span>`;
+        }
+    }
+
+    // Get selected students
+    function getSelectedStudents() {
+        const selected = [];
+        document.querySelectorAll('.studentCheckbox:checked').forEach(checkbox => {
+            const row = checkbox.closest('tr');
+            const studentId = parseInt(row.dataset.studentId);
+            selected.push(studentId);
+        });
+        return selected;
+    }
+
+    // Update selected buttons state
+    function updateSelectedButtons() {
+        const selected = getSelectedStudents();
+        const presentBtn = document.getElementById('markSelectedPresentBtn');
+        const absentBtn = document.getElementById('markSelectedAbsentBtn');
+
+        if (selected.length > 0) {
+            presentBtn.disabled = false;
+            presentBtn.style.opacity = '1';
+            presentBtn.style.pointerEvents = 'auto';
+            absentBtn.disabled = false;
+            absentBtn.style.opacity = '1';
+            absentBtn.style.pointerEvents = 'auto';
+        } else {
+            presentBtn.disabled = true;
+            presentBtn.style.opacity = '0.5';
+            presentBtn.style.pointerEvents = 'none';
+            absentBtn.disabled = true;
+            absentBtn.style.opacity = '0.5';
+            absentBtn.style.pointerEvents = 'none';
+        }
+    }
+
+    // Mark selected students as present
+    function markSelectedPresent() {
+        const selected = getSelectedStudents();
+        if (selected.length === 0) return;
+
+        selected.forEach(studentId => {
+            const row = document.querySelector(`[data-student-id="${studentId}"]`);
+            const radio = row.querySelector('input[value="present"]');
+            if (radio) {
+                radio.checked = true;
+                markAttendance(studentId, 'present');
+            }
+        });
+
+        updateSaveIndicator('⏳ Saving...', '#fff3e0', '#e65100');
+    }
+
+    // Mark selected students as absent
+    function markSelectedAbsent() {
+        const selected = getSelectedStudents();
+        if (selected.length === 0) return;
+
+        selected.forEach(studentId => {
+            const row = document.querySelector(`[data-student-id="${studentId}"]`);
+            const radio = row.querySelector('input[value="absent"]');
+            if (radio) {
+                radio.checked = true;
+                markAttendance(studentId, 'absent');
+            }
+        });
+
+        updateSaveIndicator('⏳ Saving...', '#fff3e0', '#e65100');
+    }
+
+    // Toggle select all checkbox
+    function toggleSelectAll(checkbox) {
+        document.querySelectorAll('.studentCheckbox').forEach(cb => {
+            cb.checked = checkbox.checked;
+        });
+        updateSelectedButtons();
+    }
+
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', initializeAttendanceData);
+
+    // Update buttons when checkboxes change
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('studentCheckbox') || e.target.id === 'selectAllCheckbox') {
+            updateSelectedButtons();
+        }
+    });
+</script>
+
+{% endblock %}
