@@ -63,7 +63,6 @@ class GroupUpdateView(AdminRequiredMixin, View):
         sessions = Session.objects.all()
         teachers = User.objects.filter(role='teacher')
 
-        # Get related data
         from attendance.models import Schedule
         from tasks.models import Assignment
         from django.utils import timezone
@@ -71,24 +70,19 @@ class GroupUpdateView(AdminRequiredMixin, View):
 
         schedules = Schedule.objects.filter(group=group).order_by('day_of_week', 'start_time')
 
-        # Add is_upcoming flag to each schedule (for this week)
         today = timezone.now().date()
-        today_weekday = today.weekday()  # 0=Monday, 6=Sunday
+        today_weekday = today.weekday()
 
         schedules_sorted = []
         for schedule in schedules:
-            # Calculate if this schedule is in the upcoming week
             day_diff = (schedule.day_of_week - today_weekday) % 7
             if day_diff == 0:
-                # Today - check if time hasn't passed
                 is_upcoming = timezone.now().time() < schedule.start_time
             else:
-                # Upcoming days
                 is_upcoming = day_diff > 0 or day_diff < 0
             schedule.is_upcoming = is_upcoming
             schedules_sorted.append(schedule)
 
-        # Sort: upcoming first, then already passed
         schedules_sorted.sort(key=lambda x: (not x.is_upcoming, x.day_of_week, x.start_time))
 
         assignments = Assignment.objects.filter(group=group).order_by('-created_at')
@@ -126,13 +120,11 @@ class SessionUpdateView(AdminRequiredMixin, View):
         courses = Course.objects.all()
         groups = session.groups.all().annotate(student_count=Count('enrollments'))
 
-        # Students in this session but not assigned to any group
         unassigned_students = Enrollment.objects.filter(
             session=session,
             group__isnull=True
         ).select_related('student')
 
-        # All students in this session
         session_students = Enrollment.objects.filter(
             session=session
         ).select_related('student', 'group')
@@ -325,12 +317,11 @@ class AdminStudentDepositView(AdminRequiredMixin, View):
         student = get_object_or_404(User, pk=pk, role='student')
 
         if "charge_monthly" in request.POST:
-            # Charge monthly fee for all active enrollments
             enrollments = Enrollment.objects.filter(student=student, status='studying')
             total_charged = Decimal('0')
             for enr in enrollments:
                 price = Decimal(enr.course.price or 0)
-                monthly_fee = price / 3 # Simple logic: monthly fee is 1/3 of course price
+                monthly_fee = price / 3
 
                 if student.balance >= monthly_fee:
                     student.balance -= monthly_fee
@@ -379,7 +370,6 @@ class AdminGroupStudentsView(AdminRequiredMixin, View):
         group = get_object_or_404(Group, pk=pk)
         group_enrollments = Enrollment.objects.filter(group=group).select_related('student')
 
-        # Students in the same session but NOT in this group (to add them)
         available_students = Enrollment.objects.filter(
             session=group.session,
             course=group.course
@@ -491,21 +481,16 @@ class CourseDetailCreateView(View):
         session = get_object_or_404(Session, id=session_id, course=course)
         group = get_object_or_404(Group, id=group_id, course=course, session=session)
 
-        # Check if already enrolled
         if Enrollment.objects.filter(student=request.user, course=course).exists():
              return redirect('accounts:dashboard')
 
-        # Check balance
         price = Decimal(course.price or 0)
         if request.user.balance < price:
-            # In a real app we'd show an error message
             return redirect('courses:detail', pk=pk)
 
-        # Deduct balance
         request.user.balance -= price
         request.user.save()
 
-        # Create Enrollment
         Enrollment.objects.create(
             student=request.user,
             course=course,
@@ -514,7 +499,6 @@ class CourseDetailCreateView(View):
             status='studying'
         )
 
-        # Create Payment record
         Payment.objects.create(
             student=request.user,
             amount=price,
@@ -546,13 +530,10 @@ class GroupStudentSearchAPIView(AdminRequiredMixin, View):
         group = get_object_or_404(Group, pk=pk)
         search_term = request.GET.get('q', '').lower().strip()
 
-        # Get enrolled student IDs
         enrolled_student_ids = Enrollment.objects.filter(group=group).values_list('student_id', flat=True)
 
-        # Get all students not enrolled in this group
         available_students = User.objects.filter(role='student').exclude(id__in=enrolled_student_ids)
 
-        # Filter based on search term
         if search_term:
             available_students = available_students.filter(
                 Q(first_name__icontains=search_term) |
@@ -562,7 +543,6 @@ class GroupStudentSearchAPIView(AdminRequiredMixin, View):
                 Q(id__iexact=search_term)
             )
 
-        # Limit results
         available_students = available_students[:20]
 
         students_data = [{
@@ -582,7 +562,6 @@ class EnrollmentAddView(AdminRequiredMixin, View):
         search_term = request.POST.get('search_term', '')
         student = get_object_or_404(User, pk=student_id, role='student')
 
-        # Check if already enrolled
         if not Enrollment.objects.filter(student=student, group=group).exists():
             Enrollment.objects.create(
                 student=student,

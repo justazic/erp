@@ -9,7 +9,6 @@ DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 
-# Application definition
 INSTALLED_APPS = [
     "unfold",
     "unfold.contrib.filters",
@@ -67,7 +66,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.template.context_processors.csrf',  # 👈 SHU YO‘Q EDI
+                'django.template.context_processors.csrf',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],

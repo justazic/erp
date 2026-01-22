@@ -4,7 +4,7 @@
 {% block content %}
     <section class="section section--soft">
         <div class="container">
-            <!-- BACK BUTTON & ACTIONS -->
+            
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
                 <a href="{% url 'courses:admin_dashboard' %}" style="color: var(--teal2); text-decoration: none; display: flex; align-items: center; gap: 8px;">
                     ← Back to Dashboard
@@ -19,7 +19,7 @@
             </div>
 
             <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <!-- DETAIL VIEW (Hidden when editing) -->
+                
                 <div id="detailView" style="display: block;">
                     <h1 style="margin-top: 0; margin-bottom: 32px;">{{ group.name }}</h1>
 
@@ -42,7 +42,7 @@
                         </div>
                     </div>
 
-                    <!-- TABS -->
+                    
                     <div style="display: flex; gap: 16px; margin: 32px 0; border-bottom: 2px solid #eee; padding-bottom: 0;">
                         <button type="button" onclick="switchTab('timetable')" class="tab-btn" style="padding: 16px 0; border: none; background: none; cursor: pointer; font-weight: 600; color: var(--teal2); border-bottom: 3px solid var(--teal2);" id="tab-timetable">
                             📅 Timetable
@@ -55,7 +55,7 @@
                         </button>
                     </div>
 
-                    <!-- TIMETABLE TAB -->
+                    
                     <div id="timetable-content" style="display: block; margin-top: 32px;">
                         <h3 style="margin-top: 0; margin-bottom: 24px;">Class Schedule (Upcoming First)</h3>
                         {% if schedules_sorted %}
@@ -87,7 +87,7 @@
                         {% endif %}
                     </div>
 
-                    <!-- ASSIGNMENTS TAB -->
+                    
                     <div id="assignments-content" style="display: none; margin-top: 32px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                             <h3 style="margin: 0;">Assignments</h3>
@@ -119,11 +119,11 @@
                         {% endif %}
                     </div>
 
-                    <!-- STUDENTS TAB -->
+                    
                     <div id="students-content" style="display: none; margin-top: 32px;">
                         <h3 style="margin-top: 0; margin-bottom: 24px;">Manage Students</h3>
 
-                        <!-- ADD STUDENT SECTION -->
+                        
                         <div style="margin-bottom: 32px; padding: 24px; background: linear-gradient(135deg, #e8f5f3 0%, #f0fffe 100%); border-radius: 12px; border-left: 4px solid var(--teal2); box-shadow: 0 4px 12px rgba(26, 153, 153, 0.1);">
                             <h4 style="margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 1.1rem;">🔍 <span>Add Student to Group</span></h4>
                             <p style="font-size: 0.9rem; color: #555; margin-bottom: 16px; line-height: 1.6;">Search by name, email, username, or ID. Added students will automatically appear in the enrolled list.</p>
@@ -137,11 +137,11 @@
                                 </div>
                             </div>
                             <div id="studentSearchResults" style="display: none; max-height: 450px; overflow-y: auto; border: 1px solid #d0d0d0; border-radius: 8px; margin-top: 12px; background: white; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
-                                <!-- Results will be inserted here -->
+                                
                             </div>
                         </div>
 
-                        <!-- ENROLLED STUDENTS LIST -->
+                        
                         <div style="background: #f9f9f9; padding: 24px; border-radius: 12px;">
                             <h4 style="margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 1.05rem;">👥 <span>Enrolled Students ({{ enrollments.count }})</span></h4>
                             {% if enrollments %}
@@ -385,7 +385,7 @@
                     document.head.appendChild(style);
                 </script>
 
-                <!-- EDIT FORM (Hidden by default) -->
+                
                 <form id="editForm" method="post" style="display: none;">
                     {% csrf_token %}
 
@@ -476,4 +476,3 @@
         }
     </script>
 {% endblock %}
-

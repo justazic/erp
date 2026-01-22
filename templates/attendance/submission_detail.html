@@ -4,7 +4,7 @@
 {% block content %}
     <section class="section section--soft">
         <div class="container">
-            <!-- BACK BUTTON -->
+            
             <div style="margin-bottom: 32px;">
                 <a href="javascript:history.back()" style="color: var(--teal2); text-decoration: none; display: flex; align-items: center; gap: 8px;">
                     ← Back
@@ -12,7 +12,7 @@
             </div>
 
             <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <!-- HEADER -->
+                
                 <div style="margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #eee;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 16px;">
                         <h1 style="margin: 0;">{{ assignment.title }}</h1>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <!-- SUBMISSION DETAILS -->
+                
                 <div style="margin-bottom: 32px;">
                     <h2 style="margin-bottom: 16px;">Submission File</h2>
                     {% if submission.file %}
@@ -66,7 +66,7 @@
                     {% endif %}
                 </div>
 
-                <!-- GRADING FORM - ONLY FOR TEACHERS/ADMINS -->
+                
                 {% if request.user.role != 'student' %}
                 <form method="post" style="margin-bottom: 32px;">
                     {% csrf_token %}
@@ -82,7 +82,7 @@
                         <textarea id="comment" name="comment" rows="6" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 1rem;">{{ submission.comment|default:'' }}</textarea>
                     </div>
 
-                    <!-- Status is auto-determined based on grade -->
+                    
                     <input type="hidden" name="status" value="{% if submission.grade %}graded{% elif submission.status == 'late' %}late{% else %}submitted{% endif %}">
 
                     <div style="display: flex; gap: 12px;">
@@ -95,7 +95,7 @@
                     </div>
                 </form>
                 {% else %}
-                <!-- STUDENT VIEW - SHOW GRADE AND FEEDBACK ONLY -->
+                
                 {% if submission.grade is not None %}
                 <div style="margin-bottom: 32px; padding: 20px; background: var(--soft); border-radius: 12px; border-left: 4px solid var(--teal2);">
                     <h3 style="margin-top: 0;">Your Grade & Feedback</h3>
@@ -125,4 +125,3 @@
         </div>
     </section>
 {% endblock %}
-

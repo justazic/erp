@@ -1,8 +1,7 @@
-<!-- Category Detail Modal -->
 <div style="padding: 24px;">
     <h2 style="margin-top: 0; margin-bottom: 24px;">{{ category.name }}</h2>
 
-    <!-- Category Information Display -->
+    
     <div id="categoryInfo" style="display: block;">
         <div style="margin-bottom: 24px;">
             <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">Category Name</label>
@@ -19,7 +18,7 @@
         </button>
     </div>
 
-    <!-- Edit Form (Hidden by default) -->
+    
     <form id="categoryEditForm" method="post" style="display: none;">
         {% csrf_token %}
 
@@ -64,4 +63,3 @@
         }).catch(error => console.error('Error:', error));
     });
 </script>
-

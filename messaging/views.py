@@ -11,7 +11,6 @@ class GroupChatListView(LoginRequiredMixin, View):
         if user.role == 'teacher':
             groups = Group.objects.filter(teacher=user).select_related('course')
         elif user.role == 'student':
-            # Only show groups that the student is directly enrolled in
             groups = Group.objects.filter(enrollments__student=user).select_related('course').distinct()
         else:
             groups = Group.objects.all().select_related('course')
@@ -21,7 +20,6 @@ class GroupChatListView(LoginRequiredMixin, View):
 class GroupChatDetailView(LoginRequiredMixin, View):
     def get(self, request, group_id):
         group = get_object_or_404(Group, id=group_id)
-        # Access check - only allow if student is enrolled in this specific group
         if request.user.role == 'student':
             is_enrolled = Enrollment.objects.filter(student=request.user, group=group).exists()
             if not is_enrolled:
@@ -40,7 +38,6 @@ class GroupChatDetailView(LoginRequiredMixin, View):
 
     def post(self, request, group_id):
         group = get_object_or_404(Group, id=group_id)
-        # Access check - only allow if student is enrolled in this specific group
         if request.user.role == 'student':
             is_enrolled = Enrollment.objects.filter(student=request.user, group=group).exists()
             if not is_enrolled:

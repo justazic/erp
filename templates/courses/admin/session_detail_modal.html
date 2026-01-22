@@ -1,8 +1,7 @@
-<!-- Session Detail Modal -->
 <div style="padding: 24px;">
     <h2 style="margin-top: 0; margin-bottom: 24px;">{{ session.course.name }} - {{ session.get_session_type_display }}</h2>
 
-    <!-- Session Information Display -->
+    
     <div id="sessionInfo" style="display: block;">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
             <div>
@@ -32,7 +31,7 @@
         </button>
     </div>
 
-    <!-- Edit Form (Hidden by default) -->
+    
     <form id="sessionEditForm" method="post" style="display: none;">
         {% csrf_token %}
         <input type="hidden" name="update_session" value="1">
@@ -111,4 +110,3 @@
         }).catch(error => console.error('Error:', error));
     });
 </script>
-

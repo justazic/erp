@@ -17,7 +17,6 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.stdout.write('Populating database...')
 
-        # 1. Create Categories
         categories_names = ['Programming', 'Design', 'Marketing', 'Business', 'Music']
         categories = []
         for name in categories_names:
@@ -25,7 +24,6 @@ class Command(BaseCommand):
             categories.append(cat)
         self.stdout.write(f'Created {len(categories)} categories.')
 
-        # 2. Create Teachers
         teachers = []
         for i in range(1, 11):
             username = f'teacher{i}'
@@ -47,7 +45,6 @@ class Command(BaseCommand):
             teachers.append(teacher)
         self.stdout.write(f'Created {len(teachers)} teachers.')
 
-        # 3. Create Students
         students = []
         for i in range(1, 101):
             username = f'student{i}'
@@ -68,7 +65,6 @@ class Command(BaseCommand):
             students.append(student)
         self.stdout.write(f'Created {len(students)} students.')
 
-        # 4. Create Courses
         course_data = [
             ('Python for Beginners', 'Programming', 99),
             ('Advanced Web Design', 'Design', 149),
@@ -95,18 +91,16 @@ class Command(BaseCommand):
             )
             courses.append(course)
             
-            # Link a random teacher to the course
             TeacherCourse.objects.get_or_create(teacher=random.choice(teachers), course=course)
             
         self.stdout.write(f'Created {len(courses)} courses.')
 
-        # 5. Create Sessions and Groups
         sessions = []
         groups = []
         session_types = ['spring', 'summer', 'fall', 'winter']
         
         for course in courses:
-            for stype in session_types[:2]: # 2 sessions per course
+            for stype in session_types[:2]:
                 session, created = Session.objects.get_or_create(
                     course=course,
                     session_type=stype,
@@ -119,7 +113,6 @@ class Command(BaseCommand):
                 )
                 sessions.append(session)
                 
-                # Create 2 groups per session
                 for g_idx in range(1, 3):
                     group, created = Group.objects.get_or_create(
                         name=f'{course.name} - Group {g_idx} ({stype})',
@@ -132,16 +125,12 @@ class Command(BaseCommand):
                     groups.append(group)
         self.stdout.write(f'Created {len(sessions)} sessions and {len(groups)} groups.')
 
-        # 6. Enroll Students
-        # Each student enrolled in 1-3 random courses
         for student in students:
             enrolled_courses = random.sample(courses, k=random.randint(1, 3))
             for course in enrolled_courses:
-                # Find a session and group for this course
                 course_sessions = [s for s in sessions if s.course == course]
                 if course_sessions:
                     session = random.choice(course_sessions)
-                    # Find groups for this session
                     session_groups = [g for g in groups if g.session == session]
                     group = random.choice(session_groups) if session_groups else None
                     
@@ -156,10 +145,7 @@ class Command(BaseCommand):
                     )
         self.stdout.write('Enrolled students in courses.')
 
-        # 7. Create Schedules and Assignments
         for group in groups:
-            # Schedule
-            # Avoid teacher conflicts by using different times or days
             days = random.sample(range(0, 7), k=3)
             times = [time(8, 0), time(10, 0), time(12, 0), time(14, 0), time(16, 0)]
             start_t = random.choice(times)
@@ -178,10 +164,8 @@ class Command(BaseCommand):
                         }
                     )
                 except Exception:
-                    # If conflict, just skip this slot for now
                     pass
             
-            # Assignments
             for i in range(1, 3):
                 Assignment.objects.get_or_create(
                     teacher=group.teacher,

@@ -4,7 +4,7 @@
 {% block content %}
     <section class="section section--soft">
         <div class="container">
-            <!-- HEADER -->
+            
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
                 <div>
                     <h1 style="margin: 0; margin-bottom: 8px;">{{ group.name }}</h1>
@@ -15,7 +15,7 @@
                 </a>
             </div>
 
-            <!-- STATS -->
+            
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
                 <div style="padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
                     <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600;">👥 Total Students</div>
@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <!-- STUDENTS TABLE - MARK ATTENDANCE -->
+            
             <div style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden;">
                 {% if enrollments %}
                     <div style="overflow-x: auto;">
@@ -83,4 +83,3 @@
         </div>
     </section>
 {% endblock %}
-

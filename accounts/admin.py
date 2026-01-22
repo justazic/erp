@@ -14,7 +14,6 @@ from .models import User
 class CustomUserCreationForm(UnfoldUserCreationForm):
     class Meta(UnfoldUserCreationForm.Meta):
         model = User
-        # include your extra fields on the add form
         fields = ("username",
                   "email",
                   "first_name",
@@ -31,10 +30,9 @@ class CustomUserChangeForm(UnfoldUserChangeForm):
 
 @admin.register(User)
 class CustomUserAdmin(BaseUserAdmin, ModelAdmin):
-    # ✅ Unfold-styled auth forms (including password change)
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
-    change_password_form = AdminPasswordChangeForm  # :contentReference[oaicite:1]{index=1}
+    change_password_form = AdminPasswordChangeForm
 
     list_display = ("first_name",
                     "last_name",
@@ -101,7 +99,6 @@ class CustomUserAdmin(BaseUserAdmin, ModelAdmin):
              }),
     )
 
-    # ✅ This is what makes the ADD user page show password1/password2
     add_fieldsets = (
         (None,
          {

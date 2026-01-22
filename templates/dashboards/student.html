@@ -133,7 +133,7 @@
                                     <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small font-weight-600">{{ slot_data.slot.group.course.name }}</td>
                                     <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot_data.slot.group.name }}</td>
                                     <td style="padding: 12px; border-bottom: 1px solid #f9f9f9;" class="small">{{ slot_data.slot.room|default:"—" }}</td>
-                                    <!-- ATTENDANCE STATUS -->
+                                    
                                     <td style="padding: 12px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem;">
                                         {% if slot_data.attendance %}
                                             <span style="display: inline-block; padding: 4px 8px; border-radius: 12px; font-weight: 600;
@@ -155,7 +155,7 @@
                                             </span>
                                         {% endif %}
                                     </td>
-                                    <!-- ASSIGNMENTS STATUS -->
+                                    
                                     <td style="padding: 12px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem;">
                                         {% if slot_data.assignments %}
                                             <div style="display: flex; gap: 4px; flex-wrap: wrap;">
@@ -183,10 +183,10 @@
         </div>
     </section>
 
-    <!-- LESSON DETAIL MODAL -->
+    
     <div id="lessonModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
         <div style="background: white; border-radius: 12px; padding: 32px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-            <!-- HEADER -->
+            
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px; border-bottom: 2px solid #eee; padding-bottom: 16px;">
                 <div>
                     <h2 id="modalTitle" style="margin: 0 0 8px 0;"></h2>
@@ -195,7 +195,7 @@
                 <button onclick="closeLessonModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">✕</button>
             </div>
 
-            <!-- LESSON INFO -->
+            
             <div style="margin-bottom: 24px;">
                 <h3 style="margin-bottom: 16px; font-size: 0.95rem; color: var(--muted);">Lesson Details</h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
@@ -210,15 +210,15 @@
                 </div>
             </div>
 
-            <!-- ASSIGNMENTS -->
+            
             <div style="margin-bottom: 16px;">
                 <h3 style="margin-bottom: 16px; font-size: 0.95rem; color: var(--muted);">Assignments for this Lesson</h3>
                 <div id="assignmentsContainer" style="display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Will be populated by JavaScript -->
+                    
                 </div>
             </div>
 
-            <!-- CLOSE BUTTON -->
+            
             <div style="display: flex; gap: 12px; margin-top: 24px;">
                 <button onclick="closeLessonModal()" style="flex: 1; padding: 10px 16px; background: #e0e0e0; color: #333; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem;">
                     Close

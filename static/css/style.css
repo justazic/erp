@@ -44,7 +44,7 @@ a{color:inherit;text-decoration:none}
 .link--right{justify-self:end}
 .arrow{margin-left:10px}
 
-/* NAV */
+
 .nav{
   background:var(--teal);
   padding:18px 0;
@@ -66,7 +66,7 @@ a{color:inherit;text-decoration:none}
   font-weight:700;
 }
 #about-us {
-  scroll-margin-top: 100px; /* adjust to your navbar height */
+  scroll-margin-top: 100px; 
 }
 
 .brand__mark{font-size:22px; opacity:.95}
@@ -83,7 +83,7 @@ a{color:inherit;text-decoration:none}
   cursor:pointer;
 }
 
-/* Buttons */
+
 .btn{
   display:inline-flex;
   align-items:center;
@@ -122,7 +122,7 @@ a{color:inherit;text-decoration:none}
 }
 .btn--small{padding:10px 16px; font-size:13px}
 
-/* HERO */
+
 .hero{
   background:var(--teal);
   color:#fff;
@@ -168,7 +168,7 @@ a{color:inherit;text-decoration:none}
   filter: drop-shadow(0 30px 60px rgba(0,0,0,.18));
 }
 
-/* Hero floating cards */
+
 .floatCard{
   position:absolute;
   background:rgba(255,255,255,.92);
@@ -206,7 +206,7 @@ a{color:inherit;text-decoration:none}
   border-top-right-radius: 100% 130px;
 }
 
-/* STATS */
+
 .stats{
   margin-top:34px;
   display:grid;
@@ -221,7 +221,7 @@ a{color:inherit;text-decoration:none}
 }
 .stat__label{margin-top:6px; color:#2b2e45; font-weight:500}
 
-/* Cards 3 */
+
 .cards3{
   margin-top:46px;
   display:grid;
@@ -247,7 +247,7 @@ a{color:inherit;text-decoration:none}
 .card__icon--cyan{background:#2bbbe5}
 .card__title{margin:28px 0 12px; font-size:18px}
 
-/* What is TOTC media cards */
+
 .splitCards{
   margin-top:40px;
   display:grid;
@@ -295,7 +295,7 @@ a{color:inherit;text-decoration:none}
   background:linear-gradient(90deg, rgba(10,20,40,.25), rgba(10,20,40,.15));
 }
 
-/* Two column sections */
+
 .twoCol{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -310,7 +310,7 @@ a{color:inherit;text-decoration:none}
   padding-left:10px;
 }
 
-/* Video frame */
+
 .videoFrame{
   border-radius:22px;
   overflow:hidden;
@@ -328,7 +328,7 @@ a{color:inherit;text-decoration:none}
   cursor:pointer;
 }
 
-/* Screenshot frame */
+
 .shotFrame{
   border-radius:22px;
   overflow:hidden;
@@ -336,11 +336,11 @@ a{color:inherit;text-decoration:none}
   background:#fff;
 }
 
-/* Bullets */
+
 .bullets{margin:18px 0 0; padding-left:18px; color:var(--muted); line-height:1.9}
 .bullets li{margin:10px 0}
 
-/* Course section */
+
 .courseWrap{position:relative}
 .courseHead{
   display:grid;
@@ -401,7 +401,7 @@ a{color:inherit;text-decoration:none}
 .stars{color:#ffb400; letter-spacing:2px; font-size:14px}
 .price{font-weight:700}
 
-/* Testimonial */
+
 .testiMedia{position:relative}
 .testiMedia__img{
   width:100%;
@@ -438,7 +438,7 @@ a{color:inherit;text-decoration:none}
 }
 .quoteName{font-weight:700}
 
-/* News */
+
 .newsGrid{
   margin-top:34px;
   display:grid;
@@ -477,7 +477,7 @@ a{color:inherit;text-decoration:none}
 }
 .newsItem h4{margin:6px 0 6px; font-size:14px}
 
-/* Footer */
+
 .footer{
   margin-top:30px;
   background:var(--navy);
@@ -514,7 +514,7 @@ a{color:inherit;text-decoration:none}
 .footer__links a{color:#cdd0ff}
 .footer__copy{margin-top:10px; font-size:12px; opacity:.7}
 
-/* Mobile */
+
 @media (max-width: 980px){
   .nav__links, .nav__actions{display:none}
   .nav__burger{display:block}
@@ -553,7 +553,7 @@ a{color:inherit;text-decoration:none}
 
 
 
-/* ===== Morphing pills (isolated) ===== */
+
 .morphCourses{
   width: inherit;
   display:flex;
@@ -561,21 +561,21 @@ a{color:inherit;text-decoration:none}
   gap:18px;
   align-items:flex-start;
   flex-wrap:wrap;
-  overflow:hidden;          /* prevents scrollbars from transforms */
+  overflow:hidden;          
 }
 
-/* Base component */
+
 .morphPill{
   position:relative;
-  width:84px;               /* pill width */
-  height:260px;             /* pill height */
+  width:84px;               
+  height:260px;             
   background:#fff;
   border-radius:22px;
   border: 1px solid #1bc7b9;
   overflow:hidden;
   cursor:pointer;
 
-  /* smooth morph */
+  
   transition:
     width .72s cubic-bezier(.2,.8,.2,1),
     transform .72s cubic-bezier(.2,.8,.2,1),
@@ -583,7 +583,7 @@ a{color:inherit;text-decoration:none}
   will-change: width, transform;
 }
 
-/* Pill label (only thing visible by default) */
+
 .morphPill__label{
   position:absolute;
   inset:0;
@@ -603,7 +603,7 @@ a{color:inherit;text-decoration:none}
   transition: opacity .18s ease;
 }
 
-/* Card content hidden by default */
+
 .morphPill__card{
   position:absolute;
   inset:0;
@@ -618,7 +618,7 @@ a{color:inherit;text-decoration:none}
   transition: opacity .20s ease;
 }
 
-/* Image area */
+
 .morphPill__img{
   border-radius:18px;
   overflow:hidden;
@@ -632,7 +632,7 @@ a{color:inherit;text-decoration:none}
   display:block;
 }
 
-/* Text area */
+
 .morphPill__body{
   display:flex;
   flex-direction:column;
@@ -659,16 +659,16 @@ a{color:inherit;text-decoration:none}
   max-width: 45ch;
 }
 
-/* ===== Hover morph ===== */
+
 .morphPill:hover{
-  width:720px;              /* expands into card */
+  width:720px;              
   box-shadow:0 22px 70px rgba(20,40,80,.14);
 
-  /* OPTIONAL: enable this if you truly want 90° clockwise turn */
-  /* transform: rotate(90deg); */
+  
+  
 }
 
-/* show details */
+
 .morphPill:hover .morphPill__label{
   opacity:0;
 }
@@ -677,7 +677,7 @@ a{color:inherit;text-decoration:none}
   pointer-events:auto;
 }
 
-/* ===== No-scrollbar safety (only affects this component) ===== */
+
 @media (max-width: 900px){
   .morphPill:hover{
     width:100%;
@@ -696,7 +696,7 @@ a{color:inherit;text-decoration:none}
 }
 
 
-/* OPEN state (only one should be open) */
+
 .morphPill.is-open{
   width:720px;
   box-shadow:0 22px 70px rgba(20,40,80,.14);
@@ -708,12 +708,12 @@ a{color:inherit;text-decoration:none}
   pointer-events:auto;
 }
 
-/* OPTIONAL: keep hover as just a small highlight (doesn't open) */
+
 .morphPill:hover{
   box-shadow:0 18px 44px rgba(20,40,80,.14);
 }
 
-/* ===== AUTH / LOGIN ===== */
+
 .authBody {
     font-family: 'Poppins', sans-serif;
     background: #e6e2e2;
@@ -732,7 +732,7 @@ a{color:inherit;text-decoration:none}
     overflow: hidden;
 }
 
-/* LEFT IMAGE */
+
 .loginImage {
     width: 50%;
     position: relative;
@@ -761,7 +761,7 @@ a{color:inherit;text-decoration:none}
     opacity: .85;
 }
 
-/* FORM */
+
 .loginFormWrap {
     width: 50%;
     display: flex;
@@ -851,7 +851,7 @@ a{color:inherit;text-decoration:none}
     cursor: pointer;
 }
 
-/* MOBILE */
+
 @media (max-width: 900px) {
     .loginWrap {
         flex-direction: column;
@@ -879,7 +879,7 @@ a{color:inherit;text-decoration:none}
 }
 
 
-/* USER DROPDOWN */
+
 .navUser {
     position: relative;
 }
@@ -900,13 +900,13 @@ a{color:inherit;text-decoration:none}
     font-size: 12px;
 }
 
-/* USER DROPDOWN */
+
 .navUser {
     position: relative;
     display: inline-block;
 }
 
-/* button */
+
 .navUser__btn {
     display: flex;
     align-items: center;
@@ -919,12 +919,12 @@ a{color:inherit;text-decoration:none}
     font-weight: 500;
 }
 
-/* menu */
+
 .navUser__menu {
     position: absolute;
     right: 0;
     top: 100%;
-    margin-top: 8px; /* visual spacing */
+    margin-top: 8px; 
 
     min-width: 180px;
     background: #fff;
@@ -939,18 +939,18 @@ a{color:inherit;text-decoration:none}
     z-index: 100;
 }
 
-/* ✅ Invisible hover-bridge so the menu doesn't vanish */
+
 .navUser__menu::before {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
-    top: -10px; /* bridge height */
+    top: -10px; 
     height: 10px;
     border-radius: 14px;
 }
 
-/* menu items */
+
 .navUser__menu a {
     display: block;
     padding: 12px 16px;
@@ -968,7 +968,7 @@ a{color:inherit;text-decoration:none}
 
 }
 
-/* ✅ show menu when hovering wrapper OR focusing inside (click/keyboard) */
+
 .navUser:hover .navUser__menu,
 .navUser:focus-within .navUser__menu {
     opacity: 1;
@@ -976,7 +976,7 @@ a{color:inherit;text-decoration:none}
     pointer-events: auto;
 }
 
-/* ===== DASHBOARD (student/teacher) ===== */
+
 .dash {
     padding: 42px 0;
 }
@@ -1105,7 +1105,7 @@ a{color:inherit;text-decoration:none}
     }
 }
 
-/* ===== PROFILE PAGE ===== */
+
 .profilePage {
     padding: 44px 0;
 }
@@ -1284,7 +1284,7 @@ a{color:inherit;text-decoration:none}
     flex-wrap: wrap;
 }
 
-/* buttons – if your existing btn styles exist, these just add missing variants */
+
 .btn--outline {
     background: #fff;
     border: 1px solid #e6ebf2;
@@ -1301,7 +1301,7 @@ a{color:inherit;text-decoration:none}
     filter: brightness(.95);
 }
 
-/* ===== MODAL ===== */
+
 .modal {
     position: fixed;
     inset: 0;
@@ -1356,7 +1356,7 @@ a{color:inherit;text-decoration:none}
     opacity: 1;
 }
 
-/* responsive */
+
 @media (max-width: 900px) {
     .profileLayout {
         grid-template-columns: 1fr;
@@ -1375,9 +1375,7 @@ a{color:inherit;text-decoration:none}
     }
 }
 
-/* ================================
-   PROFILE FORM ACTION BUTTONS
-   ================================ */
+
 
 .formActions {
     display: flex;
@@ -1387,9 +1385,9 @@ a{color:inherit;text-decoration:none}
     border-top: 1px solid #eef0f6;
 }
 
-/* Primary submit button */
+
 .formActions .btn--primary {
-    background: #4a5bdc; /* strong blue */
+    background: #4a5bdc; 
     color: #ffffff;
     border: 1px solid #4a5bdc;
     padding: 10px 22px;
@@ -1403,7 +1401,7 @@ a{color:inherit;text-decoration:none}
     border-color: #3f4fd1;
 }
 
-/* Secondary cancel button */
+
 .formActions .btn--white {
     background: #ffffff;
     color: #1f2340;
@@ -1417,7 +1415,7 @@ a{color:inherit;text-decoration:none}
     background: #f6f7fb;
 }
 
-/* Ensure buttons are never hidden */
+
 .formActions button {
     display: inline-flex;
     align-items: center;
@@ -1425,13 +1423,13 @@ a{color:inherit;text-decoration:none}
     cursor: pointer;
 }
 
-/* Fix if parent container collapses */
+
 #profileForm {
     overflow: visible;
 }
 
 
-/* ===== COURSE LIST ===== */
+
 
 .courseListPage {
     padding: 48px 0;
@@ -1606,7 +1604,7 @@ a{color:inherit;text-decoration:none}
 .courseCategories{
   display: flex;
   gap: 14px;
-  flex-wrap: wrap;          /* wraps cleanly */
+  flex-wrap: wrap;          
   margin-bottom: 32px;
 }
 
@@ -1619,7 +1617,7 @@ a{color:inherit;text-decoration:none}
   color: #2b2e45;
   text-decoration: none;
   transition: all .2s ease;
-  white-space: nowrap;      /* prevent vertical stacking */
+  white-space: nowrap;      
 }
 
 .categoryChip:hover{

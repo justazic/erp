@@ -4,7 +4,7 @@
 {% block content %}
     <section class="section section--soft">
         <div class="container">
-            <!-- BACK BUTTON & ACTIONS -->
+            
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
                 <a href="{% url 'courses:admin_dashboard' %}" style="color: var(--teal2); text-decoration: none; display: flex; align-items: center; gap: 8px;">
                     ← Back to Dashboard
@@ -19,7 +19,7 @@
             </div>
 
             <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <!-- DETAIL VIEW (Hidden when editing) -->
+                
                 <div id="detailView" style="display: block;">
                     <h1 style="margin-top: 0; margin-bottom: 32px;">{{ course.name }}</h1>
 
@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <!-- EDIT FORM (Hidden by default) -->
+                
                 <form id="editForm" method="post" style="display: none;">
                     {% csrf_token %}
 
@@ -121,5 +121,3 @@
         }
     </script>
 {% endblock %}
-
-

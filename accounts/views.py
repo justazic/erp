@@ -75,11 +75,9 @@ class LogoutView(View):
 def profile( request ):
   user = request.user
 
-  # default forms
   profile_form = UserProfileForm(request.POST or None, request.FILES or None, instance=user, user=user, )
   password_form = PasswordChangeForm(user)
 
-  # ---------- PROFILE UPDATE ----------
   if request.method == "POST" and "update_profile" in request.POST:
     if profile_form.is_valid():
       profile_form.save()
@@ -88,28 +86,23 @@ def profile( request ):
     else:
       messages.error(request, "Please fix the errors in your profile form.")
 
-  # ---------- PASSWORD CHANGE ----------
   if request.method == "POST" and "change_password" in request.POST:
     password_form = PasswordChangeForm(user, request.POST)
     if password_form.is_valid():
       password_form.save()
-      update_session_auth_hash(request, password_form.user)  # keep user logged in
+      update_session_auth_hash(request, password_form.user)
       messages.success(request, "Password changed successfully.")
       return redirect("accounts:profile")
     else:
-      # keep modal open on errors (template JS checks this flag)
       messages.error(request, "Please fix the password errors.")
 
-  # ---------- DELETE ACCOUNT (2-step confirm) ----------
   if request.method == "POST" and "delete_account" in request.POST:
     step = request.POST.get("delete_step", "1")
     if step == "2":
-      # final confirm -> delete
       user.delete()
       messages.success(request, "Your account has been deleted.")
       return redirect("index")
     else:
-      # step 1 handled by modal UI; we don't delete here
       messages.error(request, "Please confirm deletion again.")
 
   ctx = {
@@ -117,7 +110,7 @@ def profile( request ):
     "profile_form": profile_form,
     "password_form": password_form,
     "open_password_modal": bool(password_form.errors),
-    "open_edit_mode": bool(profile_form.errors),  # ✅ ADD THIS
+    "open_edit_mode": bool(profile_form.errors),
     }
   return render(request, "accounts/profile.html", ctx)
 
@@ -142,7 +135,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         my_groups_count = my_groups.count()
         total_students_count = Enrollment.objects.filter(course__groups__in=my_groups).distinct().count()
         
-        # Recent submissions for teacher's assignments
         pending_submissions = Submission.objects.filter(
             assignment__teacher=user, 
             status='submitted'
@@ -161,7 +153,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         enrollments = Enrollment.objects.filter(student=user).select_related('course', 'session', 'group')
         enrolled_groups_count = enrollments.filter(group__isnull=False).values('group').distinct().count()
 
-        # Pending tasks: assignments for groups student is in, where no submission exists
         student_groups = Group.objects.filter(enrollments__student=user)
         pending_assignments = Assignment.objects.filter(
             group__in=student_groups,
@@ -170,15 +161,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         
         pending_tasks_count = Assignment.objects.filter(group__in=student_groups).exclude(submissions__student=user).count()
         
-        # Attendance rate
         total_attendance = Attendance.objects.filter(student=user).count()
         present_attendance = Attendance.objects.filter(student=user, status='present').count()
         attendance_rate = int((present_attendance / total_attendance) * 100) if total_attendance > 0 else 0
         
-        # Payments
         recent_payments = Payment.objects.filter(student=user).order_by('-created_at')[:5]
         
-        # Schedule with attendance and assignment status
         from django.utils import timezone
         from datetime import timedelta
 
@@ -188,11 +176,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         schedule_data = []
 
         for slot in schedule_slots:
-            # Calculate the date for this schedule's day_of_week
-            current_day_of_week = today.weekday()  # Monday=0, Sunday=6
+            current_day_of_week = today.weekday()
             target_day_of_week = slot.day_of_week
 
-            # Calculate days difference
             days_diff = (target_day_of_week - current_day_of_week) % 7
             if days_diff == 0:
                 slot_date = today
@@ -203,17 +189,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 else:
                     slot_date = today - timedelta(days=(7 - days_diff))
 
-                # Check if this slot is in the past
                 is_passed = slot_date < today
 
-            # Get attendance for this slot
             attendance = Attendance.objects.filter(
                 student=user,
                 schedule=slot,
                 date=slot_date
             ).first()
 
-            # Get assignments for this slot
             assignments = Assignment.objects.filter(
                 schedule=slot,
                 status='published'
@@ -241,7 +224,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 'assignments': assignment_statuses,
             })
 
-        # Sort: upcoming first, then past
         schedule_data.sort(key=lambda x: (x['is_passed'], x['slot'].day_of_week, x['slot'].start_time))
 
         ctx.update({

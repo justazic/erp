@@ -53,52 +53,42 @@ class ScheduleDetailView(LoginRequiredMixin, DetailView):
     schedule = self.object
     today = timezone.now().date()
 
-    # Calculate the date for this schedule's day_of_week
-    current_day_of_week = today.weekday()  # Monday=0, Sunday=6
+    current_day_of_week = today.weekday()
     target_day_of_week = schedule.day_of_week
 
-    # Calculate days difference
     days_diff = (target_day_of_week - current_day_of_week) % 7
     if days_diff == 0:
-      # Use today if it's the same day of week
       attendance_date = today
     else:
-      # Find the most recent past occurrence
       if days_diff <= current_day_of_week:
         attendance_date = today - timedelta(days=current_day_of_week - target_day_of_week)
       else:
         attendance_date = today - timedelta(days=(7 - days_diff))
 
-    # Get all enrollments for this group
     enrollments = Enrollment.objects.filter(
       group=schedule.group,
       status='studying',
     ).select_related('student')
 
-    # Get attendance records for this schedule's date
     attendance_records = Attendance.objects.filter(
       schedule=schedule,
       date=attendance_date,
     )
     attendance_map = {a.student_id: a for a in attendance_records}
 
-    # Get assignments for this SPECIFIC schedule (lesson)
     assignments = Assignment.objects.filter(
       schedule=schedule,
       status='published',
     ).prefetch_related('submissions')
 
-    # Build student data with attendance and assignment info
     students_data = []
     for enrollment in enrollments:
       student = enrollment.student
       attendance = attendance_map.get(student.id)
 
-      # Get submission status for this student across all assignments for this schedule
       submissions = {}
       submission_list = []
 
-      # Always process all assignments, even if no submissions
       for assignment in assignments:
         submission = next(
           (s for s in assignment.submissions.all() if s.student_id == student.id),
@@ -106,7 +96,6 @@ class ScheduleDetailView(LoginRequiredMixin, DetailView):
         )
         submissions[assignment.id] = submission
 
-        # Build submission data for display
         if submission:
           submission_list.append({
             'id': submission.id,
@@ -115,7 +104,6 @@ class ScheduleDetailView(LoginRequiredMixin, DetailView):
             'grade': submission.grade,
           })
         else:
-          # Add empty entry for assignments without submission
           submission_list.append({
             'id': None,
             'assignment_title': assignment.title,
@@ -131,7 +119,6 @@ class ScheduleDetailView(LoginRequiredMixin, DetailView):
         'submission_list': submission_list,
       })
 
-    # Serialize students data to JSON for JavaScript (for modal functionality if needed)
     students_data_json = json.dumps([
       {
         'student_id': item['student'].id,
@@ -212,26 +199,20 @@ class MarkStudentAttendanceView(LoginRequiredMixin, View):
     schedule = get_object_or_404(Schedule, pk=schedule_id)
     student = get_object_or_404(User, pk=student_id, role='student')
 
-    # Allow teacher of the group or admin
     if request.user.role not in ['teacher', 'admin']:
       return JsonResponse({'error': 'Permission denied'}, status=403)
 
     if request.user.role == 'teacher' and schedule.teacher != request.user:
       return JsonResponse({'error': 'Permission denied'}, status=403)
 
-    # Calculate the date for this schedule's day_of_week
-    # Find the most recent occurrence of this day of week (or today if it matches)
     today = timezone.now().date()
-    current_day_of_week = today.weekday()  # Monday=0, Sunday=6
+    current_day_of_week = today.weekday()
     target_day_of_week = schedule.day_of_week
 
-    # Calculate days difference
     days_diff = (target_day_of_week - current_day_of_week) % 7
     if days_diff == 0:
-      # Use today if it's the same day of week
       attendance_date = today
     else:
-      # Find the most recent past occurrence
       if days_diff <= current_day_of_week:
         attendance_date = today - timedelta(days=current_day_of_week - target_day_of_week)
       else:
@@ -266,7 +247,6 @@ class StudentSubmissionDetailView(LoginRequiredMixin, DetailView):
     context = super().get_context_data(**kwargs)
     submission = self.object
 
-    # Allow students to view their own submissions, or teachers to view submissions from their group
     if self.request.user.role == 'student':
       if submission.student != self.request.user:
         raise PermissionDenied()
@@ -284,18 +264,15 @@ class StudentSubmissionDetailView(LoginRequiredMixin, DetailView):
   def post(self, request, submission_id):
     submission = get_object_or_404(Submission, pk=submission_id)
 
-    # Check permissions - allow teachers of the group or admins
     if request.user.role == 'teacher':
       if submission.assignment.group.teacher != request.user:
         raise PermissionDenied()
     elif request.user.role != 'admin':
       raise PermissionDenied()
 
-    # Update submission with grade and feedback
     submission.grade = request.POST.get('grade')
     submission.comment = request.POST.get('comment', '')
 
-    # Auto-determine status based on grade
     if submission.grade:
       submission.status = 'graded'
     elif submission.status == 'late':
@@ -305,6 +282,4 @@ class StudentSubmissionDetailView(LoginRequiredMixin, DetailView):
 
     submission.save()
 
-    # Redirect back to schedule detail
     return redirect('attendance:schedule_detail', schedule_id=submission.assignment.schedule.id)
-

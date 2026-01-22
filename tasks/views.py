@@ -7,7 +7,6 @@ from .models import Assignment, Submission
 from courses.models import Group
 
 
-# Create your views here.
 
 class AssigmentCreateView(LoginRequiredMixin, View):
   def get( self, request, group_id=None ):
@@ -47,7 +46,6 @@ class AssigmentCreateView(LoginRequiredMixin, View):
       status='published'
       )
 
-    # Redirect back to schedule detail if schedule_id was provided
     if schedule_id:
       return redirect('attendance:schedule_detail', schedule_id=schedule_id)
 

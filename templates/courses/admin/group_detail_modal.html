@@ -1,8 +1,7 @@
-<!-- Group Detail Modal -->
 <div style="padding: 24px;">
     <h2 style="margin-top: 0; margin-bottom: 24px;">{{ group.name }}</h2>
 
-    <!-- Group Information Display -->
+    
     <div id="groupInfo" style="display: block;">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
             <div>
@@ -28,7 +27,7 @@
         </button>
     </div>
 
-    <!-- Edit Form (Hidden by default) -->
+    
     <form id="groupEditForm" method="post" style="display: none;">
         {% csrf_token %}
         <div style="margin-bottom: 16px;">
@@ -107,4 +106,3 @@
         }).catch(error => console.error('Error:', error));
     });
 </script>
-

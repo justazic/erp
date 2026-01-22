@@ -7,7 +7,7 @@
 <section class="section section--soft">
     <div class="container">
 
-        <!-- BACK BUTTON -->
+        
         <div style="margin-bottom: 32px;">
             <a href="javascript:history.back()" style="color: var(--teal2); text-decoration: none; display: flex; align-items: center; gap: 8px;">
                 ← Back
@@ -15,7 +15,7 @@
         </div>
 
             <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <!-- SCHEDULE HEADER -->
+                
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 32px;">
                     <div>
                         <h1 style="margin: 0 0 16px 0;">{{ schedule.group.name }}</h1>
@@ -45,9 +45,9 @@
                     </a>
                 </div>
 
-                <!-- STUDENTS TABLE AND SIDEBAR CONTAINER -->
+                
                 <div style="display: flex; gap: 24px;">
-                    <!-- LEFT: FULL-WIDTH TABLE -->
+                    
                     <div style="flex: 1;">
                         <h2 style="margin-top: 32px; margin-bottom: 24px;">Students</h2>
                         {% if students_data %}
@@ -71,14 +71,14 @@
                                         <td style="padding: 12px; border: 1px solid #eee; text-align: center;">
                                             <input type="checkbox" class="studentCheckbox" onchange="updateStats()" style="cursor: pointer; width: 18px; height: 18px;">
                                         </td>
-                                        <!-- STUDENT NAME WITH LINK -->
+                                        
                                         <td style="padding: 12px; border: 1px solid #eee;">
                                             <a href="{% url 'courses:admin_student_detail' item.student.id %}" style="color: var(--teal2); text-decoration: none; font-weight: 600;">
                                                 {{ item.student.get_full_name|default:item.student.username }} →
                                             </a>
                                         </td>
 
-                                        <!-- ATTENDANCE WITH INLINE OPTIONS -->
+                                        
                                         <td style="padding: 12px; border: 1px solid #eee;">
                                             <div style="display: flex; align-items: center; gap: 6px;">
                                                 <span style="display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; font-weight: 600;
@@ -131,7 +131,7 @@
                                             </div>
                                         </td>
 
-                                        <!-- ASSIGNMENTS -->
+                                        
                                         <td style="padding: 12px; border: 1px solid #eee;">
                                             {% if item.submission_list %}
                                                 <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -182,7 +182,7 @@
                     </div>
                 </div>
 
-                <!-- RIGHT SIDEBAR: SEPARATED STATS & BUTTONS PANEL -->
+                
                 <div style="
                     position: fixed;
                     right: 40px;
@@ -197,7 +197,7 @@
                     gap: 10px;
                     z-index: 100;
                 ">
-                        <!-- STATS DISPLAY -->
+                        
                         <div id="attendanceStats" style="
                             font-size: 0.8rem;
                             font-weight: 600;
@@ -210,9 +210,9 @@
                             ✓ All Present
                         </div>
 
-                        <!-- BUTTONS ROW -->
+                        
                         <div style="display: flex; gap: 6px;">
-                            <!-- MARK SELECTED PRESENT BUTTON -->
+                            
                             <button type="button" onclick="markSelectedPresent()" id="markSelectedPresentBtn"
                                     style="
                                         padding: 6px 10px;
@@ -234,7 +234,7 @@
                                 ✓ Present
                             </button>
 
-                            <!-- MARK SELECTED ABSENT BUTTON -->
+                            
                             <button type="button" onclick="markSelectedAbsent()" id="markSelectedAbsentBtn"
                                     style="
                                         padding: 6px 10px;
@@ -256,7 +256,7 @@
                                 ✗ Absent
                             </button>
 
-                            <!-- AUTO-SAVE INDICATOR -->
+                            
                             <div id="autoSaveIndicator" style="
                                 padding: 6px 10px;
                                 background: #e8f5e9;
@@ -274,7 +274,7 @@
                         </div>
                 </div>
 
-                <!-- ASSIGNMENTS MANAGEMENT -->
+                
                 <div style="margin-top: 32px; padding-top: 32px; border-top: 2px solid #eee;">
                     <h2 style="margin-top: 0; margin-bottom: 24px;">Assignments for This Lesson</h2>
                     {% if assignments %}
@@ -306,7 +306,7 @@
     </div>
 </section>
 
-<!-- ATTENDANCE DATA & FUNCTIONS -->
+
 <script>
     const schedule_id = {{ schedule.id }};
     const attendanceData = {};

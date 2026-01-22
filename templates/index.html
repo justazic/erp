@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<!-- HERO -->
+
 <section class="hero">
   <div class="container hero__grid">
     <div class="hero__left">
@@ -24,10 +24,10 @@
     </div>
 
     <div class="hero__right">
-      <!-- Replace with your exported hero person image -->
+      
       <img class="hero__person" src="{% static 'images/hero-person.png' %}" alt="Student">
 
-      <!-- Floating cards (simple HTML; you can refine later) -->
+      
       <div class="floatCard floatCard--top">
         <div class="floatIcon">📅</div>
         <div>
@@ -55,11 +55,11 @@
     </div>
   </div>
 
-  <!-- curved bottom -->
+  
   <div class="hero__curve" aria-hidden="true"></div>
 </section>
 
-<!-- SUCCESS -->
+
 <section class="section" id="about-us">
   <div class="container">
     <div class="center">
@@ -95,7 +95,7 @@
   </div>
 </section>
 
-<!-- ALL-IN-ONE -->
+
 <section class="section">
   <div class="container">
     <div class="center">
@@ -138,7 +138,7 @@
   </div>
 </section>
 
-<!-- WHAT IS TOTC -->
+
 <section class="section">
   <div class="container">
     <div class="center">
@@ -172,7 +172,7 @@
   </div>
 </section>
 
-<!-- CLASSROOM -->
+
 <section class="section">
   <div class="container twoCol">
     <div>
@@ -194,7 +194,7 @@
   </div>
 </section>
 
-<!-- OUR FEATURES TITLE -->
+
 <section class="section">
   <div class="container center">
     <h2 class="h2">Our <span class="accent">Features</span></h2>
@@ -202,7 +202,7 @@
   </div>
 </section>
 
-<!-- FEATURE ROW 1 -->
+
 <section class="section">
   <div class="container twoCol">
     <div class="shotFrame">
@@ -219,7 +219,7 @@
   </div>
 </section>
 
-<!-- FEATURE ROW 2 -->
+
 <section class="section">
   <div class="container twoCol twoCol--reverse">
     <div class="shotFrame">
@@ -235,7 +235,7 @@
   </div>
 </section>
 
-<!-- FEATURE ROW 3 -->
+
 <section class="section">
   <div class="container twoCol">
     <div class="shotFrame">
@@ -251,7 +251,7 @@
   </div>
 </section>
 
-<!-- FEATURE ROW 4 -->
+
 <section class="section">
   <div class="container twoCol">
     <div>
@@ -267,7 +267,7 @@
   </div>
 </section>
 
-<!-- FEATURE ROW 5 -->
+
 <section class="section">
   <div class="container twoCol twoCol--reverse">
     <div>
@@ -290,12 +290,12 @@
     <div class="morphCourses">
         {% for c in popular_courses %}
         <article class="morphPill">
-            <!-- always visible label (pill state) -->
+            
             <div class="morphPill__label">
                 {{ c.name }}
             </div>
 
-            <!-- hidden details (card state) -->
+            
             <div class="morphPill__card">
                 <div class="morphPill__img">
                     <img

@@ -15,7 +15,7 @@
             </div>
 
             <div class="chat-container" style="max-width: 800px; margin: 0 auto; background: #fff; border-radius: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; height: 600px;">
-                <!-- Chat Messages -->
+                
                 <div class="chat-messages" id="chat-messages" style="flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
                     {% for msg in messages %}
                         <div class="message {% if msg.sender == request.user %}message--sent{% else %}message--received{% endif %}" 
@@ -34,7 +34,7 @@
                     {% endfor %}
                 </div>
 
-                <!-- Chat Input -->
+                
                 <div class="chat-footer" style="padding: 20px; border-top: 1px solid #eee;">
                     <form method="post" style="display: flex; gap: 12px;">
                         {% csrf_token %}

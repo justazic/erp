@@ -6,7 +6,7 @@
 {% block content %}
     <section class="section section--soft">
         <div class="container">
-            <!-- HERO / TITLE SECTION -->
+            
             <div class="center" style="margin-bottom: 48px;">
                 {% if course.category %}
                     <span class="kicker">{{ course.category.name|upper }}</span>
@@ -16,7 +16,7 @@
             </div>
 
             <div class="courseDetail__grid">
-                <!-- ================= LEFT ================= -->
+                
                 <div class="courseDetail__main">
                     {% if course.large_image %}
                         <div class="courseHero" style="margin-bottom: 32px; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow);">
@@ -24,14 +24,14 @@
                         </div>
                     {% endif %}
 
-                    <!-- TABS -->
+                    
                     <div class="courseTabs">
                         <a href="#overview" class="courseTab active">Overview</a>
                         <a href="#instructors" class="courseTab">Instructors</a>
                         <a href="#reviews" class="courseTab">Reviews</a>
                     </div>
 
-                    <!-- OVERVIEW -->
+                    
                     <div id="overview" class="courseOverview" style="margin-bottom: 48px;">
                         <h3 class="h2" style="font-size: 24px;">Course <span class="accent">Description</span></h3>
                         <div class="muted" style="background: #fff; padding: 32px; border-radius: 20px; box-shadow: var(--shadow);">
@@ -39,7 +39,7 @@
                         </div>
                     </div>
 
-                    <!-- TEACHERS -->
+                    
                     {% if teachercourses %}
                         <div id="instructors" style="margin-bottom: 48px;">
                             <h3 class="h2" style="font-size: 24px;">Meet your <span class="accent">Instructors</span></h3>
@@ -64,7 +64,7 @@
                         </div>
                     {% endif %}
 
-                    <!-- ================= RATINGS ================= -->
+                    
                     <div id="reviews" style="margin-bottom: 48px;">
                         <h3 class="h2" style="font-size: 24px;">Student <span class="accent">Reviews</span></h3>
                         {% if total_reviews > 0 %}
@@ -94,7 +94,7 @@
                             </div>
                         {% endif %}
 
-                        <!-- COMMENTS -->
+                        
                         <div class="courseReviews" style="margin-top: 32px;">
                             {% for comment in comments %}
                                 <div class="review" style="background: #fff; padding: 24px; border-radius: 20px; margin-bottom: 16px; box-shadow: var(--shadow);">
@@ -114,7 +114,7 @@
                             {% endfor %}
                         </div>
 
-                        <!-- WRITE REVIEW -->
+                        
                         {% if is_authenticated and is_enrolled %}
                             <div class="card writeReview" style="background: #fff; padding: 32px; border-radius: 20px; margin-top: 32px; box-shadow: var(--shadow);">
                                 <h4 class="h2" style="font-size: 20px; margin-bottom: 24px;">Leave a <span class="accent">Review</span></h4>
@@ -142,7 +142,7 @@
                     </div>
                 </div>
 
-                <!-- ================= RIGHT SIDEBAR ================= -->
+                
                 <aside class="courseDetail__sidebar">
                     <div class="priceCard" style="background: #fff; padding: 24px; border-radius: 20px; box-shadow: var(--shadow); position: sticky; top: 100px;">
                         {% if course.small_image %}

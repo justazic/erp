@@ -11,7 +11,7 @@
             </div>
 
             <div class="profileLayout" style="display: grid; grid-template-columns: 320px 1fr; gap: 40px; align-items: start;">
-                <!-- SIDEBAR -->
+                
                 <aside class="profileSidebar card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow); text-align: center;">
                     <div class="avatarCircle" style="width: 120px; height: 120px; background: var(--soft); border-radius: 50%; margin: 0 auto 24px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--teal2); border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
                         {% if profile_user.avatar %}
@@ -31,7 +31,7 @@
                     </div>
                 </aside>
 
-                <!-- CONTENT -->
+                
                 <main class="profileContent">
                     {% if messages %}
                         <div class="alerts" style="margin-bottom: 24px;">
@@ -43,7 +43,7 @@
                         </div>
                     {% endif %}
 
-                    <!-- READ VIEW -->
+                    
                     <div id="profileView" class="card" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #eee;">
                             <h3 style="margin: 0; font-size: 20px;">Personal Information</h3>
@@ -85,7 +85,7 @@
                         </div>
                     </div>
 
-                    <!-- EDIT FORM -->
+                    
                     <form id="profileForm" class="card hidden" method="post" enctype="multipart/form-data" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: var(--shadow);">
                         {% csrf_token %}
                         <input type="hidden" name="update_profile" value="1">
@@ -147,7 +147,7 @@
         </div>
     </section>
 
-    <!-- MODALS (Password & Delete) stay largely same but with updated styles -->
+    
     <style>
         .modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;

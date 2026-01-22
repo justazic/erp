@@ -4,7 +4,7 @@
 {% block content %}
     <section class="section section--soft">
         <div class="container">
-            <!-- HEADER -->
+            
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
                 <a href="{% url 'teachers:admin_list' %}" style="color: var(--teal2); text-decoration: none; display: flex; align-items: center; gap: 8px;">
                     ← Back to Teachers
@@ -21,7 +21,7 @@
             </div>
 
             <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <!-- TEACHER DETAILS -->
+                
                 <h1 style="margin-top: 0; margin-bottom: 32px;">{{ teacher.get_full_name|default:teacher.username }}</h1>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid #eee;">
@@ -51,7 +51,7 @@
                     </div>
                 </div>
 
-                <!-- TAUGHT GROUPS -->
+                
                 <div style="margin-top: 48px;">
                     <h2 style="font-size: 1.5rem; margin-bottom: 16px;">Groups Taught ({{ teacher.taught_groups.count }})</h2>
 
@@ -103,4 +103,3 @@
         </div>
     </section>
 {% endblock %}
-

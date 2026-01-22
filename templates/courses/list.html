@@ -12,7 +12,7 @@
                 </p>
             </div>
 
-            <!-- CATEGORY FILTER -->
+            
             {% if categories %}
                 <div class="categoryFilter" style="margin-top: 32px;">
                     <a href="{% url 'courses:list' %}" class="btn btn--pill {% if not active_category %}btn--primary{% else %}btn--white{% endif %}">All</a>
@@ -25,7 +25,7 @@
                 </div>
             {% endif %}
 
-            <!-- SEARCH BAR -->
+            
             <div class="center" style="margin: 32px 0 48px;">
                 <form method="get" class="searchForm" style="display: inline-flex; width: 100%; max-width: 600px; gap: 10px;">
                     {% if active_category %}
